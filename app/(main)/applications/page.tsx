@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { cn } from "@/lib/utils";
-import { InfoModal } from "@/app/components/InfoModal";
 import {
   Paper,
   Table,
@@ -358,7 +357,6 @@ export default function DocumentsPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<(typeof mockData)[0] | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -488,7 +486,7 @@ export default function DocumentsPage() {
               .map((row) => {
                 const status = statusFilters.find((s) => s.key === row.status);
                 return (
-                  <TableRow key={row.id} hover onClick={() => setSelectedRow(row)} className="cursor-pointer">
+                  <TableRow key={row.id} hover>
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{row.date}</TableCell>
                     <TableCell>{row.initiator}</TableCell>
@@ -533,28 +531,6 @@ export default function DocumentsPage() {
           }
         />
       </TableContainer>
-
-      {selectedRow && (
-        <InfoModal
-          title={`Заявка ${selectedRow.id}`}
-          onClose={() => setSelectedRow(null)}
-          fields={[
-            { label: "№ заявки", value: selectedRow.id },
-            { label: "Дата поступления", value: selectedRow.date },
-            { label: "Инициатор", value: selectedRow.initiator },
-            { label: "Тип", value: selectedRow.type },
-            { label: "Описание", value: selectedRow.description },
-            { label: "Стоимость", value: `${selectedRow.cost} ${selectedRow.currency}` },
-            { label: "№ договора", value: selectedRow.contractNum },
-            { label: "Исполнитель", value: selectedRow.executor },
-            { label: "Статус", value: statusFilters.find((s) => s.key === selectedRow.status)?.label },
-            { label: "Договор", value: selectedRow.contract },
-            { label: "Время изменения", value: selectedRow.updatedAt },
-            { label: "Статья", value: selectedRow.article },
-            { label: "№ ЗНО", value: selectedRow.znoNum },
-          ]}
-        />
-      )}
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import { InfoModal } from "@/app/components/InfoModal";
 import {
   Paper,
   Table,
@@ -136,7 +135,6 @@ export default function AccompanimentPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<(typeof mockData)[0] | null>(null);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 400);
@@ -224,7 +222,7 @@ export default function AccompanimentPage() {
             {mockData
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <TableRow key={row.id} hover onClick={() => setSelectedRow(row)} className="cursor-pointer">
+                <TableRow key={row.id} hover>
                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.initiator}</TableCell>
                   <TableCell>{row.dept}</TableCell>
@@ -255,24 +253,6 @@ export default function AccompanimentPage() {
           }
         />
       </TableContainer>
-
-      {selectedRow && (
-        <InfoModal
-          title={`Заявка ${selectedRow.id}`}
-          onClose={() => setSelectedRow(null)}
-          fields={[
-            { label: "№ заявки", value: selectedRow.id },
-            { label: "Инициатор", value: selectedRow.initiator },
-            { label: "Деп. инициатора", value: selectedRow.dept },
-            { label: "Поставщик", value: selectedRow.supplier },
-            { label: "№ договора", value: selectedRow.contractNum },
-            { label: "Дата поставки", value: selectedRow.deliveryDate },
-            { label: "Стоимость", value: selectedRow.cost },
-            { label: "Дата оплаты", value: selectedRow.paymentDate },
-            { label: "Исполнитель", value: selectedRow.executor },
-          ]}
-        />
-      )}
     </div>
   );
 }
