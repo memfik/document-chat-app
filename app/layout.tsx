@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeRegistry } from "./components/ThemeRegistry";
-import { Navigation } from "./components/Navigation";
 
 export const metadata: Metadata = {
   title: "Document & Chat Manager",
@@ -16,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>
-        <ThemeRegistry>
-          <Navigation />
-          {children}
-        </ThemeRegistry>
+        <ThemeRegistry>{children}</ThemeRegistry>
       </body>
     </html>
   );
