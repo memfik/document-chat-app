@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeRegistry } from "./components/ThemeRegistry";
 
 export const metadata: Metadata = {
-  title: "Document & Chat Manager",
-  description: "Manage documents and chat with AI assistant",
+  title: "Document Manager",
+  description: "Manage documents",
 };
 
 export default function RootLayout({

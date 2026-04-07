@@ -93,14 +93,19 @@ export function Navigation() {
         <div className="px-6 py-2 flex items-center gap-2">
           <button
             onClick={() => router.push("/applications/new")}
-            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-blue-200 transition-colors flex items-center gap-1"
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm transition-colors flex items-center gap-1 cursor-pointer",
+              pathname === "/applications/new"
+                ? "bg-blue-500 text-white font-semibold"
+                : "bg-blue-200 text-gray-600 hover:bg-blue-300",
+            )}
           >
             <AddIcon fontSize="small" />
             Новая Ф16
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-green-200 transition-colors flex items-center gap-1"
+            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-green-200 transition-colors flex items-center gap-1 cursor-pointer"
           >
             <FileUploadIcon fontSize="small" />
             Импорт
@@ -109,7 +114,7 @@ export function Navigation() {
           <div ref={docsRef} className="relative">
             <button
               onClick={() => setShowDocsDropdown((v) => !v)}
-              className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-gray-100 transition-colors flex items-center gap-1"
+              className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
             >
               Документы
               <KeyboardArrowDownIcon
@@ -129,7 +134,7 @@ export function Navigation() {
                       router.push(item.href);
                       setShowDocsDropdown(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
                   >
                     {item.label}
                   </button>
@@ -139,13 +144,23 @@ export function Navigation() {
           </div>
           <button
             onClick={() => router.push("/rd")}
-            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-blue-200 transition-colors"
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
+              pathname === "/rd"
+                ? "bg-blue-500 text-white font-semibold"
+                : "bg-blue-200 text-gray-600 hover:bg-blue-300",
+            )}
           >
             РД
           </button>
           <button
             onClick={() => router.push("/report")}
-            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-red-300 transition-colors"
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
+              pathname === "/report"
+                ? "bg-red-500 text-white font-semibold"
+                : "bg-red-300 text-gray-600 hover:bg-red-400",
+            )}
           >
             REPORT
           </button>

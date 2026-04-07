@@ -27,7 +27,7 @@ export function InfoModal({ title, fields, onClose }: InfoModalProps) {
           <h3 className="text-base font-semibold text-gray-800">{title}</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
           >
             <CloseIcon fontSize="small" />
           </button>
@@ -37,7 +37,9 @@ export function InfoModal({ title, fields, onClose }: InfoModalProps) {
           {fields.map((field) => (
             <div key={field.label}>
               <p className="text-xs text-gray-400 mb-0.5">{field.label}</p>
-              <p className="text-sm text-gray-800 font-medium">{field.value || "—"}</p>
+              <p className="text-sm text-gray-800 font-medium">
+                {field.value || "—"}
+              </p>
             </div>
           ))}
         </div>

@@ -17,7 +17,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-orange-100">
       <div className="bg-white rounded-2xl shadow-md p-10 w-full max-w-md flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <img
@@ -25,25 +25,25 @@ export default function LoginPage() {
             alt="Logo"
             className="object-contain h-16"
           />
-          <span className="text-md font-medium text-gray-800 text-center leading-tight">
+          <span className="text-md font-bold text-gray-800 text-center leading-tight">
             Служба сопровождения контрактов
           </span>
         </div>
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-gray-700">Почта</label>
+            <label className="text-xs font-bold text-gray-700">Почта</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@company.kz"
+              placeholder="example@jusanmobile.kz"
               required
               className="px-4 py-2.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-gray-700">Пароль</label>
+            <label className="text-xs font-bold text-gray-700">Пароль</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}

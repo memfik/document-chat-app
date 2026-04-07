@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import HistoryIcon from "@mui/icons-material/History";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { cn } from "@/lib/utils";
+import { InfoModal } from "@/app/components/InfoModal";
 import {
   Paper,
   Table,
@@ -350,6 +355,111 @@ const statusFilters = [
   { key: "postponed", label: "Отложенные", color: "#94a3b8" },
 ];
 
+interface RowExtra {
+  znoNum: string;
+  paymentFile: File | null;
+  paymentFileName: string;
+}
+
+interface EditModalProps {
+  rowId: string;
+  extra: RowExtra;
+  onClose: () => void;
+  onSave: (data: RowExtra) => void;
+}
+
+function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
+  const [znoNum, setZnoNum] = useState(extra.znoNum);
+  const [file, setFile] = useState<File | null>(extra.paymentFile);
+  const [fileName, setFileName] = useState(extra.paymentFileName);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      setFile(f);
+      setFileName(f.name);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl p-6 w-[420px] shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold text-gray-800">
+            Редактирование — {rowId}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <CloseIcon fontSize="small" />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">№ ЗНО</label>
+            <input
+              type="text"
+              value={znoNum}
+              onChange={(e) => setZnoNum(e.target.value)}
+              placeholder="Введите номер ЗНО..."
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">
+              Платежный документ
+            </label>
+            <div
+              className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#f96800] transition-colors"
+              onClick={() => fileRef.current?.click()}
+            >
+              <UploadFileIcon fontSize="small" className="text-gray-400" />
+              <span className="text-sm text-gray-500 truncate flex-1">
+                {fileName || "Нажмите для загрузки файла..."}
+              </span>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              className="hidden"
+              onChange={handleFile}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 mt-5">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            Отмена
+          </button>
+          <button
+            onClick={() =>
+              onSave({ znoNum, paymentFile: file, paymentFileName: fileName })
+            }
+            className="px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors"
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -357,12 +467,33 @@ export default function DocumentsPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedRow, setSelectedRow] = useState<(typeof mockData)[0] | null>(
+    null,
+  );
+  const [extras, setExtras] = useState<Record<string, RowExtra>>(() =>
+    Object.fromEntries(
+      mockData.map((r) => [
+        r.id,
+        { znoNum: r.znoNum, paymentFile: null, paymentFileName: "" },
+      ]),
+    ),
+  );
+  const [editTarget, setEditTarget] = useState<string | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 400);
+    setTimeout(() => setLoading(false), 400);
   }, []);
+
+  const saveExtra = (id: string, data: RowExtra) => {
+    setExtras((prev) => ({ ...prev, [id]: data }));
+    setEditTarget(null);
+  };
+
+  const openFile = (extra: RowExtra) => {
+    if (extra.paymentFile) {
+      window.open(URL.createObjectURL(extra.paymentFile), "_blank");
+    }
+  };
 
   if (loading) {
     return (
@@ -478,6 +609,12 @@ export default function DocumentsPage() {
               <TableCell>
                 <b>№ ЗНО</b>
               </TableCell>
+              <TableCell>
+                <b>Платежный документ</b>
+              </TableCell>
+              <TableCell>
+                <b>Действия</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -486,7 +623,12 @@ export default function DocumentsPage() {
               .map((row) => {
                 const status = statusFilters.find((s) => s.key === row.status);
                 return (
-                  <TableRow key={row.id} hover>
+                  <TableRow
+                    key={row.id}
+                    hover
+                    onClick={() => setSelectedRow(row)}
+                    className="cursor-pointer"
+                  >
                     <TableCell>{row.id}</TableCell>
                     <TableCell>{row.date}</TableCell>
                     <TableCell>{row.initiator}</TableCell>
@@ -508,7 +650,42 @@ export default function DocumentsPage() {
                     <TableCell>{row.contract}</TableCell>
                     <TableCell>{row.updatedAt}</TableCell>
                     <TableCell>{row.article}</TableCell>
-                    <TableCell>{row.znoNum}</TableCell>
+                    <TableCell>
+                      {extras[row.id]?.znoNum || row.znoNum}
+                    </TableCell>
+                    <TableCell>
+                      {extras[row.id]?.paymentFileName ? (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); openFile(extras[row.id]); }}
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <VisibilityIcon fontSize="inherit" />
+                          Посмотреть
+                        </button>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEditTarget(row.id); }}
+                          title="Редактировать"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        >
+                          <EditIcon fontSize="inherit" />
+                          Править
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); window.open(`/history/${row.id}`, "_blank"); }}
+                          title="История"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        >
+                          <HistoryIcon fontSize="inherit" />
+                          История
+                        </button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -531,6 +708,44 @@ export default function DocumentsPage() {
           }
         />
       </TableContainer>
+
+      {editTarget && extras[editTarget] && (
+        <EditModal
+          rowId={editTarget}
+          extra={extras[editTarget]}
+          onClose={() => setEditTarget(null)}
+          onSave={(data) => saveExtra(editTarget, data)}
+        />
+      )}
+
+      {selectedRow && (
+        <InfoModal
+          title={`Заявка ${selectedRow.id}`}
+          onClose={() => setSelectedRow(null)}
+          fields={[
+            { label: "№ заявки", value: selectedRow.id },
+            { label: "Дата поступления", value: selectedRow.date },
+            { label: "Инициатор", value: selectedRow.initiator },
+            { label: "Тип", value: selectedRow.type },
+            { label: "Описание", value: selectedRow.description },
+            {
+              label: "Стоимость",
+              value: `${selectedRow.cost} ${selectedRow.currency}`,
+            },
+            { label: "№ договора", value: selectedRow.contractNum },
+            { label: "Исполнитель", value: selectedRow.executor },
+            {
+              label: "Статус",
+              value: statusFilters.find((s) => s.key === selectedRow.status)
+                ?.label,
+            },
+            { label: "Договор", value: selectedRow.contract },
+            { label: "Время изменения", value: selectedRow.updatedAt },
+            { label: "Статья", value: selectedRow.article },
+            { label: "№ ЗНО", value: selectedRow.znoNum },
+          ]}
+        />
+      )}
     </div>
   );
 }
