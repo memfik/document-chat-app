@@ -54,9 +54,81 @@ export function Navigation() {
     <>
       <nav className="bg-white border-b border-gray-200 shadow-sm">
         <div className="h-16 px-6 flex items-center justify-between">
-          <span className="text-[#1a1a2e] text-xl font-semibold whitespace-nowrap">
-            Служба сопровождения контрактов
-          </span>
+          <div className="px-6 py-2 flex items-center gap-2">
+            <button
+              onClick={() => router.push("/applications/new")}
+              className={cn(
+                "px-4 py-1.5 rounded-lg text-sm transition-colors flex items-center gap-1 cursor-pointer",
+                pathname === "/applications/new"
+                  ? "bg-blue-500 text-white font-semibold"
+                  : "bg-blue-200 text-gray-600 hover:bg-blue-300",
+              )}
+            >
+              <AddIcon fontSize="small" />
+              Новая Ф16
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-green-200 transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <FileUploadIcon fontSize="small" />
+              Импорт
+            </button>
+
+            <div ref={docsRef} className="relative">
+              <button
+                onClick={() => setShowDocsDropdown((v) => !v)}
+                className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                Инструкции
+                <KeyboardArrowDownIcon
+                  fontSize="small"
+                  className={cn(
+                    "transition-transform",
+                    showDocsDropdown ? "rotate-180" : "rotate-0",
+                  )}
+                />
+              </button>
+              {showDocsDropdown && (
+                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[200px] py-1">
+                  {docDropdownItems.map((item) => (
+                    <button
+                      key={item.href}
+                      onClick={() => {
+                        router.push(item.href);
+                        setShowDocsDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => router.push("/rd")}
+              className={cn(
+                "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
+                pathname === "/rd"
+                  ? "bg-blue-500 text-white font-semibold"
+                  : "bg-blue-200 text-gray-600 hover:bg-blue-300",
+              )}
+            >
+              РД
+            </button>
+            <button
+              onClick={() => router.push("/report")}
+              className={cn(
+                "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
+                pathname === "/report"
+                  ? "bg-red-500 text-white font-semibold"
+                  : "bg-red-300 text-gray-600 hover:bg-red-400",
+              )}
+            >
+              REPORT
+            </button>
+          </div>
           <div className="flex gap-1">
             {navItems.map((item) => {
               const active = pathname === item.href;
@@ -132,82 +204,6 @@ export function Navigation() {
               <LogoutIcon className="text-gray-500" fontSize="small" />
             </button>
           </div>
-        </div>
-        <div className="border-t border-gray-200" />
-        <div className="px-6 py-2 flex items-center gap-2">
-          <button
-            onClick={() => router.push("/applications/new")}
-            className={cn(
-              "px-4 py-1.5 rounded-lg text-sm transition-colors flex items-center gap-1 cursor-pointer",
-              pathname === "/applications/new"
-                ? "bg-blue-500 text-white font-semibold"
-                : "bg-blue-200 text-gray-600 hover:bg-blue-300",
-            )}
-          >
-            <AddIcon fontSize="small" />
-            Новая Ф16
-          </button>
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-green-200 transition-colors flex items-center gap-1 cursor-pointer"
-          >
-            <FileUploadIcon fontSize="small" />
-            Импорт
-          </button>
-
-          <div ref={docsRef} className="relative">
-            <button
-              onClick={() => setShowDocsDropdown((v) => !v)}
-              className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              Инструкции
-              <KeyboardArrowDownIcon
-                fontSize="small"
-                className={cn(
-                  "transition-transform",
-                  showDocsDropdown ? "rotate-180" : "rotate-0",
-                )}
-              />
-            </button>
-            {showDocsDropdown && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[200px] py-1">
-                {docDropdownItems.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => {
-                      router.push(item.href);
-                      setShowDocsDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <button
-            onClick={() => router.push("/rd")}
-            className={cn(
-              "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
-              pathname === "/rd"
-                ? "bg-blue-500 text-white font-semibold"
-                : "bg-blue-200 text-gray-600 hover:bg-blue-300",
-            )}
-          >
-            РД
-          </button>
-          <button
-            onClick={() => router.push("/report")}
-            className={cn(
-              "px-4 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
-              pathname === "/report"
-                ? "bg-red-500 text-white font-semibold"
-                : "bg-red-300 text-gray-600 hover:bg-red-400",
-            )}
-          >
-            REPORT
-          </button>
         </div>
       </nav>
 

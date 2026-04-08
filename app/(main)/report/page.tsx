@@ -114,26 +114,32 @@ export default function ReportPage() {
     <div className="py-6 px-6">
       <h1 className="text-xl font-semibold text-gray-800 mb-5">Отчеты</h1>
 
-      <Paper elevation={1} className="mb-6">
-        <ThemeProvider theme={redTheme}>
-          <Tabs
-            value={activeTab}
-            onChange={(_, v) => setActiveTab(v)}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.key}
-                label={tab.label}
-                className="normal-case text-sm"
-              />
-            ))}
-          </Tabs>
-        </ThemeProvider>
-      </Paper>
-
-      <div>{renderForm(current)}</div>
+      <div className="flex gap-5 items-start">
+        <Paper elevation={1} className="shrink-0 w-60 py-2">
+          <ThemeProvider theme={redTheme}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              orientation="vertical"
+              variant="scrollable"
+              scrollButtons={false}
+              TabIndicatorProps={{
+                style: { left: 0, right: "auto", width: 3 },
+              }}
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab.key}
+                  label={tab.label}
+                  className="normal-case text-sm items-start"
+                  style={{ alignItems: "flex-start", textAlign: "left" }}
+                />
+              ))}
+            </Tabs>
+          </ThemeProvider>
+        </Paper>
+        <div className="flex-1 min-w-0">{renderForm(current)}</div>
+      </div>
     </div>
   );
 }

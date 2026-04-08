@@ -458,15 +458,13 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
   const [activeStatus, setActiveStatus] = useState("all");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [selectedRow, setSelectedRow] = useState<(typeof mockData)[0] | null>(
     null,
   );
@@ -516,7 +514,7 @@ export default function DocumentsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Поиск..."
-            className="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
+            className="w-full pl-9 pr-9 py-2 text-sm border border-gray-400 rounded-lg outline-none focus:border-[#f96800] transition-colors"
           />
           {search && (
             <button
@@ -533,7 +531,7 @@ export default function DocumentsPage() {
             "px-4 py-2 text-sm rounded-lg border transition-colors text-gray-500",
             currentYearOnly
               ? "bg-[#cafeb8] font-medium"
-              : "bg-white border-gray-200 hover:bg-gray-100",
+              : "bg-white border-gray-400 hover:bg-gray-100",
           )}
         >
           Только текущий год
@@ -656,7 +654,10 @@ export default function DocumentsPage() {
                     <TableCell>
                       {extras[row.id]?.paymentFileName ? (
                         <button
-                          onClick={(e) => { e.stopPropagation(); openFile(extras[row.id]); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openFile(extras[row.id]);
+                          }}
                           className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
                         >
                           <VisibilityIcon fontSize="inherit" />
@@ -669,7 +670,10 @@ export default function DocumentsPage() {
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={(e) => { e.stopPropagation(); setEditTarget(row.id); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditTarget(row.id);
+                          }}
                           title="Редактировать"
                           className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                         >
@@ -677,7 +681,10 @@ export default function DocumentsPage() {
                           Править
                         </button>
                         <button
-                          onClick={(e) => { e.stopPropagation(); window.open(`/history/${row.id}`, "_blank"); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`/history/${row.id}`, "_blank");
+                          }}
                           title="История"
                           className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                         >
@@ -725,7 +732,8 @@ export default function DocumentsPage() {
             statusFilters.find((s) => s.key === selectedRow.status)?.label ?? ""
           }
           statusColor={
-            statusFilters.find((s) => s.key === selectedRow.status)?.color ?? "#6b7280"
+            statusFilters.find((s) => s.key === selectedRow.status)?.color ??
+            "#6b7280"
           }
           paymentFileName={extras[selectedRow.id]?.paymentFileName}
           onClose={() => setSelectedRow(null)}

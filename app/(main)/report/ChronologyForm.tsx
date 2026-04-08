@@ -36,7 +36,7 @@ export default function ChronologyForm({
   };
 
   return (
-    <Paper elevation={0} className="p-5 max-w-3xl mx-auto" style={{ boxShadow: "0 4px 16px rgba(239, 68, 68, 0.2)" }}>
+    <Paper elevation={3} className="p-5 max-w-3xl">
       <p className="text-base font-semibold text-gray-800 mb-1">{title}</p>
       <p className="text-sm text-gray-500 mb-5">{description}</p>
 
