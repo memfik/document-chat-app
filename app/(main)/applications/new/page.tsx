@@ -13,7 +13,11 @@ import {
   Checkbox,
   ListItemText,
   OutlinedInput,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { cn } from "@/lib/utils";
 
 const REQUEST_TYPES = [
@@ -50,15 +54,13 @@ const ARTICLES = [
 const LOCATIONS = ["Алматы", "Астана", "Шымкент", "Атырау", "Актобе"];
 
 const ED_GO_LIST = [
-  "Ахметов Д.С. — Финансы",
-  "Байжанов Р.Т. — Юридический",
-  "Гусев В.Н. — Безопасность",
-  "Джаксыбеков А.К. — Логистика",
-  "Есенова М.Б. — Бухгалтерия",
-  "Жумабеков С.А. — ИТ",
-  "Ким О.В. — Снабжение",
-  "Мусаева А.Н. — Кадры",
-  "Нурланов Е.Г. — Технический",
+  "Ахметов Д.С.",
+  "Байжанов Р.Т.",
+  "Гусев В.Н.",
+  "Джаксыбеков А.К.",
+  "Есенова М.Б.",
+  "Жумабеков С.А.",
+  "Ким О.В.",
 ];
 
 const VAT_RATE = 0.12;
@@ -452,11 +454,7 @@ export default function NewF16Page() {
   const [purpose, setPurpose] = useState("");
   const [benefits, setBenefits] = useState("");
   const [losses, setLosses] = useState("");
-  const [positions, setPositions] = useState<Position[]>([
-    emptyPosition(1),
-    emptyPosition(2),
-    emptyPosition(3),
-  ]);
+  const [positions, setPositions] = useState<Position[]>([emptyPosition(1)]);
   const [approvers, setApprovers] = useState<string[]>([]);
   const [attachments, setAttachments] = useState<Attachments>({
     spec: null,
@@ -546,73 +544,84 @@ export default function NewF16Page() {
           </div>
         </Paper>
 
-        <Paper elevation={1}>
-          <SectionTitle>1. Обоснование закупа</SectionTitle>
-          <div className="p-5 grid grid-cols-3 gap-4">
-            <TextArea
-              label="Назначение закупа"
-              value={purpose}
-              onChange={setPurpose}
-              required
-              error={submitted && errors.has("purpose")}
-              placeholder="Опишите назначение..."
-            />
-            <TextArea
-              label="Выгоды от закупа"
-              value={benefits}
-              onChange={setBenefits}
-              placeholder="Опишите выгоды..."
-            />
-            <TextArea
-              label="Убытки при непроведении"
-              value={losses}
-              onChange={setLosses}
-              placeholder="Опишите возможные убытки..."
-            />
-          </div>
-        </Paper>
-        <Paper elevation={1}>
-          <SectionTitle>2. Позиции заявки</SectionTitle>
-          <div className="p-5 flex flex-col gap-4">
-            {positions.map((pos, idx) => (
-              <PositionRow
-                key={pos.id}
-                pos={pos}
-                index={idx}
-                errors={errors}
-                onChange={updatePosition}
-                onClear={clearPosition}
-                onRemove={removePosition}
-                canRemove={positions.length > 1}
+        <Accordion defaultExpanded elevation={1}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <span className="text-sm font-semibold text-gray-700">1. Обоснование закупа</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className="grid grid-cols-3 gap-4">
+              <TextArea
+                label="Назначение закупа"
+                value={purpose}
+                onChange={setPurpose}
+                required
+                error={submitted && errors.has("purpose")}
+                placeholder="Опишите назначение..."
               />
-            ))}
+              <TextArea
+                label="Выгоды от закупа"
+                value={benefits}
+                onChange={setBenefits}
+                placeholder="Опишите выгоды..."
+              />
+              <TextArea
+                label="Убытки при непроведении"
+                value={losses}
+                onChange={setLosses}
+                placeholder="Опишите возможные убытки..."
+              />
+            </div>
+          </AccordionDetails>
+        </Accordion>
 
-            <button
-              type="button"
-              onClick={addPosition}
-              className="flex items-center gap-1.5 self-start px-4 py-2 text-sm border border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-[#f96800] hover:text-[#f96800] transition-colors"
-            >
-              <AddIcon fontSize="small" />
-              Добавить позицию
-            </button>
-            <div className="flex justify-end pt-2 border-t border-gray-100">
-              <div className="flex items-center gap-8 text-sm">
-                <span className="text-gray-500">
-                  Позиций: <b className="text-gray-700">{positions.length}</b>
-                </span>
-                <span className="text-gray-500">
-                  ИТОГО с НДС:{" "}
-                  <b className="text-gray-800 text-base">
-                    {fmt(totalWithVat)} KZT
-                  </b>
-                </span>
+        <Accordion elevation={1}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <span className="text-sm font-semibold text-gray-700">2. Позиции заявки</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className="flex flex-col gap-4">
+              {positions.map((pos, idx) => (
+                <PositionRow
+                  key={pos.id}
+                  pos={pos}
+                  index={idx}
+                  errors={errors}
+                  onChange={updatePosition}
+                  onClear={clearPosition}
+                  onRemove={removePosition}
+                  canRemove={positions.length > 1}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={addPosition}
+                className="flex items-center gap-1.5 self-start px-4 py-2 text-sm border border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-[#f96800] hover:text-[#f96800] transition-colors"
+              >
+                <AddIcon fontSize="small" />
+                Добавить позицию
+              </button>
+              <div className="flex justify-end pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-8 text-sm">
+                  <span className="text-gray-500">
+                    Позиций: <b className="text-gray-700">{positions.length}</b>
+                  </span>
+                  <span className="text-gray-500">
+                    ИТОГО с НДС:{" "}
+                    <b className="text-gray-800 text-base">
+                      {fmt(totalWithVat)} KZT
+                    </b>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </Paper>
-        <Paper elevation={1}>
-          <SectionTitle>3. Согласование</SectionTitle>
-          <div className="p-5">
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion elevation={1}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <span className="text-sm font-semibold text-gray-700">3. Согласование</span>
+          </AccordionSummary>
+          <AccordionDetails>
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div className="flex flex-col gap-3">
                 <div>
@@ -649,10 +658,7 @@ export default function NewF16Page() {
                   >
                     {APPROVERS.map((a) => (
                       <MenuItem key={a} value={a}>
-                        <Checkbox
-                          checked={approvers.includes(a)}
-                          size="small"
-                        />
+                        <Checkbox checked={approvers.includes(a)} size="small" />
                         <ListItemText primary={a} />
                       </MenuItem>
                     ))}
@@ -698,40 +704,45 @@ export default function NewF16Page() {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                 ЭД ГО
               </p>
-              <div className="grid gap-2">
+              <div className="grid gap-1">
                 {ED_GO_LIST.map((person, i) => (
                   <label
                     key={i}
-                    className="flex items-center justify-between gap-2.5 px-3 py-2.5 rounded-lg border text-sm text-gray-700"
+                    className="flex items-center gap-2.5 text-sm text-gray-700"
                   >
-                    <span className="font-bold">Согласующий {i + 1}</span>
+                    <span className="font-bold">Согласующий {i + 1}</span> -{" "}
                     {person}
                   </label>
                 ))}
               </div>
             </div>
-          </div>
-        </Paper>
-        <Paper elevation={1}>
-          <SectionTitle>4. Вложения</SectionTitle>
-          <div className="p-5 grid grid-cols-3 gap-4">
-            <FileInput
-              label="Техническая спецификация"
-              file={attachments.spec}
-              onChange={(f) => setAttachments((a) => ({ ...a, spec: f }))}
-            />
-            <FileInput
-              label="Дополнительные файлы"
-              file={attachments.extra}
-              onChange={(f) => setAttachments((a) => ({ ...a, extra: f }))}
-            />
-            <FileInput
-              label="Договор"
-              file={attachments.contract}
-              onChange={(f) => setAttachments((a) => ({ ...a, contract: f }))}
-            />
-          </div>
-        </Paper>
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion elevation={1}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <span className="text-sm font-semibold text-gray-700">4. Вложения</span>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className="grid grid-cols-3 gap-4">
+              <FileInput
+                label="Техническая спецификация"
+                file={attachments.spec}
+                onChange={(f) => setAttachments((a) => ({ ...a, spec: f }))}
+              />
+              <FileInput
+                label="Дополнительные файлы"
+                file={attachments.extra}
+                onChange={(f) => setAttachments((a) => ({ ...a, extra: f }))}
+              />
+              <FileInput
+                label="Договор"
+                file={attachments.contract}
+                onChange={(f) => setAttachments((a) => ({ ...a, contract: f }))}
+              />
+            </div>
+          </AccordionDetails>
+        </Accordion>
         {submitted && errors.size > 0 && (
           <div className="text-sm text-red-500 text-right">
             Заполните все обязательные поля ({errors.size} ошибок)

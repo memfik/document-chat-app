@@ -7,7 +7,10 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import AddIcon from "@mui/icons-material/Add";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { cn } from "@/lib/utils";
+import { useAppTheme } from "./ThemeContext";
 
 const navItems = [
   { label: "Заявки", href: "/applications" },
@@ -16,9 +19,15 @@ const navItems = [
 ];
 
 const docDropdownItems = [
-  { label: "Инструкция", href: "/documents/1" },
-  { label: "Инструкция рамочная", href: "/documents/2" },
-  { label: "Рекомендации", href: "/documents/3" },
+  { label: "Инструкция", href: "https://contract.jusanmobile.kz/manual.pdf" },
+  {
+    label: "Инструкция рамочная",
+    href: "https://contract.jusanmobile.kz/manual_ex1.pdf",
+  },
+  {
+    label: "Рекомендации",
+    href: "https://contract.jusanmobile.kz/recomend.pdf",
+  },
 ];
 
 const notifications = [
@@ -34,6 +43,7 @@ export function Navigation() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showDocsDropdown, setShowDocsDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { isDark, toggleTheme } = useAppTheme();
   const docsRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +105,7 @@ export function Navigation() {
                     <button
                       key={item.href}
                       onClick={() => {
-                        router.push(item.href);
+                        window.open(item.href, "_blank");
                         setShowDocsDropdown(false);
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
@@ -149,6 +159,17 @@ export function Navigation() {
             })}
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className="p-3 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+              title={isDark ? "Светлая тема" : "Тёмная тема"}
+            >
+              {isDark ? (
+                <LightModeIcon className="text-yellow-400" fontSize="medium" />
+              ) : (
+                <DarkModeIcon className="text-gray-500" fontSize="medium" />
+              )}
+            </button>
             <div ref={notifRef} className="relative">
               <button
                 onClick={() => setShowNotifications((v) => !v)}

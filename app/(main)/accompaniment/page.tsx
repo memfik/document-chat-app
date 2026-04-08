@@ -133,7 +133,7 @@ export default function AccompanimentPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
 
   useEffect(() => {
@@ -187,7 +187,7 @@ export default function AccompanimentPage() {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
+          <TableHead>
             <TableRow>
               <TableCell>
                 <b>№ заявки</b>
@@ -246,7 +246,7 @@ export default function AccompanimentPage() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          rowsPerPageOptions={[5, 10, 25, 50]}
+          rowsPerPageOptions={[25, 50, 75, 100]}
           labelRowsPerPage="Строк на странице:"
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`

@@ -26,7 +26,7 @@ const mockData = [
     id: "ЗАЯ-2025-001",
     date: "12.01.2025",
     initiator: "Петров А.В.",
-    type: "Закупка",
+    type: "АФ",
     description: "Поставка офисной техники",
     cost: "450 000",
     currency: "KZT",
@@ -42,7 +42,7 @@ const mockData = [
     id: "ЗАЯ-2025-002",
     date: "15.01.2025",
     initiator: "Смирнова О.Н.",
-    type: "Услуги",
+    type: "АФ",
     description: "Техническое обслуживание оборудования",
     cost: "120 000",
     currency: "KZT",
@@ -58,7 +58,7 @@ const mockData = [
     id: "ЗАЯ-2025-003",
     date: "20.01.2025",
     initiator: "Жуков Е.П.",
-    type: "Строительство",
+    type: "АФ",
     description: "Ремонт кровли склада №3",
     cost: "1 800 000",
     currency: "KZT",
@@ -74,7 +74,7 @@ const mockData = [
     id: "ЗАЯ-2025-004",
     date: "03.02.2025",
     initiator: "Белова К.С.",
-    type: "Закупка",
+    type: "АФ",
     description: "Канцелярские товары Q1",
     cost: "35 000",
     currency: "KZT",
@@ -90,7 +90,7 @@ const mockData = [
     id: "ЗАЯ-2025-005",
     date: "10.02.2025",
     initiator: "Новиков Г.Р.",
-    type: "Услуги",
+    type: "АФ",
     description: "Аудит информационной безопасности",
     cost: "5 200",
     currency: "USD",
@@ -106,7 +106,7 @@ const mockData = [
     id: "ЗАЯ-2025-006",
     date: "18.02.2025",
     initiator: "Лебедева Т.И.",
-    type: "Договор",
+    type: "АФ",
     description: "Аренда транспортных средств",
     cost: "980 000",
     currency: "KZT",
@@ -122,7 +122,7 @@ const mockData = [
     id: "ЗАЯ-2025-007",
     date: "25.02.2025",
     initiator: "Кузнецов И.В.",
-    type: "Закупка",
+    type: "АФ",
     description: "Серверное оборудование",
     cost: "18 500",
     currency: "EUR",
@@ -138,7 +138,7 @@ const mockData = [
     id: "ЗАЯ-2025-008",
     date: "05.03.2025",
     initiator: "Соколова М.Д.",
-    type: "Услуги",
+    type: "АФ",
     description: "Юридическое сопровождение сделок",
     cost: "300 000",
     currency: "KZT",
@@ -154,7 +154,7 @@ const mockData = [
     id: "ЗАЯ-2024-088",
     date: "14.11.2024",
     initiator: "Григорьев П.А.",
-    type: "Строительство",
+    type: "АФ",
     description: "Прокладка кабельных трасс",
     cost: "2 450 000",
     currency: "KZT",
@@ -170,7 +170,7 @@ const mockData = [
     id: "ЗАЯ-2024-091",
     date: "02.12.2024",
     initiator: "Захарова Л.Н.",
-    type: "Закупка",
+    type: "АФ",
     description: "Спецодежда и СИЗ для персонала",
     cost: "210 000",
     currency: "KZT",
@@ -186,7 +186,7 @@ const mockData = [
     id: "ЗАЯ-2025-001",
     date: "12.01.2025",
     initiator: "Петров А.В.",
-    type: "Закупка",
+    type: "АФ",
     description: "Поставка офисной техники",
     cost: "450 000",
     currency: "KZT",
@@ -202,7 +202,7 @@ const mockData = [
     id: "ЗАЯ-2025-002",
     date: "15.01.2025",
     initiator: "Смирнова О.Н.",
-    type: "Услуги",
+    type: "АФ",
     description: "Техническое обслуживание оборудования",
     cost: "120 000",
     currency: "KZT",
@@ -218,7 +218,7 @@ const mockData = [
     id: "ЗАЯ-2025-003",
     date: "20.01.2025",
     initiator: "Жуков Е.П.",
-    type: "Строительство",
+    type: "АФ",
     description: "Ремонт кровли склада №3",
     cost: "1 800 000",
     currency: "KZT",
@@ -234,7 +234,7 @@ const mockData = [
     id: "ЗАЯ-2025-004",
     date: "03.02.2025",
     initiator: "Белова К.С.",
-    type: "Закупка",
+    type: "АФ",
     description: "Канцелярские товары Q1",
     cost: "35 000",
     currency: "KZT",
@@ -250,7 +250,7 @@ const mockData = [
     id: "ЗАЯ-2025-005",
     date: "10.02.2025",
     initiator: "Новиков Г.Р.",
-    type: "Услуги",
+    type: "АФ",
     description: "Аудит информационной безопасности",
     cost: "5 200",
     currency: "USD",
@@ -266,7 +266,7 @@ const mockData = [
     id: "ЗАЯ-2025-006",
     date: "18.02.2025",
     initiator: "Лебедева Т.И.",
-    type: "Договор",
+    type: "АФ",
     description: "Аренда транспортных средств",
     cost: "980 000",
     currency: "KZT",
@@ -282,7 +282,7 @@ const mockData = [
     id: "ЗАЯ-2025-007",
     date: "25.02.2025",
     initiator: "Кузнецов И.В.",
-    type: "Закупка",
+    type: "АФ",
     description: "Серверное оборудование",
     cost: "18 500",
     currency: "EUR",
@@ -298,7 +298,7 @@ const mockData = [
     id: "ЗАЯ-2025-008",
     date: "05.03.2025",
     initiator: "Соколова М.Д.",
-    type: "Услуги",
+    type: "АФ",
     description: "Юридическое сопровождение сделок",
     cost: "300 000",
     currency: "KZT",
@@ -314,7 +314,7 @@ const mockData = [
     id: "ЗАЯ-2024-088",
     date: "14.11.2024",
     initiator: "Григорьев П.А.",
-    type: "Строительство",
+    type: "АФ",
     description: "Прокладка кабельных трасс",
     cost: "2 450 000",
     currency: "KZT",
@@ -330,7 +330,7 @@ const mockData = [
     id: "ЗАЯ-2024-091",
     date: "02.12.2024",
     initiator: "Захарова Л.Н.",
-    type: "Закупка",
+    type: "АФ",
     description: "Спецодежда и СИЗ для персонала",
     cost: "210 000",
     currency: "KZT",
@@ -540,6 +540,10 @@ export default function DocumentsPage() {
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {statusFilters.map((s) => {
           const active = activeStatus === s.key;
+          const count =
+            s.key === "all"
+              ? mockData.length
+              : mockData.filter((r) => r.status === s.key).length;
           return (
             <button
               key={s.key}
@@ -556,6 +560,7 @@ export default function DocumentsPage() {
                 style={{ backgroundColor: s.color }}
               />
               {s.label}
+              <span className="text-xs text-gray-400 font-normal">{count}</span>
             </button>
           );
         })}
@@ -563,7 +568,7 @@ export default function DocumentsPage() {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
+          <TableHead>
             <TableRow>
               <TableCell>
                 <b>№ заявки</b>
@@ -575,16 +580,13 @@ export default function DocumentsPage() {
                 <b>Инициатор</b>
               </TableCell>
               <TableCell>
-                <b>Тип</b>
+                <b>Подразделение инициатора</b>
               </TableCell>
               <TableCell>
                 <b>Описание</b>
               </TableCell>
               <TableCell>
                 <b>Стоимость</b>
-              </TableCell>
-              <TableCell>
-                <b>Валюта</b>
               </TableCell>
               <TableCell>
                 <b>№ договора</b>
@@ -632,8 +634,11 @@ export default function DocumentsPage() {
                     <TableCell>{row.initiator}</TableCell>
                     <TableCell>{row.type}</TableCell>
                     <TableCell>{row.description}</TableCell>
-                    <TableCell>{row.cost}</TableCell>
-                    <TableCell>{row.currency}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-0.5">
+                        {row.cost} {row.currency}
+                      </div>
+                    </TableCell>
                     <TableCell>{row.contractNum}</TableCell>
                     <TableCell>{row.executor}</TableCell>
                     <TableCell>
@@ -668,7 +673,7 @@ export default function DocumentsPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1">
+                      <div className="grid gap-1">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -708,7 +713,7 @@ export default function DocumentsPage() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          rowsPerPageOptions={[5, 10, 25, 50]}
+          rowsPerPageOptions={[25, 50, 75, 100]}
           labelRowsPerPage="Строк на странице:"
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`

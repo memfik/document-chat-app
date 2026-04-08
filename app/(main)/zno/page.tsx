@@ -169,7 +169,7 @@ export default function ZnoPage() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 400);
@@ -224,6 +224,10 @@ export default function ZnoPage() {
           .filter((s) => s.showButton)
           .map((s) => {
             const active = activeStatus === s.key;
+            const count =
+              s.key === "all"
+                ? mockData.length
+                : mockData.filter((r) => r.status === s.key).length;
             return (
               <button
                 key={s.key}
@@ -240,6 +244,9 @@ export default function ZnoPage() {
                   style={{ backgroundColor: s.color }}
                 />
                 {s.label}
+                <span className="text-xs text-gray-400 font-normal">
+                  {count}
+                </span>
               </button>
             );
           })}
@@ -247,7 +254,7 @@ export default function ZnoPage() {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead sx={{ backgroundColor: "#f1f5f9" }}>
+          <TableHead>
             <TableRow>
               <TableCell>
                 <b>№ заявки</b>
@@ -325,7 +332,7 @@ export default function ZnoPage() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          rowsPerPageOptions={[5, 10, 25, 50]}
+          rowsPerPageOptions={[25, 50, 75, 100]}
           labelRowsPerPage="Строк на странице:"
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`
