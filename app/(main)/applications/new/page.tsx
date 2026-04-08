@@ -448,6 +448,7 @@ function PositionRow({
 
 export default function NewF16Page() {
   const router = useRouter();
+  const [title, setTitle] = useState("");
   const [purpose, setPurpose] = useState("");
   const [benefits, setBenefits] = useState("");
   const [losses, setLosses] = useState("");
@@ -457,8 +458,6 @@ export default function NewF16Page() {
     emptyPosition(3),
   ]);
   const [approvers, setApprovers] = useState<string[]>([]);
-  const [curatorArticles, setCuratorArticles] = useState("");
-  const [checkedEdGo, setCheckedEdGo] = useState<Set<number>>(new Set());
   const [attachments, setAttachments] = useState<Attachments>({
     spec: null,
     extra: null,
@@ -526,6 +525,27 @@ export default function NewF16Page() {
       </h1>
 
       <div className="flex flex-col gap-5">
+        <Paper elevation={1}>
+          <div className="p-5">
+            <FieldLabel required>Название заявки</FieldLabel>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Введите название заявки..."
+              className={cn(
+                "w-full px-3 py-2 text-sm border rounded-lg outline-none transition-colors",
+                submitted && !title.trim()
+                  ? "border-red-400 focus:border-red-400"
+                  : "border-gray-200 focus:border-[#f96800]",
+              )}
+            />
+            {submitted && !title.trim() && (
+              <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
+            )}
+          </div>
+        </Paper>
+
         <Paper elevation={1}>
           <SectionTitle>1. Обоснование закупа</SectionTitle>
           <div className="p-5 grid grid-cols-3 gap-4">

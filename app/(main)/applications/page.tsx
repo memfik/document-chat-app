@@ -720,30 +720,15 @@ export default function DocumentsPage() {
 
       {selectedRow && (
         <InfoModal
-          title={`Заявка ${selectedRow.id}`}
+          row={selectedRow}
+          statusLabel={
+            statusFilters.find((s) => s.key === selectedRow.status)?.label ?? ""
+          }
+          statusColor={
+            statusFilters.find((s) => s.key === selectedRow.status)?.color ?? "#6b7280"
+          }
+          paymentFileName={extras[selectedRow.id]?.paymentFileName}
           onClose={() => setSelectedRow(null)}
-          fields={[
-            { label: "№ заявки", value: selectedRow.id },
-            { label: "Дата поступления", value: selectedRow.date },
-            { label: "Инициатор", value: selectedRow.initiator },
-            { label: "Тип", value: selectedRow.type },
-            { label: "Описание", value: selectedRow.description },
-            {
-              label: "Стоимость",
-              value: `${selectedRow.cost} ${selectedRow.currency}`,
-            },
-            { label: "№ договора", value: selectedRow.contractNum },
-            { label: "Исполнитель", value: selectedRow.executor },
-            {
-              label: "Статус",
-              value: statusFilters.find((s) => s.key === selectedRow.status)
-                ?.label,
-            },
-            { label: "Договор", value: selectedRow.contract },
-            { label: "Время изменения", value: selectedRow.updatedAt },
-            { label: "Статья", value: selectedRow.article },
-            { label: "№ ЗНО", value: selectedRow.znoNum },
-          ]}
         />
       )}
     </div>

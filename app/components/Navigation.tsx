@@ -21,19 +21,29 @@ const docDropdownItems = [
   { label: "Рекомендации", href: "/documents/3" },
 ];
 
-const NOTIFICATION_COUNT = 4;
+const notifications = [
+  { id: 1, text: "Заявка №1023 требует проверки", time: "5 мин назад" },
+  { id: 2, text: "Документ загружен успешно", time: "1 час назад" },
+  { id: 3, text: "Новый комментарий в заявке №987", time: "2 часа назад" },
+  { id: 4, text: "Срок по заявке №1010 истекает", time: "вчера" },
+];
 
 export function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const [showImportModal, setShowImportModal] = useState(false);
   const [showDocsDropdown, setShowDocsDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const docsRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleOutsideClick(e: MouseEvent) {
       if (docsRef.current && !docsRef.current.contains(e.target as Node)) {
         setShowDocsDropdown(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
       }
     }
     document.addEventListener("mousedown", handleOutsideClick);
@@ -67,14 +77,48 @@ export function Navigation() {
             })}
           </div>
           <div className="flex items-center gap-3">
-            <button className="relative p-3 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
-              <NotificationsIcon className="text-gray-500" fontSize="medium" />
-              {NOTIFICATION_COUNT > 0 && (
-                <span className="absolute top-1 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 leading-none">
-                  {NOTIFICATION_COUNT}
-                </span>
+            <div ref={notifRef} className="relative">
+              <button
+                onClick={() => setShowNotifications((v) => !v)}
+                className="relative p-3 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <NotificationsIcon
+                  className="text-gray-500"
+                  fontSize="medium"
+                />
+                {notifications.length > 0 && (
+                  <span className="absolute top-1 right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 leading-none">
+                    {notifications.length}
+                  </span>
+                )}
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 w-80 py-2">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <span className="text-sm font-semibold text-gray-700">
+                      Уведомления
+                    </span>
+                  </div>
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-gray-400">
+                      У вас нет уведомлений
+                    </div>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-b-0"
+                      >
+                        <p className="text-sm text-gray-700 leading-snug">
+                          {n.text}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               )}
-            </button>
+            </div>
             <span className="text-sm font-medium text-gray-700 mx-1">
               Югай Виталий
             </span>
@@ -116,7 +160,7 @@ export function Navigation() {
               onClick={() => setShowDocsDropdown((v) => !v)}
               className="px-4 py-1.5 rounded-lg text-sm text-gray-600 bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
             >
-              Документы
+              Инструкции
               <KeyboardArrowDownIcon
                 fontSize="small"
                 className={cn(

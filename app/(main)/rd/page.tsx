@@ -320,7 +320,7 @@ export default function RdPage() {
             label="Договор"
             value={draft.contract}
             options={contracts}
-            editing={editing}
+            editing={true}
             onChange={(v) => setField("contract", v)}
             onNewItem={(v) => {
               setContracts((prev) => [...prev, v]);

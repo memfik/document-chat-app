@@ -1,8 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Paper, Tabs, Tab } from "@mui/material";
-import DownloadIcon from "@mui/icons-material/Download";
+import { Paper, Tabs, Tab, createTheme, ThemeProvider } from "@mui/material";
+import BlockIcon from "@mui/icons-material/Block";
+import ChronologyForm from "./ChronologyForm";
+import F16ApprovalForm from "./F16ApprovalForm";
+import OSKContractsForm from "./OSKContractsForm";
+import ISSKForm from "./ISSKForm";
+import BudgetExecutionForm from "./BudgetExecutionForm";
+import BudgetNonExecutionForm from "./BudgetNonExecutionForm";
+
+const redTheme = createTheme({
+  palette: { primary: { main: "#ef4444" } },
+});
+
+let role = "user";
 
 const tabs = [
   {
@@ -43,65 +55,55 @@ const tabs = [
   },
 ];
 
-function ReportForm({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+const tabAccessMap: Record<string, string[]> = {
+  f16: ["user", "admin"],
+  zno: ["user", "admin"],
+  rd: ["user", "admin"],
+  contracts: ["user", "admin"],
+  payments: ["admin"],
+  summary: ["user", "admin"],
+};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Формирование: ${title}\nС: ${dateFrom}\nПо: ${dateTo}`);
-  };
-
+function NoAccess() {
   return (
-    <Paper elevation={1} className="p-5 max-w-md">
-      <p className="text-base font-semibold text-gray-800 mb-1">{title}</p>
-      <p className="text-sm text-gray-500 mb-5">{description}</p>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              Дата начала
-            </label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              required
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
-              Дата окончания
-            </label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              required
-              min={dateFrom}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors self-start"
-        >
-          <DownloadIcon fontSize="small" />
-          Сформировать
-        </button>
-      </form>
-    </Paper>
+    <div className="flex flex-col items-center justify-center gap-3 py-14 text-red-500">
+      <BlockIcon style={{ fontSize: 56 }} />
+      <p className="text-base font-semibold">
+        У вас нет прав на создание отчета по данному шаблону.
+      </p>
+    </div>
   );
+}
+
+function renderForm(tab: (typeof tabs)[number]) {
+  const allowed = tabAccessMap[tab.key] ?? [];
+  if (!allowed.includes(role)) {
+    return <NoAccess />;
+  }
+
+  if (tab.key === "f16") {
+    return <ChronologyForm title={tab.title} description={tab.description} />;
+  }
+  if (tab.key === "payments") {
+    return (
+      <BudgetNonExecutionForm title={tab.title} description={tab.description} />
+    );
+  }
+  if (tab.key === "contracts") {
+    return (
+      <BudgetExecutionForm title={tab.title} description={tab.description} />
+    );
+  }
+  if (tab.key === "rd") {
+    return <ISSKForm title={tab.title} description={tab.description} />;
+  }
+  if (tab.key === "zno") {
+    return <OSKContractsForm title={tab.title} description={tab.description} />;
+  }
+  if (tab.key === "summary") {
+    return <F16ApprovalForm title={tab.title} description={tab.description} />;
+  }
+  return <NoAccess />;
 }
 
 export default function ReportPage() {
@@ -113,23 +115,25 @@ export default function ReportPage() {
       <h1 className="text-xl font-semibold text-gray-800 mb-5">Отчеты</h1>
 
       <Paper elevation={1} className="mb-6">
-        <Tabs
-          value={activeTab}
-          onChange={(_, v) => setActiveTab(v)}
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          {tabs.map((tab) => (
-            <Tab
-              key={tab.key}
-              label={tab.label}
-              className="normal-case text-sm"
-            />
-          ))}
-        </Tabs>
+        <ThemeProvider theme={redTheme}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, v) => setActiveTab(v)}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.key}
+                label={tab.label}
+                className="normal-case text-sm"
+              />
+            ))}
+          </Tabs>
+        </ThemeProvider>
       </Paper>
 
-      <ReportForm title={current.title} description={current.description} />
+      <div>{renderForm(current)}</div>
     </div>
   );
 }
