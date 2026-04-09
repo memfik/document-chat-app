@@ -34,7 +34,7 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
   const theme = createTheme({
     palette: {
       mode: isDark ? "dark" : "light",
-      primary: { main: "#1976d2" },
+      primary: { main: "#f96800" },
       secondary: { main: "#dc004e" },
     },
   });

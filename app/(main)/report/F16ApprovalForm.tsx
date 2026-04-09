@@ -1,64 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { Paper } from "@mui/material";
+import { Paper, TextField, Button, Box, Typography, Snackbar, Alert } from "@mui/material";
 
-export default function F16ApprovalForm({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export default function F16ApprovalForm({ title, description }: { title: string; description: string }) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [snackbar, setSnackbar] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Формирование: ${title}\nС: ${dateFrom}\nПо: ${dateTo}`);
+    setSnackbar(true);
   };
 
   return (
-    <Paper elevation={3} className="p-5 max-w-lg">
-      <p className="text-base font-semibold text-gray-800 mb-1">{title}</p>
-      <p className="text-sm text-gray-500 mb-5">{description}</p>
+    <Paper elevation={3} sx={{ p: 2.5, maxWidth: 512 }}>
+      <Typography variant="subtitle1" fontWeight={600} mb={0.5}>{title}</Typography>
+      <Typography variant="body2" color="text.secondary" mb={2.5}>{description}</Typography>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-1">
-              Дата начала
-            </label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              required
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-1">
-              Дата окончания
-            </label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              required
-              min={dateFrom}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
-        </div>
+      <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2}>
+        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1.5}>
+          <TextField
+            size="small"
+            fullWidth
+            label="Дата начала"
+            type="date"
+            required
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            size="small"
+            fullWidth
+            label="Дата окончания"
+            type="date"
+            required
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            inputProps={{ min: dateFrom }}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
 
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors self-start"
-        >
+        <Button type="submit" variant="contained" sx={{ alignSelf: "flex-start", textTransform: "none" }}>
           Сформировать
-        </button>
-      </form>
+        </Button>
+      </Box>
+
+      <Snackbar open={snackbar} autoHideDuration={3000} onClose={() => setSnackbar(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity="success" variant="filled" onClose={() => setSnackbar(false)}>Отчёт формируется...</Alert>
+      </Snackbar>
     </Paper>
   );
 }

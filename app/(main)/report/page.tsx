@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Paper, Tabs, Tab, createTheme, ThemeProvider } from "@mui/material";
+import { Paper, Tabs, Tab, Box, Typography } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
 import ChronologyForm from "./ChronologyForm";
 import F16ApprovalForm from "./F16ApprovalForm";
@@ -9,10 +9,6 @@ import OSKContractsForm from "./OSKContractsForm";
 import ISSKForm from "./ISSKForm";
 import BudgetExecutionForm from "./BudgetExecutionForm";
 import BudgetNonExecutionForm from "./BudgetNonExecutionForm";
-
-const redTheme = createTheme({
-  palette: { primary: { main: "#ef4444" } },
-});
 
 let role = "user";
 
@@ -111,35 +107,39 @@ export default function ReportPage() {
   const current = tabs[activeTab];
 
   return (
-    <div className="py-6 px-6">
-      <h1 className="text-xl font-semibold text-gray-800 mb-5">Отчеты</h1>
+    <Box py={3} px={3}>
+      <Typography variant="h6" fontWeight={600} mb={2.5}>
+        Отчеты
+      </Typography>
 
-      <div className="flex gap-5 items-start">
-        <Paper elevation={1} className="shrink-0 w-60 py-2">
-          <ThemeProvider theme={redTheme}>
-            <Tabs
-              value={activeTab}
-              onChange={(_, v) => setActiveTab(v)}
-              orientation="vertical"
-              variant="scrollable"
-              scrollButtons={false}
-              TabIndicatorProps={{
-                style: { left: 0, right: "auto", width: 3 },
-              }}
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.key}
-                  label={tab.label}
-                  className="normal-case text-sm items-start"
-                  style={{ alignItems: "flex-start", textAlign: "left" }}
-                />
-              ))}
-            </Tabs>
-          </ThemeProvider>
+      <Box display="flex" gap={2.5} alignItems="flex-start">
+        <Paper elevation={1} sx={{ flexShrink: 0, width: 240, py: 1 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, v) => setActiveTab(v)}
+            orientation="vertical"
+            variant="scrollable"
+            scrollButtons={false}
+            TabIndicatorProps={{ style: { left: 0, right: "auto", width: 3 } }}
+          >
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.key}
+                label={tab.label}
+                style={{
+                  alignItems: "flex-start",
+                  textAlign: "left",
+                  textTransform: "none",
+                  fontSize: 16,
+                }}
+              />
+            ))}
+          </Tabs>
         </Paper>
-        <div className="flex-1 min-w-0">{renderForm(current)}</div>
-      </div>
-    </div>
+        <Box flex={1} minWidth={0}>
+          {renderForm(current)}
+        </Box>
+      </Box>
+    </Box>
   );
 }

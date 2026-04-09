@@ -13,8 +13,11 @@ import {
   TablePagination,
   TableRow,
   CircularProgress,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Button,
 } from "@mui/material";
-import { cn } from "@/lib/utils";
 
 const mockData = [
   {
@@ -151,38 +154,66 @@ export default function AccompanimentPage() {
   return (
     <div className="py-5 px-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1">
-          <SearchIcon
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            fontSize="small"
-          />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск..."
-            className="w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <CloseIcon fontSize="small" />
-            </button>
-          )}
-        </div>
-        <button
+        <TextField
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Поиск..."
+          sx={{
+            flex: 1,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#f96800",
+              },
+            },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
+                  />
+                </InputAdornment>
+              ),
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="clear search"
+                    onClick={() => setSearch("")}
+                    edge="end"
+                    size="small"
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
+        <Button
+          variant={currentYearOnly ? "contained" : "outlined"}
           onClick={() => setCurrentYearOnly((v) => !v)}
-          className={cn(
-            "px-4 py-2 text-sm rounded-lg border transition-colors text-gray-500",
-            currentYearOnly
-              ? "bg-[#cafeb8] font-medium"
-              : "bg-white border-gray-200 hover:bg-gray-100",
-          )}
+          size="medium"
+          sx={{
+            textTransform: "none",
+            whiteSpace: "nowrap",
+            ...(currentYearOnly
+              ? {
+                  backgroundColor: "#2db351",
+                  color: "text.primary",
+                  boxShadow: "none",
+                  "&:hover": { backgroundColor: "#208c3d", boxShadow: "none" },
+                }
+              : {
+                  borderColor: "grey.300",
+                  color: "text.secondary",
+                }),
+          }}
         >
           Только текущий год
-        </button>
+        </Button>
       </div>
 
       <TableContainer component={Paper}>

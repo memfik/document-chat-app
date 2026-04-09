@@ -1,57 +1,42 @@
 "use client";
 
-import { Paper } from "@mui/material";
+import { useState } from "react";
+import { Paper, TextField, MenuItem, Button, Box, Typography, Snackbar, Alert } from "@mui/material";
 
-const selectClass =
-  "w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors bg-white text-gray-700";
-const labelClass = "block text-sm font-semibold text-gray-800 mb-1";
+export default function BudgetExecutionForm({ title, description }: { title: string; description: string }) {
+  const [snackbar, setSnackbar] = useState(false);
 
-export default function BudgetExecutionForm({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Формирование: ${title}`);
+    setSnackbar(true);
   };
 
   return (
-    <Paper elevation={3} className="p-5 max-w-2xl">
-      <p className="text-base font-semibold text-gray-800 mb-1">{title}</p>
-      <p className="text-sm text-gray-500 mb-5">{description}</p>
+    <Paper elevation={3} sx={{ p: 2.5, maxWidth: 640 }}>
+      <Typography variant="subtitle1" fontWeight={600} mb={0.5}>{title}</Typography>
+      <Typography variant="body2" color="text.secondary" mb={2.5}>{description}</Typography>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <label className={labelClass}>Проект</label>
-            <select name="project" className={selectClass}>
-              <option value="">— Выберите —</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Статья</label>
-            <select name="article" className={selectClass}>
-              <option value="">— Выберите —</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Центр затрат</label>
-            <select name="costCenter" className={selectClass}>
-              <option value="">— Выберите —</option>
-            </select>
-          </div>
-        </div>
+      <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2}>
+        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+          <TextField select size="small" fullWidth label="Проект" name="project" defaultValue="">
+            <MenuItem value=""><em>— Выберите —</em></MenuItem>
+          </TextField>
+          <TextField select size="small" fullWidth label="Статья" name="article" defaultValue="">
+            <MenuItem value=""><em>— Выберите —</em></MenuItem>
+          </TextField>
+          <TextField select size="small" fullWidth label="Центр затрат" name="costCenter" defaultValue="">
+            <MenuItem value=""><em>— Выберите —</em></MenuItem>
+          </TextField>
+        </Box>
 
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors self-start"
-        >
+        <Button type="submit" variant="contained" sx={{ alignSelf: "flex-start", textTransform: "none" }}>
           Сформировать
-        </button>
-      </form>
+        </Button>
+      </Box>
+
+      <Snackbar open={snackbar} autoHideDuration={3000} onClose={() => setSnackbar(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity="success" variant="filled" onClose={() => setSnackbar(false)}>Отчёт формируется...</Alert>
+      </Snackbar>
     </Paper>
   );
 }

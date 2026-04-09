@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useParams } from "next/navigation";
+import { alpha } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -11,7 +11,15 @@ import GestureIcon from "@mui/icons-material/Gesture";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 import CommentIcon from "@mui/icons-material/Comment";
-import { cn } from "@/lib/utils";
+import {
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  Button,
+  Chip,
+  LinearProgress,
+} from "@mui/material";
 
 type EventType =
   | "status"
@@ -152,140 +160,150 @@ function groupByDay(events: HistoryEvent[]) {
   for (const e of events) {
     const label = dayLabel(e.date);
     const last = groups[groups.length - 1];
-    if (last && last.label === label) {
-      last.events.push(e);
-    } else {
-      groups.push({ label, events: [e] });
-    }
+    if (last && last.label === label) last.events.push(e);
+    else groups.push({ label, events: [e] });
   }
   return groups;
 }
 
-function eventMeta(type: EventType) {
+function eventMeta(type: EventType): { icon: React.ReactNode; color: string } {
   switch (type) {
     case "status":
-      return {
-        icon: <SwapHorizIcon fontSize="small" />,
-        bg: "bg-blue-100",
-        text: "text-blue-600",
-      };
+      return { icon: <SwapHorizIcon fontSize="small" />, color: "#3b82f6" };
     case "file_add":
-      return {
-        icon: <AttachFileIcon fontSize="small" />,
-        bg: "bg-green-100",
-        text: "text-green-600",
-      };
+      return { icon: <AttachFileIcon fontSize="small" />, color: "#22c55e" };
     case "file_remove":
-      return {
-        icon: <DeleteOutlineIcon fontSize="small" />,
-        bg: "bg-red-100",
-        text: "text-red-500",
-      };
+      return { icon: <DeleteOutlineIcon fontSize="small" />, color: "#ef4444" };
     case "sign":
-      return {
-        icon: <GestureIcon fontSize="small" />,
-        bg: "bg-emerald-100",
-        text: "text-emerald-600",
-      };
+      return { icon: <GestureIcon fontSize="small" />, color: "#10b981" };
     case "member":
-      return {
-        icon: <PersonAddIcon fontSize="small" />,
-        bg: "bg-purple-100",
-        text: "text-purple-600",
-      };
+      return { icon: <PersonAddIcon fontSize="small" />, color: "#8b5cf6" };
     case "forward":
       return {
         icon: <ForwardToInboxIcon fontSize="small" />,
-        bg: "bg-orange-100",
-        text: "text-orange-500",
+        color: "#f97316",
       };
     case "comment":
-      return {
-        icon: <CommentIcon fontSize="small" />,
-        bg: "bg-gray-100",
-        text: "text-gray-500",
-      };
+      return { icon: <CommentIcon fontSize="small" />, color: "#6b7280" };
     default:
-      return {
-        icon: <CommentIcon fontSize="small" />,
-        bg: "bg-slate-100",
-        text: "text-slate-500",
-      };
+      return { icon: <CommentIcon fontSize="small" />, color: "#94a3b8" };
   }
 }
 
 function EventCard({ ev }: { ev: HistoryEvent }) {
   const meta = eventMeta(ev.type);
   return (
-    <div className="flex gap-3">
-      <div className="flex flex-col items-center">
-        <div
-          className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-            meta.bg,
-            meta.text,
-          )}
+    <Box display="flex" gap={1.5}>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            bgcolor: alpha(meta.color, 0.15),
+            color: meta.color,
+          }}
         >
           {meta.icon}
-        </div>
-        <div className="w-px flex-1 bg-gray-200 mt-1" />
-      </div>
-      <div className="flex-1 pb-5">
-        <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-sm font-semibold text-gray-800">
+        </Box>
+        <Box sx={{ width: "1px", flex: 1, bgcolor: "divider", mt: 0.5 }} />
+      </Box>
+
+      <Box flex={1} pb={2.5}>
+        <Paper variant="outlined" sx={{ px: 2, py: 1.5, borderRadius: 2 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={0.5}
+          >
+            <Typography variant="body2" fontWeight={600}>
               {ev.user}
-            </span>
-            <span className="text-xs text-gray-400">{formatDate(ev.date)}</span>
-          </div>
-          <p className="text-sm text-gray-600 leading-snug">{ev.text}</p>
+            </Typography>
+            <Typography variant="caption" color="text.disabled">
+              {formatDate(ev.date)}
+            </Typography>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" lineHeight={1.5}>
+            {ev.text}
+          </Typography>
+
           {ev.status && (
-            <div className="mt-2 flex items-center gap-2">
-              <span
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white"
-                style={{ backgroundColor: ev.statusColor }}
-              >
-                {ev.status}
-              </span>
+            <Box display="flex" alignItems="center" gap={1.5} mt={1}>
+              <Chip
+                label={ev.status}
+                size="small"
+                sx={{
+                  bgcolor: ev.statusColor,
+                  color: "#fff",
+                  fontWeight: 500,
+                  fontSize: 11,
+                }}
+              />
               {ev.progress !== undefined && (
-                <div className="flex items-center gap-1.5 flex-1">
-                  <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${ev.progress}%`,
-                        backgroundColor: ev.statusColor,
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs text-gray-400">{ev.progress}%</span>
-                </div>
+                <Box display="flex" alignItems="center" gap={1} flex={1}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={ev.progress}
+                    sx={{
+                      flex: 1,
+                      height: 6,
+                      borderRadius: 3,
+                      bgcolor: alpha(ev.statusColor!, 0.15),
+                      "& .MuiLinearProgress-bar": {
+                        bgcolor: ev.statusColor,
+                        borderRadius: 3,
+                      },
+                    }}
+                  />
+                  <Typography variant="caption" color="text.disabled">
+                    {ev.progress}%
+                  </Typography>
+                </Box>
               )}
-            </div>
+            </Box>
           )}
+
           {ev.files && ev.files.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <Box display="flex" flexWrap="wrap" gap={0.75} mt={1}>
               {ev.files.map((f) => (
-                <a
+                <Chip
                   key={f.name}
+                  icon={<AttachFileIcon sx={{ fontSize: "12px !important" }} />}
+                  label={f.name}
+                  size="small"
+                  component="a"
                   href={f.url}
                   onClick={(e) => e.preventDefault()}
-                  className={cn(
-                    "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border transition-colors",
+                  clickable
+                  sx={
                     ev.type === "file_remove"
-                      ? "border-red-200 text-red-500 bg-red-50 hover:bg-red-100 line-through"
-                      : "border-blue-200 text-blue-600 bg-blue-50 hover:bg-blue-100",
-                  )}
-                >
-                  <AttachFileIcon sx={{ fontSize: 12 }} />
-                  {f.name}
-                </a>
+                      ? {
+                          bgcolor: alpha("#ef4444", 0.1),
+                          color: "#ef4444",
+                          borderColor: alpha("#ef4444", 0.3),
+                          border: "1px solid",
+                          textDecoration: "line-through",
+                        }
+                      : {
+                          bgcolor: alpha("#3b82f6", 0.08),
+                          color: "#3b82f6",
+                          borderColor: alpha("#3b82f6", 0.3),
+                          border: "1px solid",
+                        }
+                  }
+                />
               ))}
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </Paper>
+      </Box>
+    </Box>
   );
 }
 
@@ -293,7 +311,6 @@ let nextId = 100;
 
 export default function HistoryPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [events, setEvents] = useState<HistoryEvent[]>(initialEvents);
   const [comment, setComment] = useState("");
 
@@ -316,63 +333,74 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="py-6 px-6 max-w-7xl mx-auto">
-      <div className="grid gap-1 mb-5">
-        <h1 className="text-xl font-semibold text-gray-800">
+    <Box py={3} px={3} maxWidth={896} mx="auto">
+      <Box mb={2.5}>
+        <Typography variant="h6" fontWeight={600}>
           История заявки №{id}
-        </h1>
-        <p className="text-xs text-gray-400 mt-0.5">{events.length} событий</p>
-      </div>
-      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-8">
-        <p className="text-md text-gray-500 mb-2 font-bold">
+        </Typography>
+        <Typography variant="caption" color="text.disabled">
+          {events.length} событий
+        </Typography>
+      </Box>
+
+      <Paper variant="outlined" sx={{ p: 2, mb: 4, borderRadius: 2 }}>
+        <Typography variant="subtitle2" color="text.secondary" mb={1}>
           Добавить комментарий
-        </p>
-        <textarea
+        </Typography>
+        <TextField
+          fullWidth
+          size="small"
+          multiline
+          rows={3}
+          placeholder="Введите комментарий..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) sendComment();
           }}
-          placeholder="Введите комментарий..."
-          rows={3}
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors resize-none"
         />
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-xs text-gray-400">Ctrl+Enter для отправки</span>
-          <button
-            onClick={sendComment}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mt={1.5}
+        >
+          <Typography variant="caption" color="text.disabled">
+            Ctrl+Enter для отправки
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<SendIcon />}
             disabled={!comment.trim()}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={sendComment}
+            sx={{ textTransform: "none" }}
           >
-            <SendIcon fontSize="small" />
             Отправить
-          </button>
-        </div>
-      </div>
-      <div>
-        {groups.map((group) => (
-          <div key={group.label}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs font-medium text-gray-400 px-2">
-                {group.label}
-              </span>
-              <div className="flex-1 h-px bg-gray-200" />
-            </div>
+          </Button>
+        </Box>
+      </Paper>
 
-            {group.events.map((ev, idx) => (
-              <div
-                key={ev.id}
-                className={cn(
-                  idx === group.events.length - 1 && "last-in-group",
-                )}
+      <Box>
+        {groups.map((group) => (
+          <Box key={group.label}>
+            <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
+              <Typography
+                variant="caption"
+                color="text.disabled"
+                sx={{ px: 1 }}
               >
-                <EventCard ev={ev} />
-              </div>
+                {group.label}
+              </Typography>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
+            </Box>
+
+            {group.events.map((ev) => (
+              <EventCard key={ev.id} ev={ev} />
             ))}
-          </div>
+          </Box>
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

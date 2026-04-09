@@ -1,47 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { Paper } from "@mui/material";
+import { Paper, TextField, MenuItem, Button, Box, Typography, Snackbar, Alert } from "@mui/material";
 
-const selectClass =
-  "w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors bg-white text-gray-700";
-const inputClass =
-  "w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors";
-const labelClass = "block text-sm font-semibold text-gray-800 mb-1";
+const SELECT_PLACEHOLDER = "— Выберите —";
 
 function SelectField({ label, name }: { label: string; name: string }) {
   return (
-    <div>
-      <label className={labelClass}>{label}</label>
-      <select name={name} className={selectClass}>
-        <option value="">— Выберите —</option>
-      </select>
-    </div>
+    <TextField select size="small" fullWidth label={label} name={name} defaultValue="">
+      <MenuItem value=""><em>{SELECT_PLACEHOLDER}</em></MenuItem>
+    </TextField>
   );
 }
 
-export default function ChronologyForm({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export default function ChronologyForm({ title, description }: { title: string; description: string }) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [snackbar, setSnackbar] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Формирование: ${title}`);
+    setSnackbar(true);
   };
 
   return (
-    <Paper elevation={3} className="p-5 max-w-3xl">
-      <p className="text-base font-semibold text-gray-800 mb-1">{title}</p>
-      <p className="text-sm text-gray-500 mb-5">{description}</p>
+    <Paper elevation={3} sx={{ p: 2.5, maxWidth: 768 }}>
+      <Typography variant="subtitle1" fontWeight={600} mb={0.5}>{title}</Typography>
+      <Typography variant="body2" color="text.secondary" mb={2.5}>{description}</Typography>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2}>
+        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
           <SelectField label="Инициатор" name="initiator" />
           <SelectField label="Центр затрат" name="costCenter" />
           <SelectField label="Тип закупа" name="purchaseType" />
@@ -49,60 +37,43 @@ export default function ChronologyForm({
           <SelectField label="БКВ2" name="bkv2" />
           <SelectField label="Проект" name="project" />
           <SelectField label="Центр / Децентр" name="centerDecentr" />
-
-          <div>
-            <label className={labelClass}>Начало периода</label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Конец периода</label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              min={dateFrom}
-              className={inputClass}
-            />
-          </div>
-
+          <TextField
+            size="small"
+            fullWidth
+            label="Начало периода"
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+          <TextField
+            size="small"
+            fullWidth
+            label="Конец периода"
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            inputProps={{ min: dateFrom }}
+            InputLabelProps={{ shrink: true }}
+          />
           <SelectField label="Статус" name="status" />
           <SelectField label="Исполнитель" name="executor" />
           <SelectField label="Точка присутствия" name="presencePoint" />
-        </div>
+        </Box>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Фильтр по тексту</label>
-            <input
-              type="text"
-              name="textFilter"
-              className={inputClass}
-              placeholder="Введите текст"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>&nbsp;</label>
-            <input
-              type="text"
-              name="textFilterOr"
-              className={inputClass}
-              placeholder="или содержит"
-            />
-          </div>
-        </div>
+        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1.5}>
+          <TextField size="small" fullWidth label="Фильтр по тексту" name="textFilter" placeholder="Введите текст" />
+          <TextField size="small" fullWidth label="или содержит" name="textFilterOr" placeholder="или содержит" />
+        </Box>
 
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors self-start"
-        >
+        <Button type="submit" variant="contained" sx={{ alignSelf: "flex-start", textTransform: "none" }}>
           Сформировать
-        </button>
-      </form>
+        </Button>
+      </Box>
+
+      <Snackbar open={snackbar} autoHideDuration={3000} onClose={() => setSnackbar(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity="success" variant="filled" onClose={() => setSnackbar(false)}>Отчёт формируется...</Alert>
+      </Snackbar>
     </Paper>
   );
 }

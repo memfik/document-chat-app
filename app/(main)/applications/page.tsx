@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import HistoryIcon from "@mui/icons-material/History";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import { cn } from "@/lib/utils";
 import { InfoModal } from "@/app/components/InfoModal";
 import {
   Paper,
@@ -19,6 +18,16 @@ import {
   TableRow,
   CircularProgress,
   TablePagination,
+  Button,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Box,
+  Typography,
 } from "@mui/material";
 
 const mockData = [
@@ -372,89 +381,83 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
   const [znoNum, setZnoNum] = useState(extra.znoNum);
   const [file, setFile] = useState<File | null>(extra.paymentFile);
   const [fileName, setFileName] = useState(extra.paymentFileName);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) {
-      setFile(f);
-      setFileName(f.name);
-    }
+    if (f) { setFile(f); setFileName(f.name); }
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-xl p-6 w-[420px] shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-800">
-            Редактирование — {rowId}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <CloseIcon fontSize="small" />
-          </button>
-        </div>
+    <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}>
+        <Typography variant="subtitle1" fontWeight={600}>
+          Редактирование — {rowId}
+        </Typography>
+        <IconButton onClick={onClose} size="small" sx={{ color: "text.secondary" }}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </DialogTitle>
 
-        <div className="flex flex-col gap-4">
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">№ ЗНО</label>
-            <input
-              type="text"
-              value={znoNum}
-              onChange={(e) => setZnoNum(e.target.value)}
-              placeholder="Введите номер ЗНО..."
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
+      <DialogContent>
+        <Box display="flex" flexDirection="column" gap={2} pt={1}>
+          <TextField
+            size="small"
+            fullWidth
+            label="№ ЗНО"
+            placeholder="Введите номер ЗНО..."
+            value={znoNum}
+            onChange={(e) => setZnoNum(e.target.value)}
+          />
 
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">
+          <Box>
+            <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
               Платежный документ
-            </label>
-            <div
-              className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#f96800] transition-colors"
-              onClick={() => fileRef.current?.click()}
+            </Typography>
+            <Box
+              component="label"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                px: 2,
+                py: 1.5,
+                border: "1px dashed",
+                borderColor: "grey.400",
+                borderRadius: 1,
+                cursor: "pointer",
+                transition: "border-color 0.2s",
+                "&:hover": { borderColor: "primary.main" },
+              }}
             >
-              <UploadFileIcon fontSize="small" className="text-gray-400" />
-              <span className="text-sm text-gray-500 truncate flex-1">
+              <UploadFileIcon fontSize="small" sx={{ color: "text.disabled", flexShrink: 0 }} />
+              <Typography variant="body2" color="text.secondary" sx={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {fileName || "Нажмите для загрузки файла..."}
-              </span>
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              className="hidden"
-              onChange={handleFile}
-            />
-          </div>
-        </div>
+              </Typography>
+              <input type="file" hidden onChange={handleFile} />
+            </Box>
+          </Box>
+        </Box>
+      </DialogContent>
 
-        <div className="flex justify-end gap-2 mt-5">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Отмена
-          </button>
-          <button
-            onClick={() =>
-              onSave({ znoNum, paymentFile: file, paymentFileName: fileName })
-            }
-            className="px-4 py-2 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors"
-          >
-            Сохранить
-          </button>
-        </div>
-      </div>
-    </div>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          size="small"
+          sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}
+        >
+          Отмена
+        </Button>
+        <Button
+          onClick={() => onSave({ znoNum, paymentFile: file, paymentFileName: fileName })}
+          variant="contained"
+          size="small"
+          sx={{ textTransform: "none" }}
+        >
+          Сохранить
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 
@@ -504,38 +507,66 @@ export default function DocumentsPage() {
   return (
     <div className="py-5 px-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1">
-          <SearchIcon
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            fontSize="small"
-          />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск..."
-            className="w-full pl-9 pr-9 py-2 text-sm border border-gray-400 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <CloseIcon fontSize="small" />
-            </button>
-          )}
-        </div>
-        <button
+        <TextField
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Поиск..."
+          sx={{
+            flex: 1,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#f96800",
+              },
+            },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
+                  />
+                </InputAdornment>
+              ),
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="clear search"
+                    onClick={() => setSearch("")}
+                    edge="end"
+                    size="small"
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
+        <Button
+          variant={currentYearOnly ? "contained" : "outlined"}
           onClick={() => setCurrentYearOnly((v) => !v)}
-          className={cn(
-            "px-4 py-2 text-sm rounded-lg border transition-colors text-gray-500",
-            currentYearOnly
-              ? "bg-[#cafeb8] font-medium"
-              : "bg-white border-gray-400 hover:bg-gray-100",
-          )}
+          size="medium"
+          sx={{
+            textTransform: "none",
+            whiteSpace: "nowrap",
+            ...(currentYearOnly
+              ? {
+                  backgroundColor: "#2db351",
+                  color: "text.primary",
+                  boxShadow: "none",
+                  "&:hover": { backgroundColor: "#208c3d", boxShadow: "none" },
+                }
+              : {
+                  borderColor: "grey.300",
+                  color: "text.secondary",
+                }),
+          }}
         >
           Только текущий год
-        </button>
+        </Button>
       </div>
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {statusFilters.map((s) => {
@@ -545,23 +576,38 @@ export default function DocumentsPage() {
               ? mockData.length
               : mockData.filter((r) => r.status === s.key).length;
           return (
-            <button
+            <Button
               key={s.key}
               onClick={() => setActiveStatus(s.key)}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border transition-colors",
-                active
-                  ? "border-gray-300 bg-gray-100 font-medium text-gray-800"
-                  : "border-transparent text-gray-500 hover:bg-gray-100",
-              )}
+              size="small"
+              startIcon={
+                <span
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    backgroundColor: s.color,
+                    flexShrink: 0,
+                    display: "inline-block",
+                  }}
+                />
+              }
+              sx={{
+                textTransform: "none",
+                borderRadius: "8px",
+                border: "1px solid",
+                borderColor: active ? s.color : "transparent",
+                backgroundColor: "transparent",
+                color: active ? "text.primary" : "text.secondary",
+                fontWeight: active ? 600 : 400,
+                px: 2,
+              }}
             >
-              <span
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: s.color }}
-              />
               {s.label}
-              <span className="text-xs text-gray-400 font-normal">{count}</span>
-            </button>
+              <span className="text-sm text-gray-500 ml-2 font-semibold">
+                {count}
+              </span>
+            </Button>
           );
         })}
       </div>
@@ -658,44 +704,79 @@ export default function DocumentsPage() {
                     </TableCell>
                     <TableCell>
                       {extras[row.id]?.paymentFileName ? (
-                        <button
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={
+                            <VisibilityIcon
+                              sx={{ fontSize: "0.85rem !important" }}
+                            />
+                          }
                           onClick={(e) => {
                             e.stopPropagation();
                             openFile(extras[row.id]);
                           }}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+                          sx={{
+                            textTransform: "none",
+                            fontSize: "0.7rem",
+                            py: 0.5,
+                            px: 1,
+                          }}
                         >
-                          <VisibilityIcon fontSize="inherit" />
                           Посмотреть
-                        </button>
+                        </Button>
                       ) : (
                         <span className="text-xs text-gray-400">—</span>
                       )}
                     </TableCell>
                     <TableCell>
                       <div className="grid gap-1">
-                        <button
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={
+                            <EditIcon sx={{ fontSize: "0.85rem !important" }} />
+                          }
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditTarget(row.id);
                           }}
                           title="Редактировать"
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          sx={{
+                            textTransform: "none",
+                            fontSize: "0.7rem",
+                            color: "text.secondary",
+                            borderColor: "grey.300",
+                            py: 0.5,
+                            px: 5,
+                          }}
                         >
-                          <EditIcon fontSize="inherit" />
                           Править
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={
+                            <HistoryIcon
+                              sx={{ fontSize: "0.85rem !important" }}
+                            />
+                          }
                           onClick={(e) => {
                             e.stopPropagation();
                             window.open(`/history/${row.id}`, "_blank");
                           }}
                           title="История"
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                          sx={{
+                            textTransform: "none",
+                            fontSize: "0.7rem",
+                            color: "text.secondary",
+                            borderColor: "grey.300",
+                            py: 0.5,
+                            px: 1,
+                          }}
                         >
-                          <HistoryIcon fontSize="inherit" />
                           История
-                        </button>
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
