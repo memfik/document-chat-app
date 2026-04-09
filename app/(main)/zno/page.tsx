@@ -235,6 +235,7 @@ export default function ZnoPage() {
           sx={{
             textTransform: "none",
             whiteSpace: "nowrap",
+            borderRadius: 2,
             ...(currentYearOnly
               ? {
                   backgroundColor: "#2db351",
@@ -277,8 +278,8 @@ export default function ZnoPage() {
               }
               sx={{
                 textTransform: "none",
-                borderRadius: "8px",
                 border: "1px solid",
+                borderRadius: 2,
                 borderColor: active ? s.color : "transparent",
                 backgroundColor: "transparent",
                 color: active ? "text.primary" : "text.secondary",
@@ -295,8 +296,9 @@ export default function ZnoPage() {
         })}
       </div>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <Paper>
+      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -365,7 +367,8 @@ export default function ZnoPage() {
               })}
           </TableBody>
         </Table>
-        <TablePagination
+      </TableContainer>
+      <TablePagination
           component="div"
           count={mockData.length}
           page={page}
@@ -380,8 +383,9 @@ export default function ZnoPage() {
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`
           }
+          sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
         />
-      </TableContainer>
+      </Paper>
     </div>
   );
 }

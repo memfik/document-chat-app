@@ -199,6 +199,7 @@ export default function AccompanimentPage() {
           sx={{
             textTransform: "none",
             whiteSpace: "nowrap",
+            borderRadius: 2,
             ...(currentYearOnly
               ? {
                   backgroundColor: "#2db351",
@@ -216,8 +217,9 @@ export default function AccompanimentPage() {
         </Button>
       </div>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <Paper>
+      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -267,7 +269,8 @@ export default function AccompanimentPage() {
               ))}
           </TableBody>
         </Table>
-        <TablePagination
+      </TableContainer>
+      <TablePagination
           component="div"
           count={mockData.length}
           page={page}
@@ -282,8 +285,9 @@ export default function AccompanimentPage() {
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`
           }
+          sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
         />
-      </TableContainer>
+      </Paper>
     </div>
   );
 }

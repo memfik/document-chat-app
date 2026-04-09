@@ -384,16 +384,30 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) { setFile(f); setFileName(f.name); }
+    if (f) {
+      setFile(f);
+      setFileName(f.name);
+    }
   };
 
   return (
     <Dialog open onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}>
+      <DialogTitle
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          pb: 1,
+        }}
+      >
         <Typography variant="subtitle1" fontWeight={600}>
           Редактирование — {rowId}
         </Typography>
-        <IconButton onClick={onClose} size="small" sx={{ color: "text.secondary" }}>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          sx={{ color: "text.secondary" }}
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
@@ -410,7 +424,12 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
           />
 
           <Box>
-            <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              mb={0.5}
+            >
               Платежный документ
             </Typography>
             <Box
@@ -429,8 +448,20 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
                 "&:hover": { borderColor: "primary.main" },
               }}
             >
-              <UploadFileIcon fontSize="small" sx={{ color: "text.disabled", flexShrink: 0 }} />
-              <Typography variant="body2" color="text.secondary" sx={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <UploadFileIcon
+                fontSize="small"
+                sx={{ color: "text.disabled", flexShrink: 0 }}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  flex: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 {fileName || "Нажмите для загрузки файла..."}
               </Typography>
               <input type="file" hidden onChange={handleFile} />
@@ -444,15 +475,22 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
           onClick={onClose}
           variant="outlined"
           size="small"
-          sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}
+          sx={{
+            textTransform: "none",
+            borderColor: "grey.300",
+            color: "text.secondary",
+            borderRadius: 2,
+          }}
         >
           Отмена
         </Button>
         <Button
-          onClick={() => onSave({ znoNum, paymentFile: file, paymentFileName: fileName })}
+          onClick={() =>
+            onSave({ znoNum, paymentFile: file, paymentFileName: fileName })
+          }
           variant="contained"
           size="small"
-          sx={{ textTransform: "none" }}
+          sx={{ textTransform: "none", borderRadius: 2 }}
         >
           Сохранить
         </Button>
@@ -552,6 +590,7 @@ export default function DocumentsPage() {
           sx={{
             textTransform: "none",
             whiteSpace: "nowrap",
+            borderRadius: 2,
             ...(currentYearOnly
               ? {
                   backgroundColor: "#2db351",
@@ -594,7 +633,7 @@ export default function DocumentsPage() {
               }
               sx={{
                 textTransform: "none",
-                borderRadius: "8px",
+                borderRadius: 2,
                 border: "1px solid",
                 borderColor: active ? s.color : "transparent",
                 backgroundColor: "transparent",
@@ -612,8 +651,9 @@ export default function DocumentsPage() {
         })}
       </div>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <Paper>
+      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -717,6 +757,7 @@ export default function DocumentsPage() {
                             openFile(extras[row.id]);
                           }}
                           sx={{
+                            borderRadius: 2,
                             textTransform: "none",
                             fontSize: "0.7rem",
                             py: 0.5,
@@ -744,6 +785,7 @@ export default function DocumentsPage() {
                           title="Редактировать"
                           sx={{
                             textTransform: "none",
+                            borderRadius: 2,
                             fontSize: "0.7rem",
                             color: "text.secondary",
                             borderColor: "grey.300",
@@ -771,6 +813,7 @@ export default function DocumentsPage() {
                             fontSize: "0.7rem",
                             color: "text.secondary",
                             borderColor: "grey.300",
+                            borderRadius: 2,
                             py: 0.5,
                             px: 1,
                           }}
@@ -784,7 +827,8 @@ export default function DocumentsPage() {
               })}
           </TableBody>
         </Table>
-        <TablePagination
+      </TableContainer>
+      <TablePagination
           component="div"
           count={mockData.length}
           page={page}
@@ -799,8 +843,9 @@ export default function DocumentsPage() {
           labelDisplayedRows={({ from, to, count }) =>
             `${from}–${to} из ${count}`
           }
+          sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
         />
-      </TableContainer>
+      </Paper>
 
       {editTarget && extras[editTarget] && (
         <EditModal

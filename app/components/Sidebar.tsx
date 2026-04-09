@@ -1,0 +1,320 @@
+"use client";
+
+import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import AddIcon from "@mui/icons-material/Add";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import HandshakeIcon from "@mui/icons-material/Handshake";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Divider,
+} from "@mui/material";
+
+const EXPANDED = 220;
+const COLLAPSED = 60;
+
+const navItems = [
+  {
+    label: "Заявки",
+    href: "/applications",
+    icon: <ListAltIcon fontSize="small" />,
+  },
+  { label: "ЗНО", href: "/zno", icon: <AssignmentIcon fontSize="small" /> },
+  {
+    label: "Сопровождение",
+    href: "/accompaniment",
+    icon: <HandshakeIcon fontSize="small" />,
+  },
+  {
+    label: "Рамочный договор",
+    href: "/rd",
+    icon: <FolderOpenIcon fontSize="small" />,
+  },
+  {
+    label: "Отчеты",
+    href: "/report",
+    icon: <AssessmentIcon fontSize="small" />,
+  },
+];
+
+const docItems = [
+  { label: "Инструкция", href: "https://contract.jusanmobile.kz/manual.pdf" },
+  {
+    label: "Инструкция рамочная",
+    href: "https://contract.jusanmobile.kz/manual_ex1.pdf",
+  },
+  {
+    label: "Рекомендации",
+    href: "https://contract.jusanmobile.kz/recomend.pdf",
+  },
+];
+
+export function Sidebar() {
+  const [open, setOpen] = useState(true);
+  const pathname = usePathname();
+  const router = useRouter();
+  const [importOpen, setImportOpen] = useState(false);
+  const [docsAnchor, setDocsAnchor] = useState<null | HTMLElement>(null);
+
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(href + "/");
+
+  const actionBtn = (
+    label: string,
+    icon: React.ReactNode,
+    onClick: () => void,
+    color?: string,
+    active?: boolean,
+  ) => (
+    <Tooltip title={open ? "" : label} placement="right" arrow>
+      <Button
+        fullWidth
+        startIcon={icon}
+        onClick={onClick}
+        size="small"
+        variant={active ? "contained" : "text"}
+        sx={{
+          justifyContent: open ? "flex-start" : "center",
+          minWidth: 0,
+          px: open ? 1.5 : 1,
+          py: 0.75,
+          mb: 0.5,
+          borderRadius: 1.5,
+          textTransform: "none",
+          fontWeight: active ? 600 : 400,
+          color: active ? "#fff" : "text.secondary",
+          bgcolor: active ? (color ?? "primary.main") : "transparent",
+          "&:hover": {
+            bgcolor: active ? (color ?? "primary.dark") : "action.hover",
+          },
+          "& .MuiButton-startIcon": {
+            mx: open ? undefined : 0,
+          },
+        }}
+      >
+        {open ? label : null}
+      </Button>
+    </Tooltip>
+  );
+
+  return (
+    <>
+      <Box
+        sx={{
+          width: open ? EXPANDED : COLLAPSED,
+          transition: "width 0.22s ease",
+          flexShrink: 0,
+          bgcolor: "background.paper",
+          borderRight: "1px solid",
+          borderColor: "divider",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          height: "100%",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: open ? "flex-end" : "center",
+            px: 0.5,
+            py: 0.75,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <IconButton size="small" onClick={() => setOpen((v) => !v)}>
+            {open ? (
+              <ChevronLeftIcon fontSize="small" />
+            ) : (
+              <ChevronRightIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Box>
+        <Box sx={{ px: 0.75, pt: 1, pb: 0.5 }}>
+          {actionBtn(
+            "Новая Ф16",
+            <AddIcon fontSize="small" />,
+            () => router.push("/applications/new"),
+            "#f96800",
+            isActive("/applications/new"),
+          )}
+          {actionBtn("Импорт", <FileUploadIcon fontSize="small" />, () =>
+            setImportOpen(true),
+          )}
+          <Tooltip title={open ? "" : "Инструкции"} placement="right" arrow>
+            <Button
+              fullWidth
+              startIcon={<MenuBookIcon fontSize="small" />}
+              endIcon={
+                open ? (
+                  <KeyboardArrowDownIcon
+                    fontSize="small"
+                    sx={{
+                      transform: docsAnchor ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.2s",
+                      ml: "auto",
+                    }}
+                  />
+                ) : null
+              }
+              onClick={(e) => setDocsAnchor(e.currentTarget)}
+              size="small"
+              sx={{
+                justifyContent: open ? "flex-start" : "center",
+                minWidth: 0,
+                px: open ? 1.5 : 1,
+                py: 0.75,
+                borderRadius: 1.5,
+                textTransform: "none",
+                color: "text.secondary",
+                "&:hover": { bgcolor: "action.hover" },
+                "& .MuiButton-startIcon": { mx: open ? undefined : 0 },
+                "& .MuiButton-endIcon": { ml: "auto" },
+              }}
+            >
+              {open ? "Инструкции" : null}
+            </Button>
+          </Tooltip>
+          <Menu
+            anchorEl={docsAnchor}
+            open={Boolean(docsAnchor)}
+            onClose={() => setDocsAnchor(null)}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "left" }}
+          >
+            {docItems.map((item) => (
+              <MenuItem
+                key={item.href}
+                onClick={() => {
+                  window.open(item.href, "_blank");
+                  setDocsAnchor(null);
+                }}
+              >
+                {item.label}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+        <Divider />
+        <List dense disablePadding sx={{ flex: 1, px: 0.75, py: 1 }}>
+          {navItems.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Tooltip
+                key={item.href}
+                title={open ? "" : item.label}
+                placement="right"
+                arrow
+              >
+                <ListItemButton
+                  selected={active}
+                  onClick={() => router.push(item.href)}
+                  sx={{
+                    borderRadius: 1.5,
+                    mb: 0.25,
+                    px: open ? 1.5 : 1,
+                    justifyContent: open ? "flex-start" : "center",
+                    "&.Mui-selected": {
+                      bgcolor: "primary.main",
+                      color: "#fff",
+                      "&:hover": { bgcolor: "primary.dark" },
+                      "& .MuiListItemIcon-root": { color: "#fff" },
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: open ? 32 : "auto",
+                      color: active ? "#fff" : "text.secondary",
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {open && (
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        fontWeight: active ? 600 : 400,
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </Tooltip>
+            );
+          })}
+        </List>
+      </Box>
+      <Dialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Импорт файлов</DialogTitle>
+        <DialogContent>
+          <Box
+            component="label"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "2px dashed",
+              borderColor: "divider",
+              borderRadius: 2,
+              height: 128,
+              cursor: "pointer",
+              transition: "border-color 0.2s",
+              "&:hover": { borderColor: "primary.main" },
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Нажмите или перетащите файл
+            </Typography>
+            <input type="file" hidden multiple />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setImportOpen(false)}
+            color="inherit"
+            sx={{ textTransform: "none" }}
+          >
+            Отмена
+          </Button>
+          <Button
+            variant="contained"
+            disableElevation
+            sx={{ textTransform: "none" }}
+          >
+            Загрузить
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}

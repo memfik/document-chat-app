@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Paper,
   Select,
@@ -13,12 +13,17 @@ import {
   Checkbox,
   ListItemText,
   OutlinedInput,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  Stepper,
+  Step,
+  StepLabel,
+  TextField,
+  Button,
+  IconButton,
+  Box,
+  Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { cn } from "@/lib/utils";
 
 const REQUEST_TYPES = [
   "Закупка товаров",
@@ -64,6 +69,13 @@ const ED_GO_LIST = [
 ];
 
 const VAT_RATE = 0.12;
+
+const STEPS = [
+  "Обоснование закупа",
+  "Позиции заявки",
+  "Согласование",
+  "Вложения",
+];
 
 interface Position {
   id: number;
@@ -116,66 +128,6 @@ const fmt = (n: number) =>
     maximumFractionDigits: 2,
   });
 
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-5 py-3 border-b border-gray-200 bg-gray-50 rounded-t-xl">
-      <span className="text-sm font-semibold text-gray-700">{children}</span>
-    </div>
-  );
-}
-
-function FieldLabel({
-  children,
-  required,
-}: {
-  children: React.ReactNode;
-  required?: boolean;
-}) {
-  return (
-    <label className="block text-xs text-gray-500 mb-1">
-      {children}
-      {required && <span className="text-red-400 ml-0.5">*</span>}
-    </label>
-  );
-}
-
-function TextArea({
-  label,
-  value,
-  onChange,
-  required,
-  error,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  required?: boolean;
-  error?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <div>
-      <FieldLabel required={required}>{label}</FieldLabel>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={3}
-        placeholder={placeholder}
-        className={cn(
-          "w-full px-3 py-2 text-sm border rounded-lg outline-none transition-colors resize-none",
-          error
-            ? "border-red-400 focus:border-red-400"
-            : "border-gray-200 focus:border-[#f96800]",
-        )}
-      />
-      {error && (
-        <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-      )}
-    </div>
-  );
-}
-
 function FileInput({
   label,
   file,
@@ -185,38 +137,66 @@ function FileInput({
   file: File | null;
   onChange: (f: File | null) => void;
 }) {
-  const ref = useRef<HTMLInputElement>(null);
   return (
-    <div>
-      <FieldLabel>{label}</FieldLabel>
-      <div
-        onClick={() => ref.current?.click()}
-        className="flex items-center gap-2 px-3 py-2.5 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#f96800] transition-colors"
+    <Box>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        display="block"
+        mb={0.5}
       >
-        <UploadFileIcon fontSize="small" className="text-gray-400 shrink-0" />
-        <span className="text-sm text-gray-500 truncate flex-1">
+        {label}
+      </Typography>
+      <Box
+        component="label"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          px: 2,
+          py: 1.5,
+          border: "1px dashed",
+          borderColor: "grey.300",
+          borderRadius: 1,
+          cursor: "pointer",
+          transition: "border-color 0.2s",
+          "&:hover": { borderColor: "primary.main" },
+        }}
+      >
+        <UploadFileIcon
+          fontSize="small"
+          sx={{ color: "text.disabled", flexShrink: 0 }}
+        />
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            flex: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {file ? file.name : "Нажмите для загрузки файла..."}
-        </span>
+        </Typography>
         {file && (
-          <button
-            type="button"
+          <IconButton
+            size="small"
             onClick={(e) => {
-              e.stopPropagation();
+              e.preventDefault();
               onChange(null);
             }}
-            className="text-gray-400 hover:text-gray-600 text-xs shrink-0"
           >
-            ✕
-          </button>
+            <CloseIcon fontSize="small" />
+          </IconButton>
         )}
-      </div>
-      <input
-        ref={ref}
-        type="file"
-        className="hidden"
-        onChange={(e) => onChange(e.target.files?.[0] ?? null)}
-      />
-    </div>
+        <input
+          type="file"
+          hidden
+          onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+        />
+      </Box>
+    </Box>
   );
 }
 
@@ -239,217 +219,256 @@ function PositionRow({
 }) {
   const set =
     (f: keyof Position) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       onChange(pos.id, f, e.target.value);
 
-  const inputCls = (field: string) =>
-    cn(
-      "w-full px-2 py-1.5 text-sm border rounded-lg outline-none transition-colors",
-      errors.has(`${pos.id}.${field}`)
-        ? "border-red-400 focus:border-red-400"
-        : "border-gray-200 focus:border-[#f96800]",
-    );
-
-  const selectCls = (field: string) =>
-    cn(
-      "w-full px-2 py-1.5 text-sm border rounded-lg outline-none transition-colors bg-white",
-      errors.has(`${pos.id}.${field}`)
-        ? "border-red-400"
-        : "border-gray-200 focus:border-[#f96800]",
-    );
+  const err = (field: string) => errors.has(`${pos.id}.${field}`);
 
   return (
-    <div className="border border-gray-200 rounded-xl p-4 relative">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+    <Box
+      sx={{
+        border: "1px solid",
+        borderColor: "grey.200",
+        borderRadius: 2,
+        p: 2,
+      }}
+    >
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={2}
+      >
+        <Typography
+          variant="caption"
+          fontWeight={600}
+          color="text.secondary"
+          textTransform="uppercase"
+          letterSpacing={0.5}
+        >
           Позиция #{index + 1}
-        </span>
-        <div className="flex gap-2">
-          <button
-            type="button"
+        </Typography>
+        <Box display="flex" gap={1}>
+          <Button
+            size="small"
+            variant="text"
+            color="inherit"
             onClick={() => onClear(pos.id)}
-            className="text-xs text-gray-400 hover:text-gray-600 underline transition-colors"
+            sx={{
+              fontSize: 12,
+              color: "text.disabled",
+              borderRadius: 2,
+              textDecoration: "underline",
+              minWidth: "auto",
+            }}
           >
             Очистить
-          </button>
+          </Button>
           {canRemove && (
-            <button
-              type="button"
+            <Button
+              size="small"
+              variant="text"
+              color="error"
+              startIcon={<DeleteOutlineIcon fontSize="small" />}
               onClick={() => onRemove(pos.id)}
-              className="flex items-center gap-0.5 text-xs text-red-400 hover:text-red-600 transition-colors"
+              sx={{ fontSize: 12, minWidth: "auto", borderRadius: 2 }}
             >
-              <DeleteOutlineIcon fontSize="inherit" />
               Удалить
-            </button>
+            </Button>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <div className="grid grid-cols-4 gap-3">
-        <div>
-          <FieldLabel required>Тип заявки</FieldLabel>
-          <select
-            value={pos.requestType}
-            onChange={set("requestType")}
-            className={selectCls("requestType")}
-          >
-            {REQUEST_TYPES.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-        <div className="col-span-2">
-          <FieldLabel required>Товар / Услуга</FieldLabel>
-          <input
-            type="text"
-            value={pos.product}
-            onChange={set("product")}
-            placeholder="Введите наименование..."
-            className={inputCls("product")}
-          />
-          {errors.has(`${pos.id}.product`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel required>Количество</FieldLabel>
-          <input
-            type="number"
-            min="1"
-            value={pos.qty}
-            onChange={set("qty")}
-            placeholder="0"
-            className={inputCls("qty")}
-          />
-          {errors.has(`${pos.id}.qty`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel required>Место поставки</FieldLabel>
-          <input
-            type="text"
-            value={pos.deliveryPlace}
-            onChange={set("deliveryPlace")}
-            placeholder="Адрес..."
-            className={inputCls("deliveryPlace")}
-          />
-          {errors.has(`${pos.id}.deliveryPlace`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel required>Дата начала</FieldLabel>
-          <input
-            type="date"
-            value={pos.dateFrom}
-            onChange={set("dateFrom")}
-            className={inputCls("dateFrom")}
-          />
-          {errors.has(`${pos.id}.dateFrom`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel required>Дата окончания</FieldLabel>
-          <input
-            type="date"
-            value={pos.dateTo}
-            min={pos.dateFrom}
-            onChange={set("dateTo")}
-            className={inputCls("dateTo")}
-          />
-          {errors.has(`${pos.id}.dateTo`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel required>Стоимость без НДС</FieldLabel>
-          <input
-            type="number"
-            min="0"
-            value={pos.priceNoVat}
-            onChange={set("priceNoVat")}
-            placeholder="0"
-            className={inputCls("priceNoVat")}
-          />
-          {errors.has(`${pos.id}.priceNoVat`) && (
-            <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-          )}
-        </div>
-        <div>
-          <FieldLabel>Стоимость с НДС (12%)</FieldLabel>
-          <div className="w-full px-2 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-700 font-medium">
-            {pos.priceNoVat ? fmt(priceWithVat(pos)) : "—"}
-          </div>
-        </div>
-        <div>
-          <FieldLabel required>Центр затрат</FieldLabel>
-          <select
-            value={pos.costCenter}
-            onChange={set("costCenter")}
-            className={selectCls("costCenter")}
-          >
-            {COST_CENTERS.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <FieldLabel required>Куратор</FieldLabel>
-          <select
-            value={pos.curator}
-            onChange={set("curator")}
-            className={selectCls("curator")}
-          >
-            {CURATORS.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <FieldLabel>Проект</FieldLabel>
-          <select
-            value={pos.project}
-            onChange={set("project")}
-            className={selectCls("project")}
-          >
-            {PROJECTS.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <FieldLabel required>Статья</FieldLabel>
-          <select
-            value={pos.article}
-            onChange={set("article")}
-            className={selectCls("article")}
-          >
-            {ARTICLES.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <FieldLabel>Точка присутствия</FieldLabel>
-          <select
-            value={pos.location}
-            onChange={set("location")}
-            className={selectCls("location")}
-          >
-            {LOCATIONS.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-    </div>
+      <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1.5}>
+        <TextField
+          select
+          size="small"
+          label="Тип заявки"
+          required
+          fullWidth
+          value={pos.requestType}
+          onChange={set("requestType")}
+        >
+          {REQUEST_TYPES.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          size="small"
+          label="Товар / Услуга"
+          required
+          fullWidth
+          placeholder="Введите наименование..."
+          value={pos.product}
+          onChange={set("product")}
+          error={err("product")}
+          helperText={err("product") ? "Обязательное поле" : ""}
+          sx={{ gridColumn: "span 2" }}
+        />
+
+        <TextField
+          size="small"
+          label="Количество"
+          required
+          fullWidth
+          type="number"
+          inputProps={{ min: 1 }}
+          placeholder="0"
+          value={pos.qty}
+          onChange={set("qty")}
+          error={err("qty")}
+          helperText={err("qty") ? "Обязательное поле" : ""}
+        />
+
+        <TextField
+          size="small"
+          label="Место поставки"
+          required
+          fullWidth
+          placeholder="Адрес..."
+          value={pos.deliveryPlace}
+          onChange={set("deliveryPlace")}
+          error={err("deliveryPlace")}
+          helperText={err("deliveryPlace") ? "Обязательное поле" : ""}
+        />
+
+        <TextField
+          size="small"
+          label="Дата начала"
+          required
+          fullWidth
+          type="date"
+          value={pos.dateFrom}
+          onChange={set("dateFrom")}
+          error={err("dateFrom")}
+          helperText={err("dateFrom") ? "Обязательное поле" : ""}
+          InputLabelProps={{ shrink: true }}
+        />
+
+        <TextField
+          size="small"
+          label="Дата окончания"
+          required
+          fullWidth
+          type="date"
+          value={pos.dateTo}
+          inputProps={{ min: pos.dateFrom }}
+          onChange={set("dateTo")}
+          error={err("dateTo")}
+          helperText={err("dateTo") ? "Обязательное поле" : ""}
+          InputLabelProps={{ shrink: true }}
+        />
+
+        <TextField
+          size="small"
+          label="Стоимость без НДС"
+          required
+          fullWidth
+          type="number"
+          inputProps={{ min: 0 }}
+          placeholder="0"
+          value={pos.priceNoVat}
+          onChange={set("priceNoVat")}
+          error={err("priceNoVat")}
+          helperText={err("priceNoVat") ? "Обязательное поле" : ""}
+        />
+
+        <TextField
+          size="small"
+          label="Стоимость с НДС (12%)"
+          fullWidth
+          value={pos.priceNoVat ? fmt(priceWithVat(pos)) : "—"}
+          disabled
+        />
+
+        <TextField
+          select
+          size="small"
+          label="Центр затрат"
+          required
+          fullWidth
+          value={pos.costCenter}
+          onChange={set("costCenter")}
+        >
+          {COST_CENTERS.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          size="small"
+          label="Куратор"
+          required
+          fullWidth
+          value={pos.curator}
+          onChange={set("curator")}
+        >
+          {CURATORS.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          size="small"
+          label="Проект"
+          fullWidth
+          value={pos.project}
+          onChange={set("project")}
+        >
+          {PROJECTS.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          size="small"
+          label="Статья"
+          required
+          fullWidth
+          value={pos.article}
+          onChange={set("article")}
+        >
+          {ARTICLES.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          select
+          size="small"
+          label="Точка присутствия"
+          fullWidth
+          value={pos.location}
+          onChange={set("location")}
+        >
+          {LOCATIONS.map((o) => (
+            <MenuItem key={o} value={o}>
+              {o}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
+    </Box>
   );
 }
 
 export default function NewF16Page() {
   const router = useRouter();
+  const [activeStep, setActiveStep] = useState(0);
   const [title, setTitle] = useState("");
   const [purpose, setPurpose] = useState("");
   const [benefits, setBenefits] = useState("");
@@ -462,7 +481,7 @@ export default function NewF16Page() {
     contract: null,
   });
   const [errors, setErrors] = useState<Set<string>>(new Set());
-  const [submitted, setSubmitted] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const updatePosition = (id: number, field: keyof Position, value: string) => {
     setPositions((prev) =>
@@ -487,99 +506,150 @@ export default function NewF16Page() {
   };
 
   const totalWithVat = positions.reduce((acc, p) => acc + priceWithVat(p), 0);
-  const validate = () => {
+
+  const validateStep = (step: number): Set<string> => {
     const errs = new Set<string>();
-    if (!purpose.trim()) errs.add("purpose");
-    positions.forEach((p) => {
-      if (!p.product.trim()) errs.add(`${p.id}.product`);
-      if (!p.qty.trim() || parseFloat(p.qty) <= 0) errs.add(`${p.id}.qty`);
-      if (!p.deliveryPlace.trim()) errs.add(`${p.id}.deliveryPlace`);
-      if (!p.dateFrom) errs.add(`${p.id}.dateFrom`);
-      if (!p.dateTo) errs.add(`${p.id}.dateTo`);
-      if (!p.priceNoVat.trim() || parseFloat(p.priceNoVat) <= 0)
-        errs.add(`${p.id}.priceNoVat`);
-    });
+    if (step === 0) {
+      if (!title.trim()) errs.add("title");
+      if (!purpose.trim()) errs.add("purpose");
+    }
+    if (step === 1) {
+      positions.forEach((p) => {
+        if (!p.product.trim()) errs.add(`${p.id}.product`);
+        if (!p.qty.trim() || parseFloat(p.qty) <= 0) errs.add(`${p.id}.qty`);
+        if (!p.deliveryPlace.trim()) errs.add(`${p.id}.deliveryPlace`);
+        if (!p.dateFrom) errs.add(`${p.id}.dateFrom`);
+        if (!p.dateTo) errs.add(`${p.id}.dateTo`);
+        if (!p.priceNoVat.trim() || parseFloat(p.priceNoVat) <= 0)
+          errs.add(`${p.id}.priceNoVat`);
+      });
+    }
     return errs;
   };
 
-  const handleSubmit = () => {
-    const errs = validate();
+  const handleNext = () => {
+    const errs = validateStep(activeStep);
     setErrors(errs);
-    setSubmitted(true);
     if (errs.size === 0) {
-      alert("Форма отправлена успешно!");
-      router.push("/applications");
-    } else {
-      document
-        .querySelector("[data-error]")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setActiveStep((s) => s + 1);
     }
   };
 
+  const handleBack = () => {
+    setErrors(new Set());
+    setActiveStep((s) => s - 1);
+  };
+
+  const handleSubmit = () => {
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+    router.push("/applications");
+  };
+
+  const orangeBtn = {
+    bgcolor: "#f96800",
+    borderRadius: 2,
+    "&:hover": { bgcolor: "#e05a00" },
+    textTransform: "none",
+  } as const;
+
   return (
     <div className="py-6 px-6 max-w-7xl mx-auto">
-      <h1 className="text-xl font-semibold text-gray-800 mb-4">
+      <Typography variant="h6" fontWeight={600} color="text.primary" mb={3}>
         Новая заявка Ф16
-      </h1>
+      </Typography>
 
-      <div className="flex flex-col gap-5">
-        <Paper elevation={1}>
-          <div className="p-5">
-            <FieldLabel required>Название заявки</FieldLabel>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Введите название заявки..."
-              className={cn(
-                "w-full px-3 py-2 text-sm border rounded-lg outline-none transition-colors",
-                submitted && !title.trim()
-                  ? "border-red-400 focus:border-red-400"
-                  : "border-gray-200 focus:border-[#f96800]",
-              )}
-            />
-            {submitted && !title.trim() && (
-              <p className="text-xs text-red-400 mt-0.5">Обязательное поле</p>
-            )}
-          </div>
-        </Paper>
+      <Paper elevation={2} sx={{ mb: 3 }}>
+        <Box px={3} py={2.5}>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {STEPS.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
+      </Paper>
 
-        <Accordion defaultExpanded elevation={1}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <span className="text-sm font-semibold text-gray-700">1. Обоснование закупа</span>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="grid grid-cols-3 gap-4">
-              <TextArea
-                label="Назначение закупа"
-                value={purpose}
-                onChange={setPurpose}
-                required
-                error={submitted && errors.has("purpose")}
-                placeholder="Опишите назначение..."
-              />
-              <TextArea
-                label="Выгоды от закупа"
-                value={benefits}
-                onChange={setBenefits}
-                placeholder="Опишите выгоды..."
-              />
-              <TextArea
-                label="Убытки при непроведении"
-                value={losses}
-                onChange={setLosses}
-                placeholder="Опишите возможные убытки..."
-              />
-            </div>
-          </AccordionDetails>
-        </Accordion>
+      <Paper elevation={2}>
+        <Box p={3}>
+          {activeStep === 0 && (
+            <Box display="flex" flexDirection="column" gap={3}>
+              <Box>
+                <Typography variant="subtitle2" color="text.primary" mb={1.5}>
+                  Название заявки
+                </Typography>
+                <TextField
+                  size="small"
+                  label="Название заявки"
+                  required
+                  fullWidth
+                  placeholder="Введите название заявки..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  error={errors.has("title")}
+                  helperText={errors.has("title") ? "Обязательное поле" : ""}
+                />
+              </Box>
 
-        <Accordion elevation={1}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <span className="text-sm font-semibold text-gray-700">2. Позиции заявки</span>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="flex flex-col gap-4">
+              <Box
+                sx={{ borderTop: "1px solid", borderColor: "grey.100", pt: 3 }}
+              >
+                <Typography variant="subtitle2" color="text.primary" mb={2}>
+                  Обоснование закупа
+                </Typography>
+                <Box
+                  display="grid"
+                  gridTemplateColumns="repeat(3, 1fr)"
+                  gap={2}
+                >
+                  <TextField
+                    size="small"
+                    label="Назначение закупа"
+                    required
+                    fullWidth
+                    multiline
+                    rows={3}
+                    placeholder="Опишите назначение..."
+                    value={purpose}
+                    onChange={(e) => setPurpose(e.target.value)}
+                    error={errors.has("purpose")}
+                    helperText={
+                      errors.has("purpose") ? "Обязательное поле" : ""
+                    }
+                  />
+                  <TextField
+                    size="small"
+                    label="Выгоды от закупа"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    placeholder="Опишите выгоды..."
+                    value={benefits}
+                    onChange={(e) => setBenefits(e.target.value)}
+                  />
+                  <TextField
+                    size="small"
+                    label="Убытки при непроведении"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    placeholder="Опишите возможные убытки..."
+                    value={losses}
+                    onChange={(e) => setLosses(e.target.value)}
+                  />
+                </Box>
+              </Box>
+            </Box>
+          )}
+          {activeStep === 1 && (
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Typography variant="subtitle2" color="text.primary">
+                Позиции заявки
+              </Typography>
               {positions.map((pos, idx) => (
                 <PositionRow
                   key={pos.id}
@@ -592,46 +662,123 @@ export default function NewF16Page() {
                   canRemove={positions.length > 1}
                 />
               ))}
-              <button
-                type="button"
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<AddIcon />}
                 onClick={addPosition}
-                className="flex items-center gap-1.5 self-start px-4 py-2 text-sm border border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-[#f96800] hover:text-[#f96800] transition-colors"
+                sx={{
+                  alignSelf: "flex-start",
+                  textTransform: "none",
+                  borderStyle: "dashed",
+                  borderColor: "grey.300",
+                  borderRadius: 2,
+                  color: "text.secondary",
+                  "&:hover": { borderColor: "#f96800", color: "#f96800" },
+                }}
               >
-                <AddIcon fontSize="small" />
                 Добавить позицию
-              </button>
-              <div className="flex justify-end pt-2 border-t border-gray-100">
-                <div className="flex items-center gap-8 text-sm">
-                  <span className="text-gray-500">
-                    Позиций: <b className="text-gray-700">{positions.length}</b>
-                  </span>
-                  <span className="text-gray-500">
+              </Button>
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                pt={1}
+                sx={{ borderTop: "1px solid", borderColor: "grey.100" }}
+              >
+                <Box display="flex" alignItems="center" gap={4}>
+                  <Typography variant="body2" color="text.secondary">
+                    Позиций:{" "}
+                    <b style={{ color: "#374151" }}>{positions.length}</b>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
                     ИТОГО с НДС:{" "}
-                    <b className="text-gray-800 text-base">
+                    <b style={{ color: "#111827", fontSize: 15 }}>
                       {fmt(totalWithVat)} KZT
                     </b>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </AccordionDetails>
-        </Accordion>
-
-        <Accordion elevation={1}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <span className="text-sm font-semibold text-gray-700">3. Согласование</span>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="grid grid-cols-2 gap-4 mb-5">
-              <div className="flex flex-col gap-3">
-                <div>
-                  <FieldLabel>Инициирующее подразделение</FieldLabel>
-                  <div className="px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
-                    ГО-ДЦиРС
-                  </div>
-                </div>
-                <div>
-                  <FieldLabel>Согласующий</FieldLabel>
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
+          {activeStep === 2 && (
+            <Box>
+              <Typography variant="subtitle2" color="text.primary" mb={2}>
+                Согласование
+              </Typography>
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mb={3}>
+                <Box display="flex" flexDirection="column" gap={2}>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      mb={0.5}
+                    >
+                      Согласующий
+                    </Typography>
+                    <TextField
+                      size="small"
+                      fullWidth
+                      value="ГО-ДЦиРС"
+                      disabled
+                    />
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      mb={0.5}
+                    >
+                      Согласующий
+                    </Typography>
+                    <Select
+                      multiple
+                      displayEmpty
+                      value={approvers}
+                      onChange={(e) =>
+                        setApprovers(
+                          typeof e.target.value === "string"
+                            ? e.target.value.split(",")
+                            : e.target.value,
+                        )
+                      }
+                      input={<OutlinedInput notched={false} />}
+                      renderValue={(selected) =>
+                        selected.length === 0 ? (
+                          <Typography variant="body2" color="text.disabled">
+                            Выберите согласующих...
+                          </Typography>
+                        ) : (
+                          <Typography variant="body2">
+                            {selected.join(", ")}
+                          </Typography>
+                        )
+                      }
+                      size="small"
+                      fullWidth
+                    >
+                      {APPROVERS.map((a) => (
+                        <MenuItem key={a} value={a}>
+                          <Checkbox
+                            checked={approvers.includes(a)}
+                            size="small"
+                          />
+                          <ListItemText primary={a} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                    mb={0.5}
+                  >
+                    Кураторы статей
+                  </Typography>
                   <Select
                     multiple
                     displayEmpty
@@ -646,11 +793,13 @@ export default function NewF16Page() {
                     input={<OutlinedInput notched={false} />}
                     renderValue={(selected) =>
                       selected.length === 0 ? (
-                        <span className="text-gray-400 text-sm">
+                        <Typography variant="body2" color="text.disabled">
                           Выберите согласующих...
-                        </span>
+                        </Typography>
                       ) : (
-                        <span className="text-sm">{selected.join(", ")}</span>
+                        <Typography variant="body2">
+                          {selected.join(", ")}
+                        </Typography>
                       )
                     }
                     size="small"
@@ -658,111 +807,118 @@ export default function NewF16Page() {
                   >
                     {APPROVERS.map((a) => (
                       <MenuItem key={a} value={a}>
-                        <Checkbox checked={approvers.includes(a)} size="small" />
+                        <Checkbox
+                          checked={approvers.includes(a)}
+                          size="small"
+                        />
                         <ListItemText primary={a} />
                       </MenuItem>
                     ))}
                   </Select>
-                </div>
-              </div>
-              <div>
-                <FieldLabel>Кураторы статей</FieldLabel>
-                <Select
-                  multiple
-                  displayEmpty
-                  value={approvers}
-                  onChange={(e) =>
-                    setApprovers(
-                      typeof e.target.value === "string"
-                        ? e.target.value.split(",")
-                        : e.target.value,
-                    )
-                  }
-                  input={<OutlinedInput notched={false} />}
-                  renderValue={(selected) =>
-                    selected.length === 0 ? (
-                      <span className="text-gray-400 text-sm">
-                        Выберите согласующих...
-                      </span>
-                    ) : (
-                      <span className="text-sm">{selected.join(", ")}</span>
-                    )
-                  }
-                  size="small"
-                  fullWidth
+                </Box>
+              </Box>
+              <Box>
+                <Typography
+                  variant="caption"
+                  fontWeight={600}
+                  color="text.secondary"
+                  textTransform="uppercase"
+                  letterSpacing={0.5}
+                  display="block"
+                  mb={1}
                 >
-                  {APPROVERS.map((a) => (
-                    <MenuItem key={a} value={a}>
-                      <Checkbox checked={approvers.includes(a)} size="small" />
-                      <ListItemText primary={a} />
-                    </MenuItem>
+                  ЭД ГО
+                </Typography>
+                <Box display="flex" flexDirection="column" gap={0.5}>
+                  {ED_GO_LIST.map((person, i) => (
+                    <Typography key={i} variant="body2" color="text.primary">
+                      <b>Согласующий {i + 1}</b> — {person}
+                    </Typography>
                   ))}
-                </Select>
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                ЭД ГО
-              </p>
-              <div className="grid gap-1">
-                {ED_GO_LIST.map((person, i) => (
-                  <label
-                    key={i}
-                    className="flex items-center gap-2.5 text-sm text-gray-700"
-                  >
-                    <span className="font-bold">Согласующий {i + 1}</span> -{" "}
-                    {person}
-                  </label>
-                ))}
-              </div>
-            </div>
-          </AccordionDetails>
-        </Accordion>
+                </Box>
+              </Box>
+            </Box>
+          )}
+          {activeStep === 3 && (
+            <Box>
+              <Typography variant="subtitle2" color="text.primary" mb={2}>
+                Вложения
+              </Typography>
+              <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2}>
+                <FileInput
+                  label="Техническая спецификация"
+                  file={attachments.spec}
+                  onChange={(f) => setAttachments((a) => ({ ...a, spec: f }))}
+                />
+                <FileInput
+                  label="Дополнительные файлы"
+                  file={attachments.extra}
+                  onChange={(f) => setAttachments((a) => ({ ...a, extra: f }))}
+                />
+                <FileInput
+                  label="Договор"
+                  file={attachments.contract}
+                  onChange={(f) =>
+                    setAttachments((a) => ({ ...a, contract: f }))
+                  }
+                />
+              </Box>
+            </Box>
+          )}
+          {errors.size > 0 && (
+            <Typography variant="body2" color="error" mt={2} textAlign="right">
+              Заполните все обязательные поля ({errors.size} ошибок)
+            </Typography>
+          )}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            mt={3}
+            pt={2}
+            sx={{ borderTop: "1px solid", borderColor: "grey.100" }}
+          >
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={activeStep === 0 ? () => router.back() : handleBack}
+              sx={{
+                textTransform: "none",
+                borderColor: "grey.300",
+                borderRadius: 2,
+                color: "text.secondary",
+              }}
+            >
+              {activeStep === 0 ? "Отмена" : "Назад"}
+            </Button>
 
-        <Accordion elevation={1}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <span className="text-sm font-semibold text-gray-700">4. Вложения</span>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="grid grid-cols-3 gap-4">
-              <FileInput
-                label="Техническая спецификация"
-                file={attachments.spec}
-                onChange={(f) => setAttachments((a) => ({ ...a, spec: f }))}
-              />
-              <FileInput
-                label="Дополнительные файлы"
-                file={attachments.extra}
-                onChange={(f) => setAttachments((a) => ({ ...a, extra: f }))}
-              />
-              <FileInput
-                label="Договор"
-                file={attachments.contract}
-                onChange={(f) => setAttachments((a) => ({ ...a, contract: f }))}
-              />
-            </div>
-          </AccordionDetails>
-        </Accordion>
-        {submitted && errors.size > 0 && (
-          <div className="text-sm text-red-500 text-right">
-            Заполните все обязательные поля ({errors.size} ошибок)
-          </div>
-        )}
-        <div className="flex justify-end gap-2 pb-4">
-          <button
-            onClick={() => router.back()}
-            className="px-5 py-2.5 text-sm border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            Отмена
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-5 py-2.5 text-sm bg-[#f96800] text-white rounded-lg hover:bg-[#e05a00] transition-colors"
-          >
-            Отправить
-          </button>
-        </div>
-      </div>
+            {activeStep < STEPS.length - 1 ? (
+              <Button variant="contained" onClick={handleNext} sx={orangeBtn}>
+                Далее
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={handleSubmit} sx={orangeBtn}>
+                Отправить
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Paper>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={1000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Форма отправлена успешно!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

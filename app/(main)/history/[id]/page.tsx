@@ -4,12 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { alpha } from "@mui/material/styles";
 import SendIcon from "@mui/icons-material/Send";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import GestureIcon from "@mui/icons-material/Gesture";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 import CommentIcon from "@mui/icons-material/Comment";
 import {
   Box,
@@ -166,28 +161,8 @@ function groupByDay(events: HistoryEvent[]) {
   return groups;
 }
 
-function eventMeta(type: EventType): { icon: React.ReactNode; color: string } {
-  switch (type) {
-    case "status":
-      return { icon: <SwapHorizIcon fontSize="small" />, color: "#3b82f6" };
-    case "file_add":
-      return { icon: <AttachFileIcon fontSize="small" />, color: "#22c55e" };
-    case "file_remove":
-      return { icon: <DeleteOutlineIcon fontSize="small" />, color: "#ef4444" };
-    case "sign":
-      return { icon: <GestureIcon fontSize="small" />, color: "#10b981" };
-    case "member":
-      return { icon: <PersonAddIcon fontSize="small" />, color: "#8b5cf6" };
-    case "forward":
-      return {
-        icon: <ForwardToInboxIcon fontSize="small" />,
-        color: "#f97316",
-      };
-    case "comment":
-      return { icon: <CommentIcon fontSize="small" />, color: "#6b7280" };
-    default:
-      return { icon: <CommentIcon fontSize="small" />, color: "#94a3b8" };
-  }
+function eventMeta(_type: EventType): { icon: React.ReactNode; color: string } {
+  return { icon: <CommentIcon fontSize="small" />, color: "#6b7280" };
 }
 
 function EventCard({ ev }: { ev: HistoryEvent }) {
@@ -373,7 +348,7 @@ export default function HistoryPage() {
             startIcon={<SendIcon />}
             disabled={!comment.trim()}
             onClick={sendComment}
-            sx={{ textTransform: "none" }}
+            sx={{ textTransform: "none", borderRadius: 2 }}
           >
             Отправить
           </Button>

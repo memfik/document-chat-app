@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 export default function NotFound() {
@@ -12,12 +13,14 @@ export default function NotFound() {
         Страница не найдена
       </h2>
       <p className="text-gray-400">Такой страницы не существует.</p>
-      <button
+      <Button
         onClick={() => router.push("/applications")}
-        className="mt-2 px-6 py-2 bg-[#f96800] text-white rounded-lg text-sm font-medium hover:bg-[#e05a00] transition-colors"
+        size="medium"
+        color="primary"
+        variant="contained"
       >
         На главную
-      </button>
+      </Button>
     </div>
   );
 }

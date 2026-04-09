@@ -1,4 +1,5 @@
 import { Navigation } from "../components/Navigation";
+import { Sidebar } from "../components/Sidebar";
 
 export default function MainLayout({
   children,
@@ -6,11 +7,16 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <div className="sticky top-0 z-50">
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div style={{ flexShrink: 0 }}>
         <Navigation />
       </div>
-      <div className="px-5">{children}</div>
-    </>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        <Sidebar />
+        <main style={{ flex: 1, overflowY: "auto" }}>
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

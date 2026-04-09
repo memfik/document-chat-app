@@ -72,7 +72,12 @@ const initialData: FormData = {
   project: "Проект Альфа",
   article: "Ст. 44 Закупки",
   rows: [
-    { id: 1, description: "Ноутбук Lenovo ThinkPad", qty: "5", price: "250000" },
+    {
+      id: 1,
+      description: "Ноутбук Lenovo ThinkPad",
+      qty: "5",
+      price: "250000",
+    },
     { id: 2, description: 'Монитор 27" Samsung', qty: "5", price: "80000" },
     { id: 3, description: "Мышь беспроводная", qty: "10", price: "5000" },
   ],
@@ -87,7 +92,10 @@ function calcTotal(rows: SpecRow[]): number {
 }
 
 function formatNumber(n: number): string {
-  return n.toLocaleString("ru-RU", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  return n.toLocaleString("ru-RU", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
 }
 
 let nextId = 100;
@@ -119,14 +127,29 @@ function NewItemModal({ title, onClose, onSave }: NewItemModalProps) {
         />
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button variant="outlined" color="inherit" onClick={onClose} sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}>
+        <Button
+          variant="outlined"
+          color="inherit"
+          onClick={onClose}
+          sx={{
+            textTransform: "none",
+            borderColor: "grey.300",
+            color: "text.secondary",
+            borderRadius: 2,
+          }}
+        >
           Отмена
         </Button>
         <Button
           variant="contained"
           disabled={!value.trim()}
           onClick={() => value.trim() && onSave(value.trim())}
-          sx={{ textTransform: "none", bgcolor: "#f96800", "&:hover": { bgcolor: "#e05a00" } }}
+          sx={{
+            textTransform: "none",
+            bgcolor: "#f96800",
+            borderRadius: 2,
+            "&:hover": { bgcolor: "#e05a00" },
+          }}
         >
           Добавить
         </Button>
@@ -145,7 +168,15 @@ interface SelectWithAddProps {
   modalTitle: string;
 }
 
-function SelectWithAdd({ label, value, options, editing, onChange, onNewItem, modalTitle }: SelectWithAddProps) {
+function SelectWithAdd({
+  label,
+  value,
+  options,
+  editing,
+  onChange,
+  onNewItem,
+  modalTitle,
+}: SelectWithAddProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -162,7 +193,9 @@ function SelectWithAdd({ label, value, options, editing, onChange, onNewItem, mo
             fullWidth
           >
             {options.map((o) => (
-              <MenuItem key={o} value={o}>{o}</MenuItem>
+              <MenuItem key={o} value={o}>
+                {o}
+              </MenuItem>
             ))}
           </TextField>
           {editing && (
@@ -170,7 +203,14 @@ function SelectWithAdd({ label, value, options, editing, onChange, onNewItem, mo
               size="small"
               onClick={() => setShowModal(true)}
               title={`Создать новый: ${label}`}
-              sx={{ border: "1px solid", borderColor: "grey.300", borderRadius: 1, height: 40, width: 40, flexShrink: 0 }}
+              sx={{
+                border: "1px solid",
+                borderColor: "grey.300",
+                borderRadius: 1,
+                height: 40,
+                width: 40,
+                flexShrink: 0,
+              }}
             >
               <AddIcon fontSize="small" />
             </IconButton>
@@ -202,9 +242,12 @@ export default function RdPage() {
 
   const total = calcTotal(draft.rows);
 
-  const setField = useCallback(<K extends keyof FormData>(key: K, value: FormData[K]) => {
-    setDraft((d) => ({ ...d, [key]: value }));
-  }, []);
+  const setField = useCallback(
+    <K extends keyof FormData>(key: K, value: FormData[K]) => {
+      setDraft((d) => ({ ...d, [key]: value }));
+    },
+    [],
+  );
 
   const updateRow = (id: number, field: keyof SpecRow, value: string) => {
     setDraft((d) => ({
@@ -224,15 +267,34 @@ export default function RdPage() {
     setDraft((d) => ({ ...d, rows: d.rows.filter((r) => r.id !== id) }));
   };
 
-  const handleEdit = () => { setDraft(saved); setEditing(true); };
-  const handleCancel = () => { setDraft(saved); setEditing(false); };
-  const handleSave = () => { setSaved(draft); setEditing(false); };
+  const handleEdit = () => {
+    setDraft(saved);
+    setEditing(true);
+  };
+  const handleCancel = () => {
+    setDraft(saved);
+    setEditing(false);
+  };
+  const handleSave = () => {
+    setSaved(draft);
+    setEditing(false);
+  };
 
-  const orangeBtn = { bgcolor: "#f96800", "&:hover": { bgcolor: "#e05a00" }, textTransform: "none" } as const;
+  const orangeBtn = {
+    bgcolor: "#f96800",
+    borderRadius: 2,
+    "&:hover": { bgcolor: "#e05a00" },
+    textTransform: "none",
+  } as const;
 
   return (
     <Box py={3} px={3} maxWidth="1280px" mx="auto">
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={3}
+      >
         <Typography variant="h6" fontWeight={600}>
           Рамочный договор
         </Typography>
@@ -252,7 +314,12 @@ export default function RdPage() {
                 color="inherit"
                 startIcon={<CloseIcon />}
                 onClick={handleCancel}
-                sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  borderColor: "grey.300",
+                  color: "text.secondary",
+                }}
               >
                 Отмена
               </Button>
@@ -263,7 +330,12 @@ export default function RdPage() {
               color="inherit"
               startIcon={<EditIcon />}
               onClick={handleEdit}
-              sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                borderColor: "grey.300",
+                color: "text.secondary",
+              }}
             >
               Редактировать
             </Button>
@@ -272,19 +344,33 @@ export default function RdPage() {
       </Box>
 
       <Paper elevation={1} sx={{ mb: 3 }}>
-        <Box px={2.5} py={2} borderBottom="1px solid" sx={{ borderColor: "divider" }}>
+        <Box
+          px={2.5}
+          py={2}
+          borderBottom="1px solid"
+          sx={{ borderColor: "divider" }}
+        >
           <Typography variant="subtitle2" fontWeight={600}>
             Основная информация
           </Typography>
         </Box>
-        <Box px={2.5} py={2} display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+        <Box
+          px={2.5}
+          py={2}
+          display="grid"
+          gridTemplateColumns="1fr 1fr"
+          gap={2}
+        >
           <SelectWithAdd
             label="Договор"
             value={draft.contract}
             options={contracts}
             editing={true}
             onChange={(v) => setField("contract", v)}
-            onNewItem={(v) => { setContracts((prev) => [...prev, v]); setField("contract", v); }}
+            onNewItem={(v) => {
+              setContracts((prev) => [...prev, v]);
+              setField("contract", v);
+            }}
             modalTitle="Добавить новый договор"
           />
           <TextField
@@ -315,7 +401,10 @@ export default function RdPage() {
             options={costCenters}
             editing={editing}
             onChange={(v) => setField("costCenter", v)}
-            onNewItem={(v) => { setCostCenters((prev) => [...prev, v]); setField("costCenter", v); }}
+            onNewItem={(v) => {
+              setCostCenters((prev) => [...prev, v]);
+              setField("costCenter", v);
+            }}
             modalTitle="Добавить новый центр затрат"
           />
           <SelectWithAdd
@@ -324,7 +413,10 @@ export default function RdPage() {
             options={projects}
             editing={editing}
             onChange={(v) => setField("project", v)}
-            onNewItem={(v) => { setProjects((prev) => [...prev, v]); setField("project", v); }}
+            onNewItem={(v) => {
+              setProjects((prev) => [...prev, v]);
+              setField("project", v);
+            }}
             modalTitle="Добавить новый проект"
           />
           <SelectWithAdd
@@ -333,7 +425,10 @@ export default function RdPage() {
             options={articles}
             editing={editing}
             onChange={(v) => setField("article", v)}
-            onNewItem={(v) => { setArticles((prev) => [...prev, v]); setField("article", v); }}
+            onNewItem={(v) => {
+              setArticles((prev) => [...prev, v]);
+              setField("article", v);
+            }}
             modalTitle="Добавить новую статью"
           />
           <TextField
@@ -366,7 +461,12 @@ export default function RdPage() {
               size="small"
               startIcon={<AddIcon />}
               onClick={addRow}
-              sx={{ textTransform: "none", borderColor: "grey.300", color: "text.secondary" }}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                borderColor: "grey.300",
+                color: "text.secondary",
+              }}
             >
               Добавить строку
             </Button>
@@ -377,11 +477,21 @@ export default function RdPage() {
           <Table size="small">
             <TableHead sx={{ backgroundColor: "action.hover" }}>
               <TableRow>
-                <TableCell width={48}><b>№</b></TableCell>
-                <TableCell><b>Описание товара / услуги</b></TableCell>
-                <TableCell width={120}><b>Количество</b></TableCell>
-                <TableCell width={150}><b>Цена за ед.</b></TableCell>
-                <TableCell width={150}><b>Сумма</b></TableCell>
+                <TableCell width={48}>
+                  <b>№</b>
+                </TableCell>
+                <TableCell>
+                  <b>Описание товара / услуги</b>
+                </TableCell>
+                <TableCell width={120}>
+                  <b>Количество</b>
+                </TableCell>
+                <TableCell width={150}>
+                  <b>Цена за ед.</b>
+                </TableCell>
+                <TableCell width={150}>
+                  <b>Сумма</b>
+                </TableCell>
                 {editing && <TableCell width={56} />}
               </TableRow>
             </TableHead>
@@ -389,7 +499,9 @@ export default function RdPage() {
               {draft.rows.map((row, idx) => (
                 <TableRow key={row.id} hover>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary">{idx + 1}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {idx + 1}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     {editing ? (
@@ -398,10 +510,14 @@ export default function RdPage() {
                         fullWidth
                         placeholder="Введите описание..."
                         value={row.description}
-                        onChange={(e) => updateRow(row.id, "description", e.target.value)}
+                        onChange={(e) =>
+                          updateRow(row.id, "description", e.target.value)
+                        }
                       />
                     ) : (
-                      <Typography variant="body2">{row.description || "—"}</Typography>
+                      <Typography variant="body2">
+                        {row.description || "—"}
+                      </Typography>
                     )}
                   </TableCell>
                   <TableCell>
@@ -413,7 +529,9 @@ export default function RdPage() {
                         inputProps={{ min: 0, style: { textAlign: "right" } }}
                         placeholder="0"
                         value={row.qty}
-                        onChange={(e) => updateRow(row.id, "qty", e.target.value)}
+                        onChange={(e) =>
+                          updateRow(row.id, "qty", e.target.value)
+                        }
                       />
                     ) : (
                       <Typography variant="body2">{row.qty || "—"}</Typography>
@@ -428,7 +546,9 @@ export default function RdPage() {
                         inputProps={{ min: 0, style: { textAlign: "right" } }}
                         placeholder="0"
                         value={row.price}
-                        onChange={(e) => updateRow(row.id, "price", e.target.value)}
+                        onChange={(e) =>
+                          updateRow(row.id, "price", e.target.value)
+                        }
                       />
                     ) : (
                       <Typography variant="body2">
@@ -438,7 +558,9 @@ export default function RdPage() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight={500}>
-                      {calcRowSum(row) > 0 ? formatNumber(calcRowSum(row)) : "—"}
+                      {calcRowSum(row) > 0
+                        ? formatNumber(calcRowSum(row))
+                        : "—"}
                     </Typography>
                   </TableCell>
                   {editing && (
@@ -459,7 +581,11 @@ export default function RdPage() {
 
               {draft.rows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={editing ? 6 : 5} align="center" sx={{ py: 4 }}>
+                  <TableCell
+                    colSpan={editing ? 6 : 5}
+                    align="center"
+                    sx={{ py: 4 }}
+                  >
                     <Typography variant="body2" color="text.disabled">
                       Нет строк спецификации
                     </Typography>
@@ -480,7 +606,9 @@ export default function RdPage() {
           alignItems="center"
           gap={2}
         >
-          <Typography variant="body2" color="text.secondary">Итого:</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Итого:
+          </Typography>
           <Typography variant="subtitle1" fontWeight={600}>
             {formatNumber(total)} KZT
           </Typography>

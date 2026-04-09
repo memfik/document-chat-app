@@ -140,7 +140,13 @@ function FileLink({
           size="small"
           startIcon={<VisibilityIcon sx={{ fontSize: "13px !important" }} />}
           onClick={onView}
-          sx={{ textTransform: "none", fontSize: 12, ml: 1, flexShrink: 0 }}
+          sx={{
+            textTransform: "none",
+            fontSize: 12,
+            ml: 1,
+            flexShrink: 0,
+            borderRadius: 2,
+          }}
         >
           Просмотр
         </Button>
@@ -189,6 +195,7 @@ export function InfoModal({
                 textTransform: "none",
                 borderColor: "divider",
                 color: "text.secondary",
+                borderRadius: 2,
               }}
             >
               История
@@ -348,6 +355,7 @@ export function InfoModal({
             textTransform: "none",
             borderColor: "divider",
             color: "text.secondary",
+            borderRadius: 2,
           }}
         >
           Закрыть
