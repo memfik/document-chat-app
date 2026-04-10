@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -500,6 +503,7 @@ function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
 }
 
 export default function DocumentsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
@@ -518,6 +522,8 @@ export default function DocumentsPage() {
     ),
   );
   const [editTarget, setEditTarget] = useState<string | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 400);
@@ -607,7 +613,18 @@ export default function DocumentsPage() {
           Только текущий год
         </Button>
       </div>
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          mb: 2,
+          overflowX: "auto",
+          flexWrap: { xs: "nowrap", md: "wrap" },
+          pb: { xs: 0.5, md: 0 },
+          "&::-webkit-scrollbar": { display: "none" },
+          scrollbarWidth: "none",
+        }}
+      >
         {statusFilters.map((s) => {
           const active = activeStatus === s.key;
           const count =
@@ -640,6 +657,7 @@ export default function DocumentsPage() {
                 color: active ? "text.primary" : "text.secondary",
                 fontWeight: active ? 600 : 400,
                 px: 2,
+                flexShrink: 0,
               }}
             >
               {s.label}
@@ -649,203 +667,324 @@ export default function DocumentsPage() {
             </Button>
           );
         })}
-      </div>
+      </Box>
 
-      <Paper>
-      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <b>№ заявки</b>
-              </TableCell>
-              <TableCell>
-                <b>Дата поступления</b>
-              </TableCell>
-              <TableCell>
-                <b>Инициатор</b>
-              </TableCell>
-              <TableCell>
-                <b>Подразделение инициатора</b>
-              </TableCell>
-              <TableCell>
-                <b>Описание</b>
-              </TableCell>
-              <TableCell>
-                <b>Стоимость</b>
-              </TableCell>
-              <TableCell>
-                <b>№ договора</b>
-              </TableCell>
-              <TableCell>
-                <b>Исполнитель</b>
-              </TableCell>
-              <TableCell>
-                <b>Статус</b>
-              </TableCell>
-              <TableCell>
-                <b>Договор</b>
-              </TableCell>
-              <TableCell>
-                <b>Время изменения</b>
-              </TableCell>
-              <TableCell>
-                <b>Статья</b>
-              </TableCell>
-              <TableCell>
-                <b>№ ЗНО</b>
-              </TableCell>
-              <TableCell>
-                <b>Платежный документ</b>
-              </TableCell>
-              <TableCell>
-                <b>Действия</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      {isMobile ? (
+        <>
+          <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
             {mockData
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 const status = statusFilters.find((s) => s.key === row.status);
                 return (
-                  <TableRow
+                  <Paper
                     key={row.id}
-                    hover
+                    elevation={1}
                     onClick={() => setSelectedRow(row)}
-                    className="cursor-pointer"
+                    sx={{ p: 2, borderRadius: 2, cursor: "pointer" }}
                   >
-                    <TableCell>{row.id}</TableCell>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.initiator}</TableCell>
-                    <TableCell>{row.type}</TableCell>
-                    <TableCell>{row.description}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-0.5">
-                        {row.cost} {row.currency}
-                      </div>
-                    </TableCell>
-                    <TableCell>{row.contractNum}</TableCell>
-                    <TableCell>{row.executor}</TableCell>
-                    <TableCell>
-                      <span className="flex items-center gap-1.5">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      mb={1}
+                    >
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        {row.id}
+                      </Typography>
+                      <Box display="flex" alignItems="center" gap={0.5}>
                         <span
-                          className="w-2 h-2 rounded-full shrink-0"
-                          style={{ backgroundColor: status?.color }}
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            backgroundColor: status?.color,
+                            display: "inline-block",
+                            flexShrink: 0,
+                          }}
                         />
-                        {status?.label}
-                      </span>
-                    </TableCell>
-                    <TableCell>{row.contract}</TableCell>
-                    <TableCell>{row.updatedAt}</TableCell>
-                    <TableCell>{row.article}</TableCell>
-                    <TableCell>
-                      {extras[row.id]?.znoNum || row.znoNum}
-                    </TableCell>
-                    <TableCell>
-                      {extras[row.id]?.paymentFileName ? (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          startIcon={
-                            <VisibilityIcon
-                              sx={{ fontSize: "0.85rem !important" }}
-                            />
-                          }
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openFile(extras[row.id]);
-                          }}
-                          sx={{
-                            borderRadius: 2,
-                            textTransform: "none",
-                            fontSize: "0.7rem",
-                            py: 0.5,
-                            px: 1,
-                          }}
+                        <Typography
+                          variant="caption"
+                          sx={{ color: status?.color, fontWeight: 500 }}
                         >
-                          Посмотреть
-                        </Button>
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="grid gap-1">
-                        <Button
+                          {status?.label}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body2" mb={0.5}>
+                      {row.description}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {row.initiator} · {row.date}
+                    </Typography>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mt={1.5}
+                    >
+                      <Typography variant="body2" fontWeight={600}>
+                        {row.cost} {row.currency}
+                      </Typography>
+                      <Box display="flex" gap={0.5}>
+                        <IconButton
                           size="small"
-                          variant="outlined"
-                          startIcon={
-                            <EditIcon sx={{ fontSize: "0.85rem !important" }} />
-                          }
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditTarget(row.id);
                           }}
-                          title="Редактировать"
                           sx={{
-                            textTransform: "none",
-                            borderRadius: 2,
-                            fontSize: "0.7rem",
-                            color: "text.secondary",
+                            border: "1px solid",
                             borderColor: "grey.300",
-                            py: 0.5,
-                            px: 5,
+                            borderRadius: 1.5,
                           }}
                         >
-                          Править
-                        </Button>
-                        <Button
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
                           size="small"
-                          variant="outlined"
-                          startIcon={
-                            <HistoryIcon
-                              sx={{ fontSize: "0.85rem !important" }}
-                            />
-                          }
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(`/history/${row.id}`, "_blank");
+                            router.push(`/history/${row.id}`);
                           }}
-                          title="История"
                           sx={{
-                            textTransform: "none",
-                            fontSize: "0.7rem",
-                            color: "text.secondary",
+                            border: "1px solid",
                             borderColor: "grey.300",
-                            borderRadius: 2,
-                            py: 0.5,
-                            px: 1,
+                            borderRadius: 1.5,
                           }}
                         >
-                          История
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                          <HistoryIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Paper>
                 );
               })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-          component="div"
-          count={mockData.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[25, 50, 75, 100]}
-          labelRowsPerPage="Строк на странице:"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${from}–${to} из ${count}`
-          }
-          sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
-        />
-      </Paper>
+          </Box>
+          <Paper>
+            <TablePagination
+              component="div"
+              count={mockData.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              rowsPerPageOptions={[25, 50, 75, 100]}
+              labelRowsPerPage="Строк:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} из ${count}`
+              }
+            />
+          </Paper>
+        </>
+      ) : (
+        <Paper>
+          <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <b>№ заявки</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Дата поступления</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Инициатор</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Подразделение инициатора</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Описание</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Стоимость</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>№ договора</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Исполнитель</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Статус</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Договор</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Время изменения</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Статья</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>№ ЗНО</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Платежный документ</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Действия</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {mockData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    const status = statusFilters.find(
+                      (s) => s.key === row.status,
+                    );
+                    return (
+                      <TableRow
+                        key={row.id}
+                        hover
+                        onClick={() => setSelectedRow(row)}
+                        className="cursor-pointer"
+                      >
+                        <TableCell>{row.id}</TableCell>
+                        <TableCell>{row.date}</TableCell>
+                        <TableCell>{row.initiator}</TableCell>
+                        <TableCell>{row.type}</TableCell>
+                        <TableCell>{row.description}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-0.5">
+                            {row.cost} {row.currency}
+                          </div>
+                        </TableCell>
+                        <TableCell>{row.contractNum}</TableCell>
+                        <TableCell>{row.executor}</TableCell>
+                        <TableCell>
+                          <span className="flex items-center gap-1.5">
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ backgroundColor: status?.color }}
+                            />
+                            {status?.label}
+                          </span>
+                        </TableCell>
+                        <TableCell>{row.contract}</TableCell>
+                        <TableCell>{row.updatedAt}</TableCell>
+                        <TableCell>{row.article}</TableCell>
+                        <TableCell>
+                          {extras[row.id]?.znoNum || row.znoNum}
+                        </TableCell>
+                        <TableCell>
+                          {extras[row.id]?.paymentFileName ? (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={
+                                <VisibilityIcon
+                                  sx={{ fontSize: "0.85rem !important" }}
+                                />
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openFile(extras[row.id]);
+                              }}
+                              sx={{
+                                borderRadius: 2,
+                                textTransform: "none",
+                                fontSize: "0.7rem",
+                                py: 0.5,
+                                px: 1,
+                              }}
+                            >
+                              Посмотреть
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="grid gap-1">
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={
+                                <EditIcon
+                                  sx={{ fontSize: "0.85rem !important" }}
+                                />
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditTarget(row.id);
+                              }}
+                              sx={{
+                                textTransform: "none",
+                                borderRadius: 2,
+                                fontSize: "0.7rem",
+                                color: "text.secondary",
+                                borderColor: "grey.300",
+                                py: 0.5,
+                                px: 5,
+                              }}
+                            >
+                              Править
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={
+                                <HistoryIcon
+                                  sx={{ fontSize: "0.85rem !important" }}
+                                />
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/history/${row.id}`);
+                              }}
+                              sx={{
+                                textTransform: "none",
+                                fontSize: "0.7rem",
+                                color: "text.secondary",
+                                borderColor: "grey.300",
+                                borderRadius: 2,
+                                py: 0.5,
+                                px: 1,
+                              }}
+                            >
+                              История
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={mockData.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[25, 50, 75, 100]}
+            labelRowsPerPage="Строк на странице:"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} из ${count}`
+            }
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              bgcolor: "background.paper",
+              borderTop: "1px solid",
+              borderColor: "divider",
+            }}
+          />
+        </Paper>
+      )}
 
       {editTarget && extras[editTarget] && (
         <EditModal

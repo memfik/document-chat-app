@@ -2,6 +2,16 @@
 
 import { ThemeContextProvider } from "./ThemeContext";
 
-export function ThemeRegistry({ children }: { children: React.ReactNode }) {
-  return <ThemeContextProvider>{children}</ThemeContextProvider>;
+export function ThemeRegistry({
+  children,
+  initialDark,
+}: {
+  children: React.ReactNode;
+  initialDark: boolean;
+}) {
+  return (
+    <ThemeContextProvider initialDark={initialDark}>
+      {children}
+    </ThemeContextProvider>
+  );
 }

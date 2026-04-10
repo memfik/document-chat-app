@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Paper, Tabs, Tab, Box, Typography } from "@mui/material";
+import {
+  Paper,
+  Tabs,
+  Tab,
+  Box,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
 import ChronologyForm from "./ChronologyForm";
 import F16ApprovalForm from "./F16ApprovalForm";
@@ -64,7 +72,7 @@ function NoAccess() {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-14 text-red-500">
       <BlockIcon style={{ fontSize: 56 }} />
-      <p className="text-base font-semibold">
+      <p className="text-base font-semibold text-center">
         У вас нет прав на создание отчета по данному шаблону.
       </p>
     </div>
@@ -105,41 +113,75 @@ function renderForm(tab: (typeof tabs)[number]) {
 export default function ReportPage() {
   const [activeTab, setActiveTab] = useState(0);
   const current = tabs[activeTab];
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Box py={3} px={3}>
+    <Box py={{ xs: 2, md: 3 }} px={{ xs: 2, md: 3 }}>
       <Typography variant="h6" fontWeight={600} mb={2.5}>
         Отчеты
       </Typography>
 
-      <Box display="flex" gap={2.5} alignItems="flex-start">
-        <Paper elevation={1} sx={{ flexShrink: 0, width: 240, py: 1 }}>
-          <Tabs
-            value={activeTab}
-            onChange={(_, v) => setActiveTab(v)}
-            orientation="vertical"
-            variant="scrollable"
-            scrollButtons={false}
-            TabIndicatorProps={{ style: { left: 0, right: "auto", width: 3 } }}
-          >
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.key}
-                label={tab.label}
-                style={{
-                  alignItems: "flex-start",
-                  textAlign: "left",
-                  textTransform: "none",
-                  fontSize: 16,
-                }}
-              />
-            ))}
-          </Tabs>
-        </Paper>
-        <Box flex={1} minWidth={0}>
-          {renderForm(current)}
+      {isMobile ? (
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Paper elevation={1} sx={{ py: 0.5 }}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              orientation="horizontal"
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab.key}
+                  label={tab.label}
+                  sx={{
+                    textTransform: "none",
+                    fontSize: 13,
+                    minWidth: 120,
+                    whiteSpace: "normal",
+                    textAlign: "center",
+                  }}
+                />
+              ))}
+            </Tabs>
+          </Paper>
+          <Box>{renderForm(current)}</Box>
         </Box>
-      </Box>
+      ) : (
+        <Box display="flex" gap={2.5} alignItems="flex-start">
+          <Paper elevation={1} sx={{ flexShrink: 0, width: 240, py: 1 }}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              orientation="vertical"
+              variant="scrollable"
+              scrollButtons={false}
+              TabIndicatorProps={{
+                style: { left: 0, right: "auto", width: 3 },
+              }}
+            >
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab.key}
+                  label={tab.label}
+                  style={{
+                    alignItems: "flex-start",
+                    textAlign: "left",
+                    textTransform: "none",
+                    fontSize: 16,
+                  }}
+                />
+              ))}
+            </Tabs>
+          </Paper>
+          <Box flex={1} minWidth={0}>
+            {renderForm(current)}
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

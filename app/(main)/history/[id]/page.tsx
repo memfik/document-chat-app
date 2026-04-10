@@ -192,8 +192,10 @@ function EventCard({ ev }: { ev: HistoryEvent }) {
         <Paper variant="outlined" sx={{ px: 2, py: 1.5, borderRadius: 2 }}>
           <Box
             display="flex"
-            alignItems="center"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            flexDirection={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
+            gap={0.25}
             mb={0.5}
           >
             <Typography variant="body2" fontWeight={600}>
@@ -308,7 +310,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <Box py={3} px={3} maxWidth={896} mx="auto">
+    <Box py={{ xs: 2, md: 3 }} px={{ xs: 1.5, md: 3 }} maxWidth={896} mx="auto">
       <Box mb={2.5}>
         <Typography variant="h6" fontWeight={600}>
           История заявки №{id}
@@ -339,8 +341,9 @@ export default function HistoryPage() {
           alignItems="center"
           justifyContent="space-between"
           mt={1.5}
+          gap={1}
         >
-          <Typography variant="caption" color="text.disabled">
+          <Typography variant="caption" color="text.disabled" sx={{ display: { xs: "none", sm: "block" } }}>
             Ctrl+Enter для отправки
           </Typography>
           <Button
@@ -348,7 +351,7 @@ export default function HistoryPage() {
             startIcon={<SendIcon />}
             disabled={!comment.trim()}
             onClick={sendComment}
-            sx={{ textTransform: "none", borderRadius: 2 }}
+            sx={{ textTransform: "none", borderRadius: 2, ml: { xs: "auto", sm: 0 } }}
           >
             Отправить
           </Button>

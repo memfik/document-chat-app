@@ -42,7 +42,7 @@ export default function BudgetNonExecutionForm({
         flexDirection="column"
         gap={2}
       >
-        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={1.5}>
           <TextField
             select
             size="small"
@@ -97,7 +97,7 @@ export default function BudgetNonExecutionForm({
           type="submit"
           variant="contained"
           sx={{
-            alignSelf: "flex-start",
+            alignSelf: { xs: "stretch", sm: "flex-start" },
             textTransform: "none",
             borderRadius: 2,
           }}

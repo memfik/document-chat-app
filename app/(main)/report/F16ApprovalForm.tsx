@@ -43,7 +43,7 @@ export default function F16ApprovalForm({
         flexDirection="column"
         gap={2}
       >
-        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={1.5}>
           <TextField
             size="small"
             fullWidth
@@ -71,7 +71,7 @@ export default function F16ApprovalForm({
           type="submit"
           variant="contained"
           sx={{
-            alignSelf: "flex-start",
+            alignSelf: { xs: "stretch", sm: "flex-start" },
             textTransform: "none",
             borderRadius: 2,
           }}

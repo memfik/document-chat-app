@@ -1,6 +1,7 @@
 "use client";
 
-import { alpha } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import CloseIcon from "@mui/icons-material/Close";
 import HistoryIcon from "@mui/icons-material/History";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -17,8 +18,8 @@ import {
   IconButton,
   Chip,
   Divider,
-  Paper,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export interface ApplicationRow {
   id: string;
@@ -162,13 +163,23 @@ export function InfoModal({
   paymentFileName,
   onClose,
 }: InfoModalProps) {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const costWithVat = row.cost.replace(/\s/g, "");
+  const router = useRouter();
   const costNum = parseInt(costWithVat.replace(/\D/g, ""), 10) || 0;
   const costWithoutVat = Math.round(costNum / 1.12).toLocaleString("ru-RU");
   const vat = Math.round(costNum - costNum / 1.12).toLocaleString("ru-RU");
 
   return (
-    <Dialog open onClose={onClose} maxWidth="sm" fullWidth scroll="paper">
+    <Dialog
+      open
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={fullScreen}
+      scroll="paper"
+    >
       <DialogTitle sx={{ pb: 1 }}>
         <Box
           display="flex"
@@ -190,7 +201,7 @@ export function InfoModal({
               color="inherit"
               size="small"
               startIcon={<HistoryIcon fontSize="small" />}
-              onClick={() => window.open(`/history/${row.id}`, "_blank")}
+              onClick={() => router.push(`/history/${row.id}`)}
               sx={{
                 textTransform: "none",
                 borderColor: "divider",

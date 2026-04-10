@@ -70,7 +70,7 @@ export default function ISSKForm({
         flexDirection="column"
         gap={2}
       >
-        <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }} gap={1.5}>
           <SelectField
             label="Инициатор"
             name="initiator"
@@ -89,13 +89,13 @@ export default function ISSKForm({
           />
         </Box>
 
-        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={1.5}>
           <SelectField label="Статья" name="article" defaultValue="--все--" />
           <SelectField label="БКВ2" name="bkv2" defaultValue="--все--" />
           <SelectField label="Проект" name="project" defaultValue="--все--" />
         </Box>
 
-        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={1.5}>
           <SelectField
             label="Подпроект"
             name="subproject"
@@ -119,7 +119,7 @@ export default function ISSKForm({
           />
         </Box>
 
-        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={1.5}>
           <SelectField
             label="Центр / Децентр"
             name="centerDecentr"
@@ -142,7 +142,7 @@ export default function ISSKForm({
           display="flex"
           flexDirection="column"
           gap={1}
-          sx={{ maxWidth: 220 }}
+          sx={{ maxWidth: { xs: "100%", sm: 220 } }}
         >
           <TextField
             select
@@ -161,9 +161,9 @@ export default function ISSKForm({
           </Typography>
           <TextField
             size="small"
+            fullWidth
             label="Текст"
             name="presencePointText"
-            sx={{ maxWidth: 180 }}
           />
         </Box>
 
@@ -171,7 +171,7 @@ export default function ISSKForm({
           type="submit"
           variant="contained"
           sx={{
-            alignSelf: "flex-start",
+            alignSelf: { xs: "stretch", sm: "flex-start" },
             textTransform: "none",
             borderRadius: 2,
           }}

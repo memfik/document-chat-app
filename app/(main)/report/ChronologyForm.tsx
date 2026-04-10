@@ -63,7 +63,7 @@ export default function ChronologyForm({
         flexDirection="column"
         gap={2}
       >
-        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={1.5}>
           <SelectField label="Инициатор" name="initiator" />
           <SelectField label="Центр затрат" name="costCenter" />
           <SelectField label="Тип закупа" name="purchaseType" />
@@ -95,7 +95,7 @@ export default function ChronologyForm({
           <SelectField label="Точка присутствия" name="presencePoint" />
         </Box>
 
-        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={1.5}>
           <TextField
             size="small"
             fullWidth
@@ -116,7 +116,7 @@ export default function ChronologyForm({
           type="submit"
           variant="contained"
           sx={{
-            alignSelf: "flex-start",
+            alignSelf: { xs: "stretch", sm: "flex-start" },
             textTransform: "none",
             borderRadius: 2,
           }}

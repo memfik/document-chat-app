@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import EditIcon from "@mui/icons-material/Edit";
@@ -241,6 +243,8 @@ export default function RdPage() {
   const [articles, setArticles] = useState(articleOptions);
 
   const total = calcTotal(draft.rows);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const setField = useCallback(
     <K extends keyof FormData>(key: K, value: FormData[K]) => {
@@ -288,7 +292,12 @@ export default function RdPage() {
   } as const;
 
   return (
-    <Box py={3} px={3} maxWidth="1280px" mx="auto">
+    <Box
+      py={{ xs: 2, md: 3 }}
+      px={{ xs: 1.5, md: 3 }}
+      maxWidth="1280px"
+      mx="auto"
+    >
       <Box
         display="flex"
         alignItems="center"
@@ -305,10 +314,25 @@ export default function RdPage() {
                 variant="contained"
                 startIcon={<SaveIcon />}
                 onClick={handleSave}
-                sx={orangeBtn}
+                sx={{
+                  ...orangeBtn,
+                  display: { xs: "none", sm: "inline-flex" },
+                }}
               >
                 Сохранить
               </Button>
+              <IconButton
+                onClick={handleSave}
+                sx={{
+                  display: { xs: "flex", sm: "none" },
+                  bgcolor: "#f96800",
+                  color: "#fff",
+                  borderRadius: 2,
+                  "&:hover": { bgcolor: "#e05a00" },
+                }}
+              >
+                <SaveIcon fontSize="small" />
+              </IconButton>
               <Button
                 variant="outlined"
                 color="inherit"
@@ -319,26 +343,54 @@ export default function RdPage() {
                   borderRadius: 2,
                   borderColor: "grey.300",
                   color: "text.secondary",
+                  display: { xs: "none", sm: "inline-flex" },
                 }}
               >
                 Отмена
               </Button>
+              <IconButton
+                onClick={handleCancel}
+                sx={{
+                  display: { xs: "flex", sm: "none" },
+                  border: "1px solid",
+                  borderColor: "grey.300",
+                  borderRadius: 2,
+                  color: "text.secondary",
+                }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
             </>
           ) : (
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<EditIcon />}
-              onClick={handleEdit}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                borderColor: "grey.300",
-                color: "text.secondary",
-              }}
-            >
-              Редактировать
-            </Button>
+            <>
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  borderColor: "grey.300",
+                  color: "text.secondary",
+                  display: { xs: "none", sm: "inline-flex" },
+                }}
+              >
+                Редактировать
+              </Button>
+              <IconButton
+                onClick={handleEdit}
+                sx={{
+                  display: { xs: "flex", sm: "none" },
+                  border: "1px solid",
+                  borderColor: "grey.300",
+                  borderRadius: 2,
+                  color: "text.secondary",
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </>
           )}
         </Box>
       </Box>
@@ -358,7 +410,7 @@ export default function RdPage() {
           px={2.5}
           py={2}
           display="grid"
-          gridTemplateColumns="1fr 1fr"
+          gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
           gap={2}
         >
           <SelectWithAdd
@@ -473,128 +525,178 @@ export default function RdPage() {
           )}
         </Box>
 
-        <TableContainer>
-          <Table size="small">
-            <TableHead sx={{ backgroundColor: "action.hover" }}>
-              <TableRow>
-                <TableCell width={48}>
-                  <b>№</b>
-                </TableCell>
-                <TableCell>
-                  <b>Описание товара / услуги</b>
-                </TableCell>
-                <TableCell width={120}>
-                  <b>Количество</b>
-                </TableCell>
-                <TableCell width={150}>
-                  <b>Цена за ед.</b>
-                </TableCell>
-                <TableCell width={150}>
-                  <b>Сумма</b>
-                </TableCell>
-                {editing && <TableCell width={56} />}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {draft.rows.map((row, idx) => (
-                <TableRow key={row.id} hover>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {idx + 1}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {editing ? (
-                      <TextField
-                        size="small"
-                        fullWidth
-                        placeholder="Введите описание..."
-                        value={row.description}
-                        onChange={(e) =>
-                          updateRow(row.id, "description", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <Typography variant="body2">
-                        {row.description || "—"}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editing ? (
-                      <TextField
-                        size="small"
-                        fullWidth
-                        type="number"
-                        inputProps={{ min: 0, style: { textAlign: "right" } }}
-                        placeholder="0"
-                        value={row.qty}
-                        onChange={(e) =>
-                          updateRow(row.id, "qty", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <Typography variant="body2">{row.qty || "—"}</Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editing ? (
-                      <TextField
-                        size="small"
-                        fullWidth
-                        type="number"
-                        inputProps={{ min: 0, style: { textAlign: "right" } }}
-                        placeholder="0"
-                        value={row.price}
-                        onChange={(e) =>
-                          updateRow(row.id, "price", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <Typography variant="body2">
-                        {row.price ? formatNumber(parseFloat(row.price)) : "—"}
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={500}>
-                      {calcRowSum(row) > 0
-                        ? formatNumber(calcRowSum(row))
-                        : "—"}
-                    </Typography>
-                  </TableCell>
+        {isMobile ? (
+          <Box px={2} py={1.5} display="flex" flexDirection="column" gap={1.5}>
+            {draft.rows.length === 0 && (
+              <Typography variant="body2" color="text.disabled" textAlign="center" py={3}>
+                Нет строк спецификации
+              </Typography>
+            )}
+            {draft.rows.map((row, idx) => (
+              <Paper
+                key={row.id}
+                variant="outlined"
+                sx={{ p: 1.5, borderRadius: 2 }}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                  <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                    № {idx + 1}
+                  </Typography>
                   {editing && (
-                    <TableCell>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => removeRow(row.id)}
-                        title="Удалить строку"
-                        sx={{ border: "1px solid", borderColor: "error.light" }}
-                      >
-                        <RemoveIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => removeRow(row.id)}
+                      sx={{ border: "1px solid", borderColor: "error.light", borderRadius: 1.5 }}
+                    >
+                      <RemoveIcon fontSize="small" />
+                    </IconButton>
                   )}
-                </TableRow>
-              ))}
+                </Box>
 
-              {draft.rows.length === 0 && (
+                {editing ? (
+                  <TextField
+                    size="small"
+                    fullWidth
+                    placeholder="Введите описание..."
+                    value={row.description}
+                    onChange={(e) => updateRow(row.id, "description", e.target.value)}
+                    sx={{ mb: 1.5 }}
+                  />
+                ) : (
+                  <Typography variant="body2" fontWeight={500} mb={1.5}>
+                    {row.description || "—"}
+                  </Typography>
+                )}
+
+                <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1}>
+                  {editing ? (
+                    <>
+                      <TextField
+                        size="small"
+                        fullWidth
+                        type="number"
+                        label="Кол-во"
+                        slotProps={{ htmlInput: { min: 0 } }}
+                        value={row.qty}
+                        onChange={(e) => updateRow(row.id, "qty", e.target.value)}
+                      />
+                      <TextField
+                        size="small"
+                        fullWidth
+                        type="number"
+                        label="Цена за ед."
+                        slotProps={{ htmlInput: { min: 0 } }}
+                        value={row.price}
+                        onChange={(e) => updateRow(row.id, "price", e.target.value)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">Кол-во</Typography>
+                        <Typography variant="body2">{row.qty || "—"}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">Цена за ед.</Typography>
+                        <Typography variant="body2">
+                          {row.price ? formatNumber(parseFloat(row.price)) : "—"}
+                        </Typography>
+                      </Box>
+                    </>
+                  )}
+                </Box>
+
+                <Box
+                  display="flex"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  mt={1.5}
+                  pt={1.5}
+                  borderTop="1px solid"
+                  sx={{ borderColor: "divider" }}
+                >
+                  <Typography variant="caption" color="text.secondary" mr={1}>Сумма:</Typography>
+                  <Typography variant="body2" fontWeight={700} color={calcRowSum(row) > 0 ? "text.primary" : "text.disabled"}>
+                    {calcRowSum(row) > 0 ? formatNumber(calcRowSum(row)) : "—"}
+                  </Typography>
+                </Box>
+              </Paper>
+            ))}
+          </Box>
+        ) : (
+          <TableContainer>
+            <Table size="small" sx={{ minWidth: 640 }}>
+              <TableHead sx={{ backgroundColor: "action.hover" }}>
                 <TableRow>
-                  <TableCell
-                    colSpan={editing ? 6 : 5}
-                    align="center"
-                    sx={{ py: 4 }}
-                  >
-                    <Typography variant="body2" color="text.disabled">
-                      Нет строк спецификации
-                    </Typography>
-                  </TableCell>
+                  <TableCell width={48}><b>№</b></TableCell>
+                  <TableCell><b>Описание товара / услуги</b></TableCell>
+                  <TableCell width={120}><b>Количество</b></TableCell>
+                  <TableCell width={150}><b>Цена за ед.</b></TableCell>
+                  <TableCell width={150}><b>Сумма</b></TableCell>
+                  {editing && <TableCell width={56} />}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {draft.rows.map((row, idx) => (
+                  <TableRow key={row.id} hover>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">{idx + 1}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      {editing ? (
+                        <TextField size="small" fullWidth placeholder="Введите описание..."
+                          value={row.description} onChange={(e) => updateRow(row.id, "description", e.target.value)} />
+                      ) : (
+                        <Typography variant="body2">{row.description || "—"}</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editing ? (
+                        <TextField size="small" fullWidth type="number"
+                          slotProps={{ htmlInput: { min: 0, style: { textAlign: "right" } } }}
+                          placeholder="0" value={row.qty} onChange={(e) => updateRow(row.id, "qty", e.target.value)} />
+                      ) : (
+                        <Typography variant="body2">{row.qty || "—"}</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editing ? (
+                        <TextField size="small" fullWidth type="number"
+                          slotProps={{ htmlInput: { min: 0, style: { textAlign: "right" } } }}
+                          placeholder="0" value={row.price} onChange={(e) => updateRow(row.id, "price", e.target.value)} />
+                      ) : (
+                        <Typography variant="body2">
+                          {row.price ? formatNumber(parseFloat(row.price)) : "—"}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={500}>
+                        {calcRowSum(row) > 0 ? formatNumber(calcRowSum(row)) : "—"}
+                      </Typography>
+                    </TableCell>
+                    {editing && (
+                      <TableCell>
+                        <IconButton size="small" color="error" onClick={() => removeRow(row.id)}
+                          title="Удалить строку" sx={{ border: "1px solid", borderColor: "error.light" }}>
+                          <RemoveIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+                {draft.rows.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={editing ? 6 : 5} align="center" sx={{ py: 4 }}>
+                      <Typography variant="body2" color="text.disabled">Нет строк спецификации</Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         <Box
           px={2.5}

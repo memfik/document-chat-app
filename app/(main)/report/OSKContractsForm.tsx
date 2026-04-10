@@ -42,7 +42,7 @@ export default function OSKContractsForm({
         flexDirection="column"
         gap={2}
       >
-        <Box display="grid" gridTemplateColumns="1fr 1fr" gap={1.5}>
+        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={1.5}>
           <TextField
             select
             size="small"
@@ -73,7 +73,7 @@ export default function OSKContractsForm({
           type="submit"
           variant="contained"
           sx={{
-            alignSelf: "flex-start",
+            alignSelf: { xs: "stretch", sm: "flex-start" },
             textTransform: "none",
             borderRadius: 2,
           }}

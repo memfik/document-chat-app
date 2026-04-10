@@ -16,6 +16,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   Box,
   Button,
+  Drawer,
   IconButton,
   List,
   ListItemButton,
@@ -30,6 +31,8 @@ import {
   DialogActions,
   Typography,
   Divider,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 
 const EXPANDED = 220;
@@ -71,12 +74,20 @@ const docItems = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+  mobileOpen = false,
+  onMobileClose,
+}: {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}) {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const [importOpen, setImportOpen] = useState(false);
   const [docsAnchor, setDocsAnchor] = useState<null | HTMLElement>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -119,6 +130,229 @@ export function Sidebar() {
     </Tooltip>
   );
 
+  const handleNavClick = (href: string) => {
+    router.push(href);
+    onMobileClose?.();
+  };
+  const navList = (forceExpanded = false) => {
+    const expanded = forceExpanded || open;
+    return (
+      <List dense disablePadding sx={{ flex: 1, px: 0.75, py: 1 }}>
+        {navItems.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <Tooltip
+              key={item.href}
+              title={expanded ? "" : item.label}
+              placement="right"
+              arrow
+            >
+              <ListItemButton
+                selected={active}
+                onClick={() => handleNavClick(item.href)}
+                sx={{
+                  borderRadius: 1.5,
+                  mb: 0.25,
+                  px: expanded ? 1.5 : 1,
+                  justifyContent: expanded ? "flex-start" : "center",
+                  "&.Mui-selected": {
+                    bgcolor: "primary.main",
+                    color: "#fff",
+                    "&:hover": { bgcolor: "primary.dark" },
+                    "& .MuiListItemIcon-root": { color: "#fff" },
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: expanded ? 32 : "auto",
+                    color: active ? "#fff" : "text.secondary",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {expanded && (
+                  <ListItemText
+                    primary={item.label}
+                    slotProps={{
+                      primary: {
+                        variant: "body2",
+                        fontWeight: active ? 600 : 400,
+                      },
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </Tooltip>
+          );
+        })}
+      </List>
+    );
+  };
+  const actionButtons = (forceExpanded = false) => {
+    const expanded = forceExpanded || open;
+    return (
+      <Box sx={{ px: 0.75, pt: 1, pb: 0.5 }}>
+        {actionBtn(
+          "Новая Ф16",
+          <AddIcon fontSize="small" />,
+          () => {
+            router.push("/applications/new");
+            onMobileClose?.();
+          },
+          "#f96800",
+          isActive("/applications/new"),
+        )}
+        {actionBtn("Импорт", <FileUploadIcon fontSize="small" />, () =>
+          setImportOpen(true),
+        )}
+        <Tooltip title={expanded ? "" : "Инструкции"} placement="right" arrow>
+          <Button
+            fullWidth
+            startIcon={<MenuBookIcon fontSize="small" />}
+            endIcon={
+              expanded ? (
+                <KeyboardArrowDownIcon
+                  fontSize="small"
+                  sx={{
+                    transform: docsAnchor ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s",
+                    ml: "auto",
+                  }}
+                />
+              ) : null
+            }
+            onClick={(e) => setDocsAnchor(e.currentTarget)}
+            size="small"
+            sx={{
+              justifyContent: expanded ? "flex-start" : "center",
+              minWidth: 0,
+              px: expanded ? 1.5 : 1,
+              py: 0.75,
+              borderRadius: 1.5,
+              textTransform: "none",
+              color: "text.secondary",
+              "&:hover": { bgcolor: "action.hover" },
+              "& .MuiButton-startIcon": { mx: expanded ? undefined : 0 },
+              "& .MuiButton-endIcon": { ml: "auto" },
+            }}
+          >
+            {expanded ? "Инструкции" : null}
+          </Button>
+        </Tooltip>
+        <Menu
+          anchorEl={docsAnchor}
+          open={Boolean(docsAnchor)}
+          onClose={() => setDocsAnchor(null)}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+        >
+          {docItems.map((item) => (
+            <MenuItem
+              key={item.href}
+              onClick={() => {
+                window.open(item.href, "_blank");
+                setDocsAnchor(null);
+              }}
+            >
+              {item.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+    );
+  };
+
+  const importDialog = (
+    <Dialog
+      open={importOpen}
+      onClose={() => setImportOpen(false)}
+      maxWidth="xs"
+      fullWidth
+    >
+      <DialogTitle>Импорт файлов</DialogTitle>
+      <DialogContent>
+        <Box
+          component="label"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "2px dashed",
+            borderColor: "divider",
+            borderRadius: 2,
+            height: 128,
+            cursor: "pointer",
+            transition: "border-color 0.2s",
+            "&:hover": { borderColor: "primary.main" },
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Нажмите или перетащите файл
+          </Typography>
+          <input type="file" hidden multiple />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => setImportOpen(false)}
+          color="inherit"
+          sx={{ textTransform: "none" }}
+        >
+          Отмена
+        </Button>
+        <Button
+          variant="contained"
+          disableElevation
+          sx={{ textTransform: "none" }}
+        >
+          Загрузить
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  if (isMobile) {
+    return (
+      <>
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={onMobileClose}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            "& .MuiDrawer-paper": {
+              width: "100%",
+              boxSizing: "border-box",
+              display: "flex",
+              flexDirection: "column",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              px: 0.5,
+              py: 0.75,
+              borderBottom: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <IconButton size="small" onClick={onMobileClose}>
+              <ChevronLeftIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          {actionButtons(true)}
+          <Divider />
+          {navList(true)}
+        </Drawer>
+        {importDialog}
+      </>
+    );
+  }
+
   return (
     <>
       <Box
@@ -153,168 +387,11 @@ export function Sidebar() {
             )}
           </IconButton>
         </Box>
-        <Box sx={{ px: 0.75, pt: 1, pb: 0.5 }}>
-          {actionBtn(
-            "Новая Ф16",
-            <AddIcon fontSize="small" />,
-            () => router.push("/applications/new"),
-            "#f96800",
-            isActive("/applications/new"),
-          )}
-          {actionBtn("Импорт", <FileUploadIcon fontSize="small" />, () =>
-            setImportOpen(true),
-          )}
-          <Tooltip title={open ? "" : "Инструкции"} placement="right" arrow>
-            <Button
-              fullWidth
-              startIcon={<MenuBookIcon fontSize="small" />}
-              endIcon={
-                open ? (
-                  <KeyboardArrowDownIcon
-                    fontSize="small"
-                    sx={{
-                      transform: docsAnchor ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.2s",
-                      ml: "auto",
-                    }}
-                  />
-                ) : null
-              }
-              onClick={(e) => setDocsAnchor(e.currentTarget)}
-              size="small"
-              sx={{
-                justifyContent: open ? "flex-start" : "center",
-                minWidth: 0,
-                px: open ? 1.5 : 1,
-                py: 0.75,
-                borderRadius: 1.5,
-                textTransform: "none",
-                color: "text.secondary",
-                "&:hover": { bgcolor: "action.hover" },
-                "& .MuiButton-startIcon": { mx: open ? undefined : 0 },
-                "& .MuiButton-endIcon": { ml: "auto" },
-              }}
-            >
-              {open ? "Инструкции" : null}
-            </Button>
-          </Tooltip>
-          <Menu
-            anchorEl={docsAnchor}
-            open={Boolean(docsAnchor)}
-            onClose={() => setDocsAnchor(null)}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "left" }}
-          >
-            {docItems.map((item) => (
-              <MenuItem
-                key={item.href}
-                onClick={() => {
-                  window.open(item.href, "_blank");
-                  setDocsAnchor(null);
-                }}
-              >
-                {item.label}
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
+        {actionButtons()}
         <Divider />
-        <List dense disablePadding sx={{ flex: 1, px: 0.75, py: 1 }}>
-          {navItems.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <Tooltip
-                key={item.href}
-                title={open ? "" : item.label}
-                placement="right"
-                arrow
-              >
-                <ListItemButton
-                  selected={active}
-                  onClick={() => router.push(item.href)}
-                  sx={{
-                    borderRadius: 1.5,
-                    mb: 0.25,
-                    px: open ? 1.5 : 1,
-                    justifyContent: open ? "flex-start" : "center",
-                    "&.Mui-selected": {
-                      bgcolor: "primary.main",
-                      color: "#fff",
-                      "&:hover": { bgcolor: "primary.dark" },
-                      "& .MuiListItemIcon-root": { color: "#fff" },
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: open ? 32 : "auto",
-                      color: active ? "#fff" : "text.secondary",
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  {open && (
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        fontWeight: active ? 600 : 400,
-                      }}
-                    />
-                  )}
-                </ListItemButton>
-              </Tooltip>
-            );
-          })}
-        </List>
+        {navList()}
       </Box>
-      <Dialog
-        open={importOpen}
-        onClose={() => setImportOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Импорт файлов</DialogTitle>
-        <DialogContent>
-          <Box
-            component="label"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "2px dashed",
-              borderColor: "divider",
-              borderRadius: 2,
-              height: 128,
-              cursor: "pointer",
-              transition: "border-color 0.2s",
-              "&:hover": { borderColor: "primary.main" },
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Нажмите или перетащите файл
-            </Typography>
-            <input type="file" hidden multiple />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setImportOpen(false)}
-            color="inherit"
-            sx={{ textTransform: "none" }}
-          >
-            Отмена
-          </Button>
-          <Button
-            variant="contained"
-            disableElevation
-            sx={{ textTransform: "none" }}
-          >
-            Загрузить
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {importDialog}
     </>
   );
 }

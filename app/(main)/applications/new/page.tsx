@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -279,7 +281,7 @@ function PositionRow({
         </Box>
       </Box>
 
-      <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1.5}>
+      <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }} gap={1.5}>
         <TextField
           select
           size="small"
@@ -306,7 +308,7 @@ function PositionRow({
           onChange={set("product")}
           error={err("product")}
           helperText={err("product") ? "Обязательное поле" : ""}
-          sx={{ gridColumn: "span 2" }}
+          sx={{ gridColumn: { xs: "span 1", sm: "span 2" } }}
         />
 
         <TextField
@@ -549,6 +551,9 @@ export default function NewF16Page() {
     router.push("/applications");
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const orangeBtn = {
     bgcolor: "#f96800",
     borderRadius: 2,
@@ -557,25 +562,36 @@ export default function NewF16Page() {
   } as const;
 
   return (
-    <div className="py-6 px-6 max-w-7xl mx-auto">
+    <Box py={{ xs: 3, md: 6 }} px={{ xs: 1.5, md: 6 }} maxWidth="1280px" mx="auto">
       <Typography variant="h6" fontWeight={600} color="text.primary" mb={3}>
         Новая заявка Ф16
       </Typography>
 
       <Paper elevation={2} sx={{ mb: 3 }}>
-        <Box px={3} py={2.5}>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {STEPS.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+        <Box px={{ xs: 1.5, md: 3 }} py={2}>
+          {isMobile ? (
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Typography variant="body2" color="text.secondary">
+                Шаг {activeStep + 1} из {STEPS.length}
+              </Typography>
+              <Typography variant="body2" fontWeight={600}>
+                {STEPS[activeStep]}
+              </Typography>
+            </Box>
+          ) : (
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {STEPS.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          )}
         </Box>
       </Paper>
 
       <Paper elevation={2}>
-        <Box p={3}>
+        <Box p={{ xs: 2, md: 3 }}>
           {activeStep === 0 && (
             <Box display="flex" flexDirection="column" gap={3}>
               <Box>
@@ -603,7 +619,7 @@ export default function NewF16Page() {
                 </Typography>
                 <Box
                   display="grid"
-                  gridTemplateColumns="repeat(3, 1fr)"
+                  gridTemplateColumns={{ xs: "1fr", md: "repeat(3, 1fr)" }}
                   gap={2}
                 >
                   <TextField
@@ -668,7 +684,7 @@ export default function NewF16Page() {
                 startIcon={<AddIcon />}
                 onClick={addPosition}
                 sx={{
-                  alignSelf: "flex-start",
+                  alignSelf: { xs: "stretch", sm: "flex-start" },
                   textTransform: "none",
                   borderStyle: "dashed",
                   borderColor: "grey.300",
@@ -688,11 +704,11 @@ export default function NewF16Page() {
                 <Box display="flex" alignItems="center" gap={4}>
                   <Typography variant="body2" color="text.secondary">
                     Позиций:{" "}
-                    <b style={{ color: "#374151" }}>{positions.length}</b>
+                    <b>{positions.length}</b>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     ИТОГО с НДС:{" "}
-                    <b style={{ color: "#111827", fontSize: 15 }}>
+                    <b style={{ fontSize: 15 }}>
                       {fmt(totalWithVat)} KZT
                     </b>
                   </Typography>
@@ -705,7 +721,7 @@ export default function NewF16Page() {
               <Typography variant="subtitle2" color="text.primary" mb={2}>
                 Согласование
               </Typography>
-              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mb={3}>
+              <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} gap={2} mb={3}>
                 <Box display="flex" flexDirection="column" gap={2}>
                   <Box>
                     <Typography
@@ -844,7 +860,7 @@ export default function NewF16Page() {
               <Typography variant="subtitle2" color="text.primary" mb={2}>
                 Вложения
               </Typography>
-              <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2}>
+              <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={2}>
                 <FileInput
                   label="Техническая спецификация"
                   file={attachments.spec}
@@ -919,6 +935,6 @@ export default function NewF16Page() {
           Форма отправлена успешно!
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 }

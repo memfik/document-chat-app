@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -14,6 +16,8 @@ import {
   TableRow,
   CircularProgress,
   IconButton,
+  Box,
+  Typography,
   TextField,
   InputAdornment,
   Button,
@@ -138,6 +142,8 @@ export default function AccompanimentPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 400);
@@ -217,77 +223,90 @@ export default function AccompanimentPage() {
         </Button>
       </div>
 
-      <Paper>
-      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <b>№ заявки</b>
-              </TableCell>
-              <TableCell>
-                <b>Инициатор</b>
-              </TableCell>
-              <TableCell>
-                <b>Деп. иниц.</b>
-              </TableCell>
-              <TableCell>
-                <b>Поставщик</b>
-              </TableCell>
-              <TableCell>
-                <b>№ договора</b>
-              </TableCell>
-              <TableCell>
-                <b>Дата поставки</b>
-              </TableCell>
-              <TableCell>
-                <b>Стоимость</b>
-              </TableCell>
-              <TableCell>
-                <b>Дата оплаты</b>
-              </TableCell>
-              <TableCell>
-                <b>Исполнитель</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      {isMobile ? (
+        <>
+          <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
             {mockData
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <TableRow key={row.id} hover>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.initiator}</TableCell>
-                  <TableCell>{row.dept}</TableCell>
-                  <TableCell>{row.supplier}</TableCell>
-                  <TableCell>{row.contractNum}</TableCell>
-                  <TableCell>{row.deliveryDate}</TableCell>
-                  <TableCell>{row.cost}</TableCell>
-                  <TableCell>{row.paymentDate}</TableCell>
-                  <TableCell>{row.executor}</TableCell>
-                </TableRow>
+                <Paper key={row.id} elevation={1} sx={{ p: 2, borderRadius: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                    <Typography variant="subtitle2" fontWeight={600}>{row.id}</Typography>
+                    <Typography variant="caption" color="text.secondary">{row.contractNum}</Typography>
+                  </Box>
+                  <Typography variant="body2" mb={0.5}>{row.supplier}</Typography>
+                  <Typography variant="caption" color="text.secondary">{row.initiator} · {row.dept}</Typography>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1.5}>
+                    <Typography variant="body2" fontWeight={600}>{row.cost} KZT</Typography>
+                    <Typography variant="caption" color="text.secondary">Поставка: {row.deliveryDate}</Typography>
+                  </Box>
+                </Paper>
               ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-          component="div"
-          count={mockData.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[25, 50, 75, 100]}
-          labelRowsPerPage="Строк на странице:"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${from}–${to} из ${count}`
-          }
-          sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
-        />
-      </Paper>
+          </Box>
+          <Paper>
+            <TablePagination
+              component="div"
+              count={mockData.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+              rowsPerPageOptions={[25, 50, 75, 100]}
+              labelRowsPerPage="Строк:"
+              labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+            />
+          </Paper>
+        </>
+      ) : (
+        <Paper>
+          <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell><b>№ заявки</b></TableCell>
+                  <TableCell><b>Инициатор</b></TableCell>
+                  <TableCell><b>Деп. иниц.</b></TableCell>
+                  <TableCell><b>Поставщик</b></TableCell>
+                  <TableCell><b>№ договора</b></TableCell>
+                  <TableCell><b>Дата поставки</b></TableCell>
+                  <TableCell><b>Стоимость</b></TableCell>
+                  <TableCell><b>Дата оплаты</b></TableCell>
+                  <TableCell><b>Исполнитель</b></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {mockData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
+                    <TableRow key={row.id} hover>
+                      <TableCell>{row.id}</TableCell>
+                      <TableCell>{row.initiator}</TableCell>
+                      <TableCell>{row.dept}</TableCell>
+                      <TableCell>{row.supplier}</TableCell>
+                      <TableCell>{row.contractNum}</TableCell>
+                      <TableCell>{row.deliveryDate}</TableCell>
+                      <TableCell>{row.cost}</TableCell>
+                      <TableCell>{row.paymentDate}</TableCell>
+                      <TableCell>{row.executor}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={mockData.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+            rowsPerPageOptions={[25, 50, 75, 100]}
+            labelRowsPerPage="Строк на странице:"
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+            sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
+          />
+        </Paper>
+      )}
     </div>
   );
 }

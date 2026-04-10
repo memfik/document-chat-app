@@ -8,6 +8,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Toolbar,
@@ -30,7 +31,7 @@ const notifications = [
   { id: 4, text: "Срок по заявке №1010 истекает", time: "вчера" },
 ];
 
-export function Navigation() {
+export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
   const router = useRouter();
   const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
   const [userAnchorEl, setUserAnchorEl] = useState<null | HTMLElement>(null);
@@ -44,11 +45,20 @@ export function Navigation() {
       sx={{ bgcolor: "background.paper" }}
     >
       <Toolbar sx={{ justifyContent: "space-between", px: 2, minHeight: 56 }}>
-        <img
-          src="/logo-jusanmobile.png"
-          alt="Logo"
-          className="object-contain h-12 ml-3"
-        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <IconButton
+            onClick={onMenuClick}
+            sx={{ display: { xs: "flex", md: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <img
+            src="/logo-jusanmobile.png"
+            alt="Logo"
+            className="object-contain -ml-2 md:ml-3"
+            style={{ height: "clamp(32px, 6vw, 48px)" }}
+          />
+        </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
           <IconButton onClick={(e) => setNotifAnchorEl(e.currentTarget)}>
             <Badge badgeContent={notifications.length} color="error">
@@ -107,11 +117,14 @@ export function Navigation() {
               "&:hover": { bgcolor: "action.hover" },
             }}
           >
-            <AccountCircleIcon color="action" fontSize="small" />
+            <AccountCircleIcon color="action" fontSize="medium" />
             <Typography
               variant="body2"
               fontWeight={500}
-              sx={{ color: "text.primary" }}
+              sx={{
+                color: "text.primary",
+                display: { xs: "none", md: "block" },
+              }}
             >
               Югай Виталий
             </Typography>
@@ -119,6 +132,7 @@ export function Navigation() {
               fontSize="small"
               color="action"
               sx={{
+                display: { xs: "none", md: "block" },
                 transform: userAnchorEl ? "rotate(180deg)" : "rotate(0deg)",
                 transition: "transform 0.2s",
               }}

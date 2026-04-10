@@ -4,6 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import {
+  Box,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,64 +26,123 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-100">
-      <div className="bg-white rounded-2xl shadow-md p-10 w-full max-w-md flex flex-col items-center gap-6">
-        <div className="flex flex-col items-center gap-2">
+    <Box
+      minHeight="100vh"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      sx={{ bgcolor: "#fff3e8", px: { xs: 0, sm: 2 } }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          width: "100%",
+          maxWidth: { xs: "100%", sm: 440 },
+          minHeight: { xs: "100vh", sm: "auto" },
+          px: { xs: 3, sm: 5 },
+          py: { xs: 6, sm: 5 },
+          borderRadius: { xs: 0, sm: 3 },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: { xs: "center", sm: "flex-start" },
+          gap: 3,
+        }}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
           <img
             src="/logo-jusanmobile.png"
             alt="Logo"
-            className="object-contain h-16"
+            style={{ height: 64, objectFit: "contain" }}
           />
-          <span className="text-md font-bold text-gray-800 text-center leading-tight">
+          <Typography
+            variant="subtitle1"
+            fontWeight={700}
+            textAlign="center"
+            color="text.primary"
+          >
             Служба сопровождения контрактов
-          </span>
-        </div>
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-gray-700">Почта</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@jusanmobile.kz"
-              required
-              className="px-4 py-2.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-            />
-          </div>
+          </Typography>
+        </Box>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-gray-700">Пароль</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-2.5 pr-10 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#f96800] transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? (
-                  <VisibilityOffIcon fontSize="small" />
-                ) : (
-                  <VisibilityIcon fontSize="small" />
-                )}
-              </button>
-            </div>
-          </div>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          width="100%"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+        >
+          <TextField
+            label="Почта"
+            type="email"
+            size="small"
+            fullWidth
+            required
+            placeholder="example@jusanmobile.kz"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                { borderColor: "#f96800" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "#f96800" },
+            }}
+          />
 
-          <button
+          <TextField
+            label="Пароль"
+            type={showPassword ? "text" : "password"}
+            size="small"
+            fullWidth
+            required
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                { borderColor: "#f96800" },
+              "& .MuiInputLabel-root.Mui-focused": { color: "#f96800" },
+            }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowPassword((v) => !v)}
+                      edge="end"
+                    >
+                      {showPassword ? (
+                        <VisibilityOffIcon fontSize="small" />
+                      ) : (
+                        <VisibilityIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
+          <Button
             type="submit"
-            className="mt-2 w-full py-2.5 bg-black text-white text-sm font-semibold rounded-lg"
+            variant="contained"
+            fullWidth
+            size="large"
+            sx={{
+              mt: 1,
+              bgcolor: "#f96800",
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: 15,
+              "&:hover": { bgcolor: "#e05a00" },
+            }}
           >
             Войти
-          </button>
-        </form>
-      </div>
-    </div>
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
