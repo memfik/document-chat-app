@@ -31,7 +31,15 @@ export default function LoginPage() {
       display="flex"
       alignItems="center"
       justifyContent="center"
-      sx={{ bgcolor: "#fff3e8", px: { xs: 0, sm: 2 } }}
+      sx={{
+        px: { xs: 0, sm: 2 },
+        backgroundColor: "#0f172a",
+        backgroundImage: `
+    radial-gradient(circle at 20% 30%, rgba(99,102,241,0.15), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(236,72,153,0.15), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04), transparent 60%)
+  `,
+      }}
     >
       <Paper
         elevation={3}
