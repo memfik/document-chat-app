@@ -11,12 +11,12 @@ import {
   useTheme,
 } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
-import ChronologyForm from "./ChronologyForm";
-import F16ApprovalForm from "./F16ApprovalForm";
-import OSKContractsForm from "./OSKContractsForm";
-import ISSKForm from "./ISSKForm";
-import BudgetExecutionForm from "./BudgetExecutionForm";
-import BudgetNonExecutionForm from "./BudgetNonExecutionForm";
+import ChronologyForm from "./forms/ChronologyForm";
+import F16ApprovalForm from "./forms/F16ApprovalForm";
+import OSKContractsForm from "./forms/OSKContractsForm";
+import ISSKForm from "./forms/ISSKForm";
+import BudgetExecutionForm from "./forms/BudgetExecutionForm";
+import BudgetNonExecutionForm from "./forms/BudgetNonExecutionForm";
 
 let role = "user";
 

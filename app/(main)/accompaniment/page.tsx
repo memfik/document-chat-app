@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
+import { SearchBar } from "@/app/components/SearchBar";
+import { ACC_DATA } from "./data/accompaniment";
 import {
   Paper,
   Table,
@@ -15,126 +15,10 @@ import {
   TablePagination,
   TableRow,
   CircularProgress,
-  IconButton,
   Box,
   Typography,
-  TextField,
-  InputAdornment,
-  Button,
 } from "@mui/material";
 
-const mockData = [
-  {
-    id: "ЗАЯ-2025-001",
-    initiator: "Петров А.В.",
-    dept: "Отдел снабжения",
-    supplier: "ТОО «ТехСнаб»",
-    contractNum: "ДГ-2025-014",
-    deliveryDate: "25.01.2025",
-    cost: "450 000",
-    paymentDate: "30.01.2025",
-    executor: "Иванов С.К.",
-  },
-  {
-    id: "ЗАЯ-2025-002",
-    initiator: "Смирнова О.Н.",
-    dept: "IT-департамент",
-    supplier: "ИП Козлов Р.Д.",
-    contractNum: "ДГ-2025-021",
-    deliveryDate: "01.02.2025",
-    cost: "120 000",
-    paymentDate: "05.02.2025",
-    executor: "Козлов Р.Д.",
-  },
-  {
-    id: "ЗАЯ-2025-003",
-    initiator: "Жуков Е.П.",
-    dept: "АХО",
-    supplier: "АО «СтройГрупп»",
-    contractNum: "ДГ-2025-033",
-    deliveryDate: "10.02.2025",
-    cost: "1 800 000",
-    paymentDate: "15.02.2025",
-    executor: "Титов М.А.",
-  },
-  {
-    id: "ЗАЯ-2025-004",
-    initiator: "Белова К.С.",
-    dept: "Бухгалтерия",
-    supplier: "ТОО «КанцОптТорг»",
-    contractNum: "ДГ-2025-041",
-    deliveryDate: "14.02.2025",
-    cost: "35 000",
-    paymentDate: "18.02.2025",
-    executor: "Морозов Д.В.",
-  },
-  {
-    id: "ЗАЯ-2025-005",
-    initiator: "Новиков Г.Р.",
-    dept: "Безопасность",
-    supplier: "SecureIT Ltd.",
-    contractNum: "ДГ-2025-047",
-    deliveryDate: "20.02.2025",
-    cost: "680 000",
-    paymentDate: "25.02.2025",
-    executor: "Фёдоров А.Л.",
-  },
-  {
-    id: "ЗАЯ-2025-006",
-    initiator: "Лебедева Т.И.",
-    dept: "Транспортный отдел",
-    supplier: "АО «АвтоПарк»",
-    contractNum: "ДГ-2025-055",
-    deliveryDate: "01.03.2025",
-    cost: "980 000",
-    paymentDate: "05.03.2025",
-    executor: "Орлов В.Н.",
-  },
-  {
-    id: "ЗАЯ-2025-007",
-    initiator: "Кузнецов И.В.",
-    dept: "IT-департамент",
-    supplier: "ServerPro GmbH",
-    contractNum: "ДГ-2025-063",
-    deliveryDate: "10.03.2025",
-    cost: "2 150 000",
-    paymentDate: "15.03.2025",
-    executor: "Попов С.Е.",
-  },
-  {
-    id: "ЗАЯ-2025-008",
-    initiator: "Соколова М.Д.",
-    dept: "Юридический отдел",
-    supplier: "ТОО «ЮрКонсалт»",
-    contractNum: "ДГ-2025-062",
-    deliveryDate: "12.03.2025",
-    cost: "300 000",
-    paymentDate: "17.03.2025",
-    executor: "Васильев Н.О.",
-  },
-  {
-    id: "ЗАЯ-2025-009",
-    initiator: "Григорьев П.А.",
-    dept: "Строительный отдел",
-    supplier: "АО «МонтажКомплекс»",
-    contractNum: "ДГ-2025-071",
-    deliveryDate: "20.03.2025",
-    cost: "2 450 000",
-    paymentDate: "25.03.2025",
-    executor: "Яковлев Б.С.",
-  },
-  {
-    id: "ЗАЯ-2025-010",
-    initiator: "Захарова Л.Н.",
-    dept: "Отдел кадров",
-    supplier: "ТОО «СпецОдежда KZ»",
-    contractNum: "ДГ-2025-079",
-    deliveryDate: "28.03.2025",
-    cost: "210 000",
-    paymentDate: "02.04.2025",
-    executor: "Степанов К.Р.",
-  },
-];
 
 export default function AccompanimentPage() {
   const [loading, setLoading] = useState(true);
@@ -151,105 +35,48 @@ export default function AccompanimentPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[80vh]">
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="py-5 px-6">
-      <div className="flex items-center gap-3 mb-4">
-        <TextField
-          size="small"
+    <Box sx={{ py: 2.5, px: { xs: 2, sm: 3 } }}>
+      <Box mb={2}>
+        <SearchBar
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Поиск..."
-          sx={{
-            flex: 1,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#f96800",
-              },
-            },
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon
-                    fontSize="small"
-                    sx={{ color: "text.secondary" }}
-                  />
-                </InputAdornment>
-              ),
-              endAdornment: search ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="clear search"
-                    onClick={() => setSearch("")}
-                    edge="end"
-                    size="small"
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : null,
-            },
-          }}
+          onChange={setSearch}
+          currentYearOnly={currentYearOnly}
+          onYearToggle={() => setCurrentYearOnly((v) => !v)}
         />
-        <Button
-          variant={currentYearOnly ? "contained" : "outlined"}
-          onClick={() => setCurrentYearOnly((v) => !v)}
-          size="medium"
-          sx={{
-            textTransform: "none",
-            whiteSpace: "nowrap",
-            borderRadius: 2,
-            ...(currentYearOnly
-              ? {
-                  backgroundColor: "#2db351",
-                  color: "text.primary",
-                  boxShadow: "none",
-                  "&:hover": { backgroundColor: "#208c3d", boxShadow: "none" },
-                }
-              : {
-                  borderColor: "grey.300",
-                  color: "text.secondary",
-                }),
-          }}
-        >
-          Только текущий год
-        </Button>
-      </div>
+      </Box>
 
       {isMobile ? (
         <>
           <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
-            {mockData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <Paper key={row.id} elevation={1} sx={{ p: 2, borderRadius: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
-                    <Typography variant="subtitle2" fontWeight={600}>{row.id}</Typography>
-                    <Typography variant="caption" color="text.secondary">{row.contractNum}</Typography>
-                  </Box>
-                  <Typography variant="body2" mb={0.5}>{row.supplier}</Typography>
-                  <Typography variant="caption" color="text.secondary">{row.initiator} · {row.dept}</Typography>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1.5}>
-                    <Typography variant="body2" fontWeight={600}>{row.cost} KZT</Typography>
-                    <Typography variant="caption" color="text.secondary">Поставка: {row.deliveryDate}</Typography>
-                  </Box>
-                </Paper>
-              ))}
+            {ACC_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+              <Paper key={row.id} elevation={1} sx={{ p: 2, borderRadius: 2 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                  <Typography variant="subtitle2" fontWeight={600}>{row.id}</Typography>
+                  <Typography variant="caption" color="text.secondary">{row.contractNum}</Typography>
+                </Box>
+                <Typography variant="body2" mb={0.5}>{row.supplier}</Typography>
+                <Typography variant="caption" color="text.secondary">{row.initiator} · {row.dept}</Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mt={1.5}>
+                  <Typography variant="body2" fontWeight={600}>{row.cost} KZT</Typography>
+                  <Typography variant="caption" color="text.secondary">Поставка: {row.deliveryDate}</Typography>
+                </Box>
+              </Paper>
+            ))}
           </Box>
           <Paper>
             <TablePagination
               component="div"
-              count={mockData.length}
+              count={ACC_DATA.length}
               page={page}
               rowsPerPage={rowsPerPage}
-              onPageChange={(_, newPage) => setPage(newPage)}
+              onPageChange={(_, p) => setPage(p)}
               onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
               rowsPerPageOptions={[25, 50, 75, 100]}
               labelRowsPerPage="Строк:"
@@ -263,42 +90,34 @@ export default function AccompanimentPage() {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell><b>№ заявки</b></TableCell>
-                  <TableCell><b>Инициатор</b></TableCell>
-                  <TableCell><b>Деп. иниц.</b></TableCell>
-                  <TableCell><b>Поставщик</b></TableCell>
-                  <TableCell><b>№ договора</b></TableCell>
-                  <TableCell><b>Дата поставки</b></TableCell>
-                  <TableCell><b>Стоимость</b></TableCell>
-                  <TableCell><b>Дата оплаты</b></TableCell>
-                  <TableCell><b>Исполнитель</b></TableCell>
+                  {["№ заявки", "Инициатор", "Деп. иниц.", "Поставщик", "№ договора", "Дата поставки", "Стоимость", "Дата оплаты", "Исполнитель"].map((col) => (
+                    <TableCell key={col}><b>{col}</b></TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {mockData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <TableRow key={row.id} hover>
-                      <TableCell>{row.id}</TableCell>
-                      <TableCell>{row.initiator}</TableCell>
-                      <TableCell>{row.dept}</TableCell>
-                      <TableCell>{row.supplier}</TableCell>
-                      <TableCell>{row.contractNum}</TableCell>
-                      <TableCell>{row.deliveryDate}</TableCell>
-                      <TableCell>{row.cost}</TableCell>
-                      <TableCell>{row.paymentDate}</TableCell>
-                      <TableCell>{row.executor}</TableCell>
-                    </TableRow>
-                  ))}
+                {ACC_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  <TableRow key={row.id} hover>
+                    <TableCell>{row.id}</TableCell>
+                    <TableCell>{row.initiator}</TableCell>
+                    <TableCell>{row.dept}</TableCell>
+                    <TableCell>{row.supplier}</TableCell>
+                    <TableCell>{row.contractNum}</TableCell>
+                    <TableCell>{row.deliveryDate}</TableCell>
+                    <TableCell>{row.cost}</TableCell>
+                    <TableCell>{row.paymentDate}</TableCell>
+                    <TableCell>{row.executor}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
             component="div"
-            count={mockData.length}
+            count={ACC_DATA.length}
             page={page}
             rowsPerPage={rowsPerPage}
-            onPageChange={(_, newPage) => setPage(newPage)}
+            onPageChange={(_, p) => setPage(p)}
             onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
             rowsPerPageOptions={[25, 50, 75, 100]}
             labelRowsPerPage="Строк на странице:"
@@ -307,6 +126,6 @@ export default function AccompanimentPage() {
           />
         </Paper>
       )}
-    </div>
+    </Box>
   );
 }

@@ -197,11 +197,11 @@ export function Sidebar({
           "Новая Ф16",
           <AddIcon fontSize="small" />,
           () => {
-            router.push("/applications/new");
+            router.push("/new-application");
             onMobileClose?.();
           },
           "#f96800",
-          isActive("/applications/new"),
+          isActive("/new-application"),
         )}
         {actionBtn("Импорт", <FileUploadIcon fontSize="small" />, () =>
           setImportOpen(true),
