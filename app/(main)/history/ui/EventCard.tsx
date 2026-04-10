@@ -1,0 +1,106 @@
+"use client";
+
+import { alpha } from "@mui/material/styles";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import CommentIcon from "@mui/icons-material/Comment";
+import { Box, Typography, Paper, Chip, LinearProgress } from "@mui/material";
+import { formatDate, type HistoryEvent, type EventType } from "../data/events";
+
+function eventMeta(_type: EventType): { icon: React.ReactNode; color: string } {
+  return { icon: <CommentIcon fontSize="small" />, color: "#6b7280" };
+}
+
+export function EventCard({ ev }: { ev: HistoryEvent }) {
+  const meta = eventMeta(ev.type);
+
+  return (
+    <Box display="flex" gap={1.5}>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            bgcolor: alpha(meta.color, 0.15),
+            color: meta.color,
+          }}
+        >
+          {meta.icon}
+        </Box>
+        <Box sx={{ width: "1px", flex: 1, bgcolor: "divider", mt: 0.5 }} />
+      </Box>
+
+      <Box flex={1} pb={2.5}>
+        <Paper variant="outlined" sx={{ px: 2, py: 1.5, borderRadius: 2 }}>
+          <Box
+            display="flex"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            flexDirection={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            gap={0.25}
+            mb={0.5}
+          >
+            <Typography variant="body2" fontWeight={600}>{ev.user}</Typography>
+            <Typography variant="caption" color="text.disabled">{formatDate(ev.date)}</Typography>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" lineHeight={1.5}>
+            {ev.text}
+          </Typography>
+
+          {ev.status && (
+            <Box display="flex" alignItems="center" gap={1.5} mt={1}>
+              <Chip
+                label={ev.status}
+                size="small"
+                sx={{ bgcolor: ev.statusColor, color: "#fff", fontWeight: 500, fontSize: 11 }}
+              />
+              {ev.progress !== undefined && (
+                <Box display="flex" alignItems="center" gap={1} flex={1}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={ev.progress}
+                    sx={{
+                      flex: 1,
+                      height: 6,
+                      borderRadius: 3,
+                      bgcolor: alpha(ev.statusColor!, 0.15),
+                      "& .MuiLinearProgress-bar": { bgcolor: ev.statusColor, borderRadius: 3 },
+                    }}
+                  />
+                  <Typography variant="caption" color="text.disabled">{ev.progress}%</Typography>
+                </Box>
+              )}
+            </Box>
+          )}
+
+          {ev.files && ev.files.length > 0 && (
+            <Box display="flex" flexWrap="wrap" gap={0.75} mt={1}>
+              {ev.files.map((f) => (
+                <Chip
+                  key={f.name}
+                  icon={<AttachFileIcon sx={{ fontSize: "12px !important" }} />}
+                  label={f.name}
+                  size="small"
+                  component="a"
+                  href={f.url}
+                  onClick={(e) => e.preventDefault()}
+                  clickable
+                  sx={
+                    ev.type === "file_remove"
+                      ? { bgcolor: alpha("#ef4444", 0.1), color: "#ef4444", borderColor: alpha("#ef4444", 0.3), border: "1px solid", textDecoration: "line-through" }
+                      : { bgcolor: alpha("#3b82f6", 0.08), color: "#3b82f6", borderColor: alpha("#3b82f6", 0.3), border: "1px solid" }
+                  }
+                />
+              ))}
+            </Box>
+          )}
+        </Paper>
+      </Box>
+    </Box>
+  );
+}

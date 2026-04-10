@@ -20,23 +20,9 @@ import {
   Divider,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import type { ApplicationRow } from "@/app/types/application";
 
-export interface ApplicationRow {
-  id: string;
-  date: string;
-  initiator: string;
-  type: string;
-  description: string;
-  cost: string;
-  currency: string;
-  contractNum: string;
-  executor: string;
-  status: string;
-  contract: string;
-  updatedAt: string;
-  article: string;
-  znoNum: string;
-}
+export type { ApplicationRow };
 
 interface InfoModalProps {
   row: ApplicationRow;

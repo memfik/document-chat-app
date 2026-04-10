@@ -1,4 +1,4 @@
-import type { StatusFilterOption } from "@/app/components/StatusFilterBar";
+import type { StatusFilterOption } from "@/app/components/ui/StatusFilterBar";
 
 export interface ZnoRow {
   id: string;

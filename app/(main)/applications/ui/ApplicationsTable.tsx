@@ -13,6 +13,8 @@ import {
   TableRow,
   TablePagination,
   Button,
+  Box,
+  Typography,
 } from "@mui/material";
 import type { ApplicationRow, StatusFilter } from "../data/applications";
 import type { RowExtra } from "./EditModal";
@@ -86,7 +88,7 @@ export function ApplicationsTable({
                   key={row.id}
                   hover
                   onClick={() => onRowClick(row)}
-                  className="cursor-pointer"
+                  sx={{ cursor: "pointer" }}
                 >
                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.date}</TableCell>
@@ -99,13 +101,10 @@ export function ApplicationsTable({
                   <TableCell>{row.contractNum}</TableCell>
                   <TableCell>{row.executor}</TableCell>
                   <TableCell>
-                    <span className="flex items-center gap-1.5">
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: status?.color }}
-                      />
+                    <Box display="flex" alignItems="center" gap={0.75}>
+                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, bgcolor: status?.color }} />
                       {status?.label}
-                    </span>
+                    </Box>
                   </TableCell>
                   <TableCell>{row.contract}</TableCell>
                   <TableCell>{row.updatedAt}</TableCell>
@@ -123,12 +122,11 @@ export function ApplicationsTable({
                         Посмотреть
                       </Button>
                     ) : (
-                      <span className="text-xs text-gray-400">—</span>
+                      <Typography variant="caption" color="text.disabled">—</Typography>
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="grid gap-1">
-                      <Button
+                    <Box display="grid" gap={1}>                      <Button
                         size="small"
                         variant="outlined"
                         startIcon={<EditIcon sx={{ fontSize: "0.85rem !important" }} />}
@@ -162,7 +160,7 @@ export function ApplicationsTable({
                       >
                         История
                       </Button>
-                    </div>
+                    </Box>
                   </TableCell>
                 </TableRow>
               );

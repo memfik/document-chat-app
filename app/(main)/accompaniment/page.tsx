@@ -3,22 +3,11 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { SearchBar } from "@/app/components/SearchBar";
+import { SearchBar } from "@/app/components/ui/SearchBar";
 import { ACC_DATA } from "./data/accompaniment";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  CircularProgress,
-  Box,
-  Typography,
-} from "@mui/material";
-
+import { AccompanimentCard } from "./ui/AccompanimentCard";
+import { AccompanimentTable } from "./ui/AccompanimentTable";
+import { CircularProgress, Box, Paper, TablePagination } from "@mui/material";
 
 export default function AccompanimentPage() {
   const [loading, setLoading] = useState(true);
@@ -56,18 +45,7 @@ export default function AccompanimentPage() {
         <>
           <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
             {ACC_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <Paper key={row.id} elevation={1} sx={{ p: 2, borderRadius: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
-                  <Typography variant="subtitle2" fontWeight={600}>{row.id}</Typography>
-                  <Typography variant="caption" color="text.secondary">{row.contractNum}</Typography>
-                </Box>
-                <Typography variant="body2" mb={0.5}>{row.supplier}</Typography>
-                <Typography variant="caption" color="text.secondary">{row.initiator} · {row.dept}</Typography>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mt={1.5}>
-                  <Typography variant="body2" fontWeight={600}>{row.cost} KZT</Typography>
-                  <Typography variant="caption" color="text.secondary">Поставка: {row.deliveryDate}</Typography>
-                </Box>
-              </Paper>
+              <AccompanimentCard key={row.id} row={row} />
             ))}
           </Box>
           <Paper>
@@ -85,46 +63,14 @@ export default function AccompanimentPage() {
           </Paper>
         </>
       ) : (
-        <Paper>
-          <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  {["№ заявки", "Инициатор", "Деп. иниц.", "Поставщик", "№ договора", "Дата поставки", "Стоимость", "Дата оплаты", "Исполнитель"].map((col) => (
-                    <TableCell key={col}><b>{col}</b></TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {ACC_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow key={row.id} hover>
-                    <TableCell>{row.id}</TableCell>
-                    <TableCell>{row.initiator}</TableCell>
-                    <TableCell>{row.dept}</TableCell>
-                    <TableCell>{row.supplier}</TableCell>
-                    <TableCell>{row.contractNum}</TableCell>
-                    <TableCell>{row.deliveryDate}</TableCell>
-                    <TableCell>{row.cost}</TableCell>
-                    <TableCell>{row.paymentDate}</TableCell>
-                    <TableCell>{row.executor}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={ACC_DATA.length}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={(_, p) => setPage(p)}
-            onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-            rowsPerPageOptions={[25, 50, 75, 100]}
-            labelRowsPerPage="Строк на странице:"
-            labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
-            sx={{ position: "sticky", bottom: 0, bgcolor: "background.paper", borderTop: "1px solid", borderColor: "divider" }}
-          />
-        </Paper>
+        <AccompanimentTable
+          rows={ACC_DATA}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          total={ACC_DATA.length}
+          onPageChange={setPage}
+          onRowsPerPageChange={(rpp) => { setRowsPerPage(rpp); setPage(0); }}
+        />
       )}
     </Box>
   );

@@ -1,12 +1,6 @@
-import type { ApplicationRow } from "@/app/components/InfoModal";
+import type { ApplicationRow, StatusFilter } from "@/app/types/application";
 
-export type { ApplicationRow };
-
-export interface StatusFilter {
-  key: string;
-  label: string;
-  color: string;
-}
+export type { ApplicationRow, StatusFilter };
 
 export const STATUS_FILTERS: StatusFilter[] = [
   { key: "all", label: "Все заявки", color: "#6b7280" },

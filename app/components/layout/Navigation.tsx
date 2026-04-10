@@ -52,11 +52,15 @@ export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
           >
             <MenuIcon />
           </IconButton>
-          <img
+          <Box
+            component="img"
             src="/logo-jusanmobile.png"
             alt="Logo"
-            className="object-contain -ml-2 md:ml-3"
-            style={{ height: "clamp(32px, 6vw, 48px)" }}
+            sx={{
+              height: "clamp(32px, 6vw, 48px)",
+              objectFit: "contain",
+              ml: { xs: "-8px", md: "12px" },
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>

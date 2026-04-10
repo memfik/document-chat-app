@@ -1,4 +1,4 @@
-import { ClientShell } from "../components/ClientShell";
+import { ClientShell } from "../components/layout/ClientShell";
 
 export default function MainLayout({
   children,

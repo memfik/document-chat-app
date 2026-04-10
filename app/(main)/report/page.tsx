@@ -11,12 +11,12 @@ import {
   useTheme,
 } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
-import ChronologyForm from "./forms/ChronologyForm";
-import F16ApprovalForm from "./forms/F16ApprovalForm";
-import OSKContractsForm from "./forms/OSKContractsForm";
-import ISSKForm from "./forms/ISSKForm";
-import BudgetExecutionForm from "./forms/BudgetExecutionForm";
-import BudgetNonExecutionForm from "./forms/BudgetNonExecutionForm";
+import ChronologyForm from "./ui/ChronologyForm";
+import F16ApprovalForm from "./ui/F16ApprovalForm";
+import OSKContractsForm from "./ui/OSKContractsForm";
+import ISSKForm from "./ui/ISSKForm";
+import BudgetExecutionForm from "./ui/BudgetExecutionForm";
+import BudgetNonExecutionForm from "./ui/BudgetNonExecutionForm";
 
 let role = "user";
 
@@ -70,12 +70,12 @@ const tabAccessMap: Record<string, string[]> = {
 
 function NoAccess() {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-14 text-red-500">
+    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={1.5} py={14} color="error.main">
       <BlockIcon style={{ fontSize: 56 }} />
-      <p className="text-base font-semibold text-center">
+      <Typography variant="body1" fontWeight={600} textAlign="center">
         У вас нет прав на создание отчета по данному шаблону.
-      </p>
-    </div>
+      </Typography>
+    </Box>
   );
 }
 
