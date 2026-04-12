@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { Loader2 } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { InfoModal } from "@/app/components/ui/InfoModal";
 import { SearchBar } from "@/app/components/ui/SearchBar";
 import { StatusFilterBar } from "@/app/components/ui/StatusFilterBar";
@@ -13,17 +13,11 @@ import { EditModal } from "./ui/EditModal";
 import type { RowExtra } from "./ui/EditModal";
 import { APPLICATIONS, STATUS_FILTERS } from "./data/applications";
 import type { ApplicationRow } from "./data/applications";
-import {
-  Box,
-  CircularProgress,
-  Paper,
-  TablePagination,
-} from "@mui/material";
+import { TablePagination } from "@/app/components/ui/TablePagination";
 
 export default function ApplicationsPage() {
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile(900);
 
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -35,8 +29,11 @@ export default function ApplicationsPage() {
   const [editTarget, setEditTarget] = useState<string | null>(null);
   const [extras, setExtras] = useState<Record<string, RowExtra>>(() =>
     Object.fromEntries(
-      APPLICATIONS.map((r) => [r.id, { znoNum: r.znoNum, paymentFile: null, paymentFileName: "" }])
-    )
+      APPLICATIONS.map((r) => [
+        r.id,
+        { znoNum: r.znoNum, paymentFile: null, paymentFileName: "" },
+      ]),
+    ),
   );
 
   useEffect(() => {
@@ -60,41 +57,44 @@ export default function ApplicationsPage() {
       f.key === "all"
         ? APPLICATIONS.length
         : APPLICATIONS.filter((r) => r.status === f.key).length,
-    ])
+    ]),
   );
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center items-center min-h-[80vh]">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   return (
-    <Box sx={{ py: 2.5, px: { xs: 2, sm: 3 } }}>
-      <Box mb={2}>
+    <div className="py-6 px-4 sm:px-6">
+      <div className="mb-4">
         <SearchBar
           value={search}
           onChange={setSearch}
           currentYearOnly={currentYearOnly}
           onYearToggle={() => setCurrentYearOnly((v) => !v)}
         />
-      </Box>
+      </div>
 
-      <Box mb={2}>
+      <div className="mb-4">
         <StatusFilterBar
           filters={STATUS_FILTERS}
           activeKey={activeStatus}
           onSelect={setActiveStatus}
           counts={statusCounts}
         />
-      </Box>
+      </div>
 
       {isMobile ? (
         <>
-          <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
-            {APPLICATIONS.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+          <div className="flex flex-col gap-3 mb-3">
+            {APPLICATIONS.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage,
+            ).map((row) => (
               <ApplicationCard
                 key={row.id}
                 row={row}
@@ -104,20 +104,23 @@ export default function ApplicationsPage() {
                 onHistory={() => router.push(`/history/${row.id}`)}
               />
             ))}
-          </Box>
-          <Paper>
+          </div>
+          <div className="bg-card border border-border rounded-lg">
             <TablePagination
-              component="div"
               count={APPLICATIONS.length}
               page={page}
               rowsPerPage={rowsPerPage}
-              onPageChange={(_, p) => setPage(p)}
-              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-              rowsPerPageOptions={[25, 50, 75, 100]}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rpp) => {
+                setRowsPerPage(rpp);
+                setPage(0);
+              }}
               labelRowsPerPage="Строк:"
-              labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} из ${count}`
+              }
             />
-          </Paper>
+          </div>
         </>
       ) : (
         <ApplicationsTable
@@ -128,7 +131,10 @@ export default function ApplicationsPage() {
           rowsPerPage={rowsPerPage}
           total={APPLICATIONS.length}
           onPageChange={setPage}
-          onRowsPerPageChange={(rpp) => { setRowsPerPage(rpp); setPage(0); }}
+          onRowsPerPageChange={(rpp) => {
+            setRowsPerPage(rpp);
+            setPage(0);
+          }}
           onRowClick={setSelectedRow}
           onEdit={setEditTarget}
           onHistory={(id) => router.push(`/history/${id}`)}
@@ -148,12 +154,18 @@ export default function ApplicationsPage() {
       {selectedRow && (
         <InfoModal
           row={selectedRow}
-          statusLabel={STATUS_FILTERS.find((s) => s.key === selectedRow.status)?.label ?? ""}
-          statusColor={STATUS_FILTERS.find((s) => s.key === selectedRow.status)?.color ?? "#6b7280"}
+          statusLabel={
+            STATUS_FILTERS.find((s) => s.key === selectedRow.status)?.label ??
+            ""
+          }
+          statusColor={
+            STATUS_FILTERS.find((s) => s.key === selectedRow.status)?.color ??
+            "#6b7280"
+          }
           paymentFileName={extras[selectedRow.id]?.paymentFileName}
           onClose={() => setSelectedRow(null)}
         />
       )}
-    </Box>
+    </div>
   );
 }

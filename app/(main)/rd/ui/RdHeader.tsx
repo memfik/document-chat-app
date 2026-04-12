@@ -1,9 +1,6 @@
 "use client";
 
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Typography, Button, IconButton } from "@mui/material";
+import { Pencil, Save, X } from "lucide-react";
 
 interface RdHeaderProps {
   editing: boolean;
@@ -14,87 +11,56 @@ interface RdHeaderProps {
 
 export function RdHeader({ editing, onEdit, onSave, onCancel }: RdHeaderProps) {
   return (
-    <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-      <Typography variant="h6" fontWeight={600}>
-        Рамочный договор
-      </Typography>
-      <Box display="flex" gap={1}>
+    <div className="flex items-center justify-between mb-6">
+      <h1 className="text-lg font-semibold">Рамочный договор</h1>
+      <div className="flex gap-2">
         {editing ? (
           <>
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
+            <button
               onClick={onSave}
-              sx={{
-                bgcolor: "#f96800", borderRadius: 2, textTransform: "none",
-                "&:hover": { bgcolor: "#e05a00" },
-                display: { xs: "none", sm: "inline-flex" },
-              }}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
             >
+              <Save className="size-4" />
               Сохранить
-            </Button>
-            <IconButton
+            </button>
+            <button
               onClick={onSave}
-              sx={{
-                display: { xs: "flex", sm: "none" },
-                bgcolor: "#f96800", color: "#fff", borderRadius: 2,
-                "&:hover": { bgcolor: "#e05a00" },
-              }}
+              className="sm:hidden flex items-center justify-center size-8 rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
             >
-              <SaveIcon fontSize="small" />
-            </IconButton>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<CloseIcon />}
+              <Save className="size-4" />
+            </button>
+            <button
               onClick={onCancel}
-              sx={{
-                textTransform: "none", borderRadius: 2,
-                borderColor: "grey.300", color: "text.secondary",
-                display: { xs: "none", sm: "inline-flex" },
-              }}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
             >
+              <X className="size-4" />
               Отмена
-            </Button>
-            <IconButton
+            </button>
+            <button
               onClick={onCancel}
-              sx={{
-                display: { xs: "flex", sm: "none" },
-                border: "1px solid", borderColor: "grey.300",
-                borderRadius: 2, color: "text.secondary",
-              }}
+              className="sm:hidden flex items-center justify-center size-8 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
             >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+              <X className="size-4" />
+            </button>
           </>
         ) : (
           <>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<EditIcon />}
+            <button
               onClick={onEdit}
-              sx={{
-                textTransform: "none", borderRadius: 2,
-                borderColor: "grey.300", color: "text.secondary",
-                display: { xs: "none", sm: "inline-flex" },
-              }}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
             >
+              <Pencil className="size-4" />
               Редактировать
-            </Button>
-            <IconButton
+            </button>
+            <button
               onClick={onEdit}
-              sx={{
-                display: { xs: "flex", sm: "none" },
-                border: "1px solid", borderColor: "grey.300",
-                borderRadius: 2, color: "text.secondary",
-              }}
+              className="sm:hidden flex items-center justify-center size-8 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
             >
-              <EditIcon fontSize="small" />
-            </IconButton>
+              <Pencil className="size-4" />
+            </button>
           </>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

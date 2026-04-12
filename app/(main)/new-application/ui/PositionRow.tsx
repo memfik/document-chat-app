@@ -1,7 +1,6 @@
 "use client";
 
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Box, Typography, Button, TextField, MenuItem } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import {
   REQUEST_TYPES,
   COST_CENTERS,
@@ -35,121 +34,247 @@ export function PositionRow({
 }: PositionRowProps) {
   const set =
     (f: keyof Position) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       onChange(pos.id, f, e.target.value);
 
   const err = (field: string) => errors.has(`${pos.id}.${field}`);
 
   return (
-    <Box sx={{ border: "1px solid", borderColor: "grey.200", borderRadius: 2, p: 2 }}>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography
-          variant="caption"
-          fontWeight={600}
-          color="text.secondary"
-          textTransform="uppercase"
-          letterSpacing={0.5}
-        >
+    <div className="border border-border/70 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           Позиция #{index + 1}
-        </Typography>
-        <Box display="flex" gap={1}>
-          <Button
-            size="small"
-            variant="text"
-            color="inherit"
+        </p>
+        <div className="flex gap-2">
+          <button
+            type="button"
             onClick={() => onClear(pos.id)}
-            sx={{ fontSize: 12, color: "text.disabled", borderRadius: 2, textDecoration: "underline", minWidth: "auto" }}
+            className="text-xs text-muted-foreground underline hover:text-foreground transition-colors"
           >
             Очистить
-          </Button>
+          </button>
           {canRemove && (
-            <Button
-              size="small"
-              variant="text"
-              color="error"
-              startIcon={<DeleteOutlineIcon fontSize="small" />}
+            <button
+              type="button"
               onClick={() => onRemove(pos.id)}
-              sx={{ fontSize: 12, minWidth: "auto", borderRadius: 2 }}
+              className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors"
             >
+              <Trash2 className="size-3" />
               Удалить
-            </Button>
+            </button>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <Box
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }}
-        gap={1.5}
-      >
-        <TextField select size="small" label="Тип заявки" required fullWidth value={pos.requestType} onChange={set("requestType")}>
-          {REQUEST_TYPES.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Тип заявки <span className="text-destructive">*</span>
+          </label>
+          <select
+            value={pos.requestType}
+            onChange={set("requestType")}
+            className="select-base"
+          >
+            {REQUEST_TYPES.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <TextField
-          size="small" label="Товар / Услуга" required fullWidth
-          placeholder="Введите наименование..."
-          value={pos.product} onChange={set("product")}
-          error={err("product")} helperText={err("product") ? "Обязательное поле" : ""}
-          sx={{ gridColumn: { xs: "span 1", sm: "span 2" } }}
-        />
+        <div className="sm:col-span-2">
+          <label className="block text-xs text-muted-foreground mb-1">
+            Товар / Услуга <span className="text-destructive">*</span>
+          </label>
+          <input
+            className={`input-base ${err("product") ? "border-destructive" : ""}`}
+            placeholder="Введите наименование..."
+            value={pos.product}
+            onChange={set("product")}
+          />
+          {err("product") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField
-          size="small" label="Количество" required fullWidth type="number"
-          inputProps={{ min: 1 }} placeholder="0"
-          value={pos.qty} onChange={set("qty")}
-          error={err("qty")} helperText={err("qty") ? "Обязательное поле" : ""}
-        />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Количество <span className="text-destructive">*</span>
+          </label>
+          <input
+            type="number"
+            min={1}
+            className={`input-base ${err("qty") ? "border-destructive" : ""}`}
+            placeholder="0"
+            value={pos.qty}
+            onChange={set("qty")}
+          />
+          {err("qty") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField
-          size="small" label="Место поставки" required fullWidth placeholder="Адрес..."
-          value={pos.deliveryPlace} onChange={set("deliveryPlace")}
-          error={err("deliveryPlace")} helperText={err("deliveryPlace") ? "Обязательное поле" : ""}
-        />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Место поставки <span className="text-destructive">*</span>
+          </label>
+          <input
+            className={`input-base ${err("deliveryPlace") ? "border-destructive" : ""}`}
+            placeholder="Адрес..."
+            value={pos.deliveryPlace}
+            onChange={set("deliveryPlace")}
+          />
+          {err("deliveryPlace") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField
-          size="small" label="Дата начала" required fullWidth type="date"
-          value={pos.dateFrom} onChange={set("dateFrom")}
-          error={err("dateFrom")} helperText={err("dateFrom") ? "Обязательное поле" : ""}
-          InputLabelProps={{ shrink: true }}
-        />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Дата начала <span className="text-destructive">*</span>
+          </label>
+          <input
+            type="date"
+            className={`input-base ${err("dateFrom") ? "border-destructive" : ""}`}
+            value={pos.dateFrom}
+            onChange={set("dateFrom")}
+          />
+          {err("dateFrom") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField
-          size="small" label="Дата окончания" required fullWidth type="date"
-          value={pos.dateTo} inputProps={{ min: pos.dateFrom }} onChange={set("dateTo")}
-          error={err("dateTo")} helperText={err("dateTo") ? "Обязательное поле" : ""}
-          InputLabelProps={{ shrink: true }}
-        />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Дата окончания <span className="text-destructive">*</span>
+          </label>
+          <input
+            type="date"
+            className={`input-base ${err("dateTo") ? "border-destructive" : ""}`}
+            min={pos.dateFrom}
+            value={pos.dateTo}
+            onChange={set("dateTo")}
+          />
+          {err("dateTo") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField
-          size="small" label="Стоимость без НДС" required fullWidth type="number"
-          inputProps={{ min: 0 }} placeholder="0"
-          value={pos.priceNoVat} onChange={set("priceNoVat")}
-          error={err("priceNoVat")} helperText={err("priceNoVat") ? "Обязательное поле" : ""}
-        />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Стоимость без НДС <span className="text-destructive">*</span>
+          </label>
+          <input
+            type="number"
+            min={0}
+            className={`input-base ${err("priceNoVat") ? "border-destructive" : ""}`}
+            placeholder="0"
+            value={pos.priceNoVat}
+            onChange={set("priceNoVat")}
+          />
+          {err("priceNoVat") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
 
-        <TextField size="small" label="Стоимость с НДС (12%)" fullWidth value={priceWithVatValue} disabled />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Стоимость с НДС (12%)
+          </label>
+          <input
+            className="input-base"
+            value={priceWithVatValue}
+            disabled
+          />
+        </div>
 
-        <TextField select size="small" label="Центр затрат" required fullWidth value={pos.costCenter} onChange={set("costCenter")}>
-          {COST_CENTERS.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Центр затрат <span className="text-destructive">*</span>
+          </label>
+          <select
+            value={pos.costCenter}
+            onChange={set("costCenter")}
+            className="select-base"
+          >
+            {COST_CENTERS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <TextField select size="small" label="Куратор" required fullWidth value={pos.curator} onChange={set("curator")}>
-          {CURATORS.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Куратор <span className="text-destructive">*</span>
+          </label>
+          <select
+            value={pos.curator}
+            onChange={set("curator")}
+            className="select-base"
+          >
+            {CURATORS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <TextField select size="small" label="Проект" fullWidth value={pos.project} onChange={set("project")}>
-          {PROJECTS.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Проект
+          </label>
+          <select
+            value={pos.project}
+            onChange={set("project")}
+            className="select-base"
+          >
+            {PROJECTS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <TextField select size="small" label="Статья" required fullWidth value={pos.article} onChange={set("article")}>
-          {ARTICLES.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Статья <span className="text-destructive">*</span>
+          </label>
+          <select
+            value={pos.article}
+            onChange={set("article")}
+            className="select-base"
+          >
+            {ARTICLES.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <TextField select size="small" label="Точка присутствия" fullWidth value={pos.location} onChange={set("location")}>
-          {LOCATIONS.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-        </TextField>
-      </Box>
-    </Box>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Точка присутствия
+          </label>
+          <select
+            value={pos.location}
+            onChange={set("location")}
+            className="select-base"
+          >
+            {LOCATIONS.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
   );
 }

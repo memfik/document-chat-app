@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { Loader2 } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { SearchBar } from "@/app/components/ui/SearchBar";
 import { StatusFilterBar } from "@/app/components/ui/StatusFilterBar";
 import { ZNO_DATA, ZNO_STATUS_FILTERS } from "./data/zno";
 import { ZnoCard } from "./ui/ZnoCard";
 import { ZnoTable } from "./ui/ZnoTable";
-import { CircularProgress, Box, Paper, TablePagination } from "@mui/material";
+import { TablePagination } from "@/app/components/ui/TablePagination";
 
 export default function ZnoPage() {
   const [loading, setLoading] = useState(true);
@@ -17,8 +17,7 @@ export default function ZnoPage() {
   const [currentYearOnly, setCurrentYearOnly] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile(900);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 400);
@@ -27,59 +26,69 @@ export default function ZnoPage() {
   const statusCounts = Object.fromEntries(
     ZNO_STATUS_FILTERS.map((f) => [
       f.key,
-      f.key === "all" ? ZNO_DATA.length : ZNO_DATA.filter((r) => r.status === f.key).length,
+      f.key === "all"
+        ? ZNO_DATA.length
+        : ZNO_DATA.filter((r) => r.status === f.key).length,
     ]),
   );
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress />
-      </Box>
+      <div className="flex justify-center items-center min-h-[80vh]">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   return (
-    <Box sx={{ py: 2.5, px: { xs: 2, sm: 3 } }}>
-      <Box mb={2}>
+    <div className="py-6 px-4 sm:px-6">
+      <div className="mb-4">
         <SearchBar
           value={search}
           onChange={setSearch}
           currentYearOnly={currentYearOnly}
           onYearToggle={() => setCurrentYearOnly((v) => !v)}
         />
-      </Box>
+      </div>
 
-      <Box mb={2}>
+      <div className="mb-4">
         <StatusFilterBar
           filters={ZNO_STATUS_FILTERS}
           activeKey={activeStatus}
           onSelect={setActiveStatus}
           counts={statusCounts}
         />
-      </Box>
+      </div>
 
       {isMobile ? (
         <>
-          <Box display="flex" flexDirection="column" gap={1.5} mb={1}>
-            {ZNO_DATA.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              const status = ZNO_STATUS_FILTERS.find((s) => s.key === row.status);
+          <div className="flex flex-col gap-3 mb-3">
+            {ZNO_DATA.slice(
+              page * rowsPerPage,
+              page * rowsPerPage + rowsPerPage,
+            ).map((row) => {
+              const status = ZNO_STATUS_FILTERS.find(
+                (s) => s.key === row.status,
+              );
               return <ZnoCard key={row.id} row={row} status={status} />;
             })}
-          </Box>
-          <Paper>
+          </div>
+          <div className="bg-card border border-border rounded-lg">
             <TablePagination
-              component="div"
               count={ZNO_DATA.length}
               page={page}
               rowsPerPage={rowsPerPage}
-              onPageChange={(_, p) => setPage(p)}
-              onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-              rowsPerPageOptions={[25, 50, 75, 100]}
+              onPageChange={setPage}
+              onRowsPerPageChange={(rpp) => {
+                setRowsPerPage(rpp);
+                setPage(0);
+              }}
               labelRowsPerPage="Строк:"
-              labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} из ${count}`
+              }
             />
-          </Paper>
+          </div>
         </>
       ) : (
         <ZnoTable
@@ -88,9 +97,12 @@ export default function ZnoPage() {
           rowsPerPage={rowsPerPage}
           total={ZNO_DATA.length}
           onPageChange={setPage}
-          onRowsPerPageChange={(rpp) => { setRowsPerPage(rpp); setPage(0); }}
+          onRowsPerPageChange={(rpp) => {
+            setRowsPerPage(rpp);
+            setPage(0);
+          }}
         />
       )}
-    </Box>
+    </div>
   );
 }

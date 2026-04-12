@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { Paper, Box, Typography, Snackbar, Alert } from "@mui/material";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 import { FormStepper } from "./ui/FormStepper";
 import { FormNav } from "./ui/FormNav";
@@ -13,18 +11,13 @@ import { Step2Positions } from "./ui/Step2Positions";
 import { Step3Approval } from "./ui/Step3Approval";
 import { Step4Attachments } from "./ui/Step4Attachments";
 
-import {
-  emptyPosition,
-  type Position,
-  type Attachments,
-} from "./data/options";
+import { emptyPosition, type Position, type Attachments } from "./data/options";
 
 let nextId = 10;
 
 export default function NewApplicationPage() {
   const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useIsMobile(600);
 
   const [activeStep, setActiveStep] = useState(0);
   const [title, setTitle] = useState("");
@@ -33,16 +26,36 @@ export default function NewApplicationPage() {
   const [losses, setLosses] = useState("");
   const [positions, setPositions] = useState<Position[]>([emptyPosition(1)]);
   const [approvers, setApprovers] = useState<string[]>([]);
-  const [attachments, setAttachments] = useState<Attachments>({ spec: null, extra: null, contract: null });
+  const [attachments, setAttachments] = useState<Attachments>({
+    spec: null,
+    extra: null,
+    contract: null,
+  });
   const [errors, setErrors] = useState<Set<string>>(new Set());
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [toast, setToast] = useState(false);
+
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(() => {
+        setToast(false);
+        router.push("/applications");
+      }, 1000);
+      return () => clearTimeout(t);
+    }
+  }, [toast, router]);
 
   const updatePosition = (id: number, field: keyof Position, value: string) =>
-    setPositions((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+    setPositions((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
+    );
 
   const clearPosition = (id: number) =>
     setPositions((prev) =>
-      prev.map((p) => (p.id === id ? { ...emptyPosition(id), requestType: p.requestType } : p))
+      prev.map((p) =>
+        p.id === id
+          ? { ...emptyPosition(id), requestType: p.requestType }
+          : p,
+      ),
     );
 
   const removePosition = (id: number) =>
@@ -64,7 +77,8 @@ export default function NewApplicationPage() {
         if (!p.deliveryPlace.trim()) errs.add(`${p.id}.deliveryPlace`);
         if (!p.dateFrom) errs.add(`${p.id}.dateFrom`);
         if (!p.dateTo) errs.add(`${p.id}.dateTo`);
-        if (!p.priceNoVat.trim() || parseFloat(p.priceNoVat) <= 0) errs.add(`${p.id}.priceNoVat`);
+        if (!p.priceNoVat.trim() || parseFloat(p.priceNoVat) <= 0)
+          errs.add(`${p.id}.priceNoVat`);
       });
     }
     return errs;
@@ -82,39 +96,44 @@ export default function NewApplicationPage() {
     else setActiveStep((s) => s - 1);
   };
 
-  const handleSubmit = () => setSnackbarOpen(true);
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-    router.push("/applications");
-  };
+  const handleSubmit = () => setToast(true);
 
   return (
-    <Box py={{ xs: 3, md: 6 }} px={{ xs: 1.5, md: 6 }} maxWidth="1280px" mx="auto">
-      <Typography variant="h6" fontWeight={600} color="text.primary" mb={3}>
-        Новая заявка Ф16
-      </Typography>
+    <div className="py-8 md:py-12 px-4 md:px-12 max-w-[1280px] mx-auto">
+      <h1 className="text-lg font-semibold mb-6">Новая заявка Ф16</h1>
 
       <FormStepper activeStep={activeStep} isMobile={isMobile} />
 
-      <Paper elevation={2}>
-        <Box p={{ xs: 2, md: 3 }}>
+      <div className="bg-card border border-border rounded-lg shadow-sm">
+        <div className="p-4 md:p-6">
           {activeStep === 0 && (
             <Step1Justification
-              title={title} purpose={purpose} benefits={benefits} losses={losses}
+              title={title}
+              purpose={purpose}
+              benefits={benefits}
+              losses={losses}
               errors={errors}
-              onTitle={setTitle} onPurpose={setPurpose} onBenefits={setBenefits} onLosses={setLosses}
+              onTitle={setTitle}
+              onPurpose={setPurpose}
+              onBenefits={setBenefits}
+              onLosses={setLosses}
             />
           )}
           {activeStep === 1 && (
             <Step2Positions
-              positions={positions} errors={errors}
-              onUpdate={updatePosition} onClear={clearPosition}
-              onRemove={removePosition} onAdd={addPosition}
+              positions={positions}
+              errors={errors}
+              onUpdate={updatePosition}
+              onClear={clearPosition}
+              onRemove={removePosition}
+              onAdd={addPosition}
             />
           )}
           {activeStep === 2 && (
-            <Step3Approval approvers={approvers} onApproversChange={setApprovers} />
+            <Step3Approval
+              approvers={approvers}
+              onApproversChange={setApprovers}
+            />
           )}
           {activeStep === 3 && (
             <Step4Attachments
@@ -130,19 +149,14 @@ export default function NewApplicationPage() {
             onNext={handleNext}
             onSubmit={handleSubmit}
           />
-        </Box>
-      </Paper>
+        </div>
+      </div>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={1000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={handleSnackbarClose} severity="success" variant="filled" sx={{ width: "100%" }}>
+      {toast && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2.5 rounded-lg shadow-lg text-sm font-medium">
           Форма отправлена успешно!
-        </Alert>
-      </Snackbar>
-    </Box>
+        </div>
+      )}
+    </div>
   );
 }

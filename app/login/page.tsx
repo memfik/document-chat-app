@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,148 +16,81 @@ export default function LoginPage() {
   }
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      <Box
-        sx={{
-          display: { xs: "none", md: "flex" },
-          width: "60%",
-          position: "relative",
-          overflow: "hidden",
-          flexShrink: 0,
-        }}
-      >
-        <Box
-          component="img"
+    <div className="flex h-screen overflow-hidden">
+      {/* Background image (desktop only) */}
+      <div className="hidden md:block w-[60%] shrink-0 relative overflow-hidden">
+        <img
           src="/login-bg.png"
           alt="Background"
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "fill",
-            objectPosition: "center",
-          }}
+          className="w-full h-full object-fill object-center"
         />
-      </Box>
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          px: { xs: 3, sm: 6, lg: 10 },
-          py: 6,
-          bgcolor: "background.default",
-          overflowY: "auto",
-        }}
-      >
-        <Box sx={{ width: "100%", maxWidth: 400 }}>
-          {/* Logo */}
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-            <Box
-              component="img"
+      </div>
+
+      {/* Form side */}
+      <div className="flex-1 flex items-center justify-center px-6 sm:px-12 lg:px-16 py-8 bg-background overflow-y-auto">
+        <div className="w-full max-w-sm">
+          <div className="flex justify-center mb-8">
+            <img
               src="/logo-jusanmobile.png"
               alt="Logo"
-              sx={{ height: 52, objectFit: "contain" }}
+              className="h-12 object-contain"
             />
-          </Box>
+          </div>
 
-          <Typography
-            variant="h5"
-            fontWeight={700}
-            mb={0.75}
-            color="text.primary"
-            textAlign="center"
-          >
+          <h1 className="text-xl font-bold text-center mb-1">
             Добро пожаловать
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            mb={4}
-            textAlign="center"
-          >
+          </h1>
+          <p className="text-sm text-muted-foreground text-center mb-8">
             Введите данные для входа в систему
-          </Typography>
+          </p>
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            display="flex"
-            flexDirection="column"
-            gap={2.5}
-          >
-            <TextField
-              label="Почта"
-              type="email"
-              size="small"
-              fullWidth
-              required
-              placeholder="example@jusanmobile.kz"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                  { borderColor: "#f96800" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#f96800" },
-              }}
-            />
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Почта</label>
+              <input
+                type="email"
+                required
+                placeholder="example@jusanmobile.kz"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-base focus:ring-[#f96800]"
+              />
+            </div>
 
-            <TextField
-              label="Пароль"
-              type={showPassword ? "text" : "password"}
-              size="small"
-              fullWidth
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                  { borderColor: "#f96800" },
-                "& .MuiInputLabel-root.Mui-focused": { color: "#f96800" },
-              }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        size="small"
-                        onClick={() => setShowPassword((v) => !v)}
-                        edge="end"
-                      >
-                        {showPassword ? (
-                          <VisibilityOffIcon fontSize="small" />
-                        ) : (
-                          <VisibilityIcon fontSize="small" />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Пароль</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-base pr-10 focus:ring-[#f96800]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </button>
+              </div>
+            </div>
 
-            <Button
+            <button
               type="submit"
-              variant="contained"
-              fullWidth
-              size="large"
-              sx={{
-                mt: 0.5,
-                bgcolor: "#f96800",
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: 15,
-                py: 1.25,
-                "&:hover": { bgcolor: "#e05a00" },
-              }}
+              className="w-full py-2.5 mt-1 bg-[#f96800] text-white font-semibold rounded-lg hover:bg-[#e05a00] transition-colors text-sm"
             >
               Войти
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }

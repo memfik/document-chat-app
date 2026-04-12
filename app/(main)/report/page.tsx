@@ -1,16 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Paper,
-  Tabs,
-  Tab,
-  Box,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import BlockIcon from "@mui/icons-material/Block";
+import { Ban } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
+import { cn } from "@/lib/utils";
 import ChronologyForm from "./ui/ChronologyForm";
 import F16ApprovalForm from "./ui/F16ApprovalForm";
 import OSKContractsForm from "./ui/OSKContractsForm";
@@ -70,118 +63,90 @@ const tabAccessMap: Record<string, string[]> = {
 
 function NoAccess() {
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={1.5} py={14} color="error.main">
-      <BlockIcon style={{ fontSize: 56 }} />
-      <Typography variant="body1" fontWeight={600} textAlign="center">
+    <div className="flex flex-col items-center justify-center gap-3 py-20 text-destructive">
+      <Ban className="size-14" />
+      <p className="text-base font-semibold text-center">
         У вас нет прав на создание отчета по данному шаблону.
-      </Typography>
-    </Box>
+      </p>
+    </div>
   );
 }
 
 function renderForm(tab: (typeof tabs)[number]) {
   const allowed = tabAccessMap[tab.key] ?? [];
-  if (!allowed.includes(role)) {
-    return <NoAccess />;
-  }
+  if (!allowed.includes(role)) return <NoAccess />;
 
-  if (tab.key === "f16") {
+  if (tab.key === "f16")
     return <ChronologyForm title={tab.title} description={tab.description} />;
-  }
-  if (tab.key === "payments") {
+  if (tab.key === "payments")
     return (
       <BudgetNonExecutionForm title={tab.title} description={tab.description} />
     );
-  }
-  if (tab.key === "contracts") {
+  if (tab.key === "contracts")
     return (
       <BudgetExecutionForm title={tab.title} description={tab.description} />
     );
-  }
-  if (tab.key === "rd") {
+  if (tab.key === "rd")
     return <ISSKForm title={tab.title} description={tab.description} />;
-  }
-  if (tab.key === "zno") {
-    return <OSKContractsForm title={tab.title} description={tab.description} />;
-  }
-  if (tab.key === "summary") {
+  if (tab.key === "zno")
+    return (
+      <OSKContractsForm title={tab.title} description={tab.description} />
+    );
+  if (tab.key === "summary")
     return <F16ApprovalForm title={tab.title} description={tab.description} />;
-  }
   return <NoAccess />;
 }
 
 export default function ReportPage() {
   const [activeTab, setActiveTab] = useState(0);
   const current = tabs[activeTab];
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile(900);
 
   return (
-    <Box py={{ xs: 2, md: 3 }} px={{ xs: 2, md: 3 }}>
-      <Typography variant="h6" fontWeight={600} mb={2.5}>
-        Отчеты
-      </Typography>
+    <div className="py-6 px-4 md:px-6">
+      <h1 className="text-lg font-semibold mb-6">Отчеты</h1>
 
       {isMobile ? (
-        <Box display="flex" flexDirection="column" gap={2}>
-          <Paper elevation={1} sx={{ py: 0.5 }}>
-            <Tabs
-              value={activeTab}
-              onChange={(_, v) => setActiveTab(v)}
-              orientation="horizontal"
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.key}
-                  label={tab.label}
-                  sx={{
-                    textTransform: "none",
-                    fontSize: 13,
-                    minWidth: 120,
-                    whiteSpace: "normal",
-                    textAlign: "center",
-                  }}
-                />
-              ))}
-            </Tabs>
-          </Paper>
-          <Box>{renderForm(current)}</Box>
-        </Box>
+        <div className="flex flex-col gap-4">
+          <div className="bg-card border border-border rounded-lg overflow-x-auto flex py-1">
+            {tabs.map((tab, idx) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(idx)}
+                className={cn(
+                  "shrink-0 px-4 py-2 text-sm min-w-[130px] text-center border-b-2 transition-colors whitespace-normal",
+                  activeTab === idx
+                    ? "border-[#f96800] text-[#f96800] font-medium"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div>{renderForm(current)}</div>
+        </div>
       ) : (
-        <Box display="flex" gap={2.5} alignItems="flex-start">
-          <Paper elevation={1} sx={{ flexShrink: 0, width: 240, py: 1 }}>
-            <Tabs
-              value={activeTab}
-              onChange={(_, v) => setActiveTab(v)}
-              orientation="vertical"
-              variant="scrollable"
-              scrollButtons={false}
-              TabIndicatorProps={{
-                style: { left: 0, right: "auto", width: 3 },
-              }}
-            >
-              {tabs.map((tab) => (
-                <Tab
-                  key={tab.key}
-                  label={tab.label}
-                  style={{
-                    alignItems: "flex-start",
-                    textAlign: "left",
-                    textTransform: "none",
-                    fontSize: 16,
-                  }}
-                />
-              ))}
-            </Tabs>
-          </Paper>
-          <Box flex={1} minWidth={0}>
-            {renderForm(current)}
-          </Box>
-        </Box>
+        <div className="flex gap-6 items-start">
+          <div className="shrink-0 w-60 bg-card border border-border rounded-lg py-1">
+            {tabs.map((tab, idx) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(idx)}
+                className={cn(
+                  "w-full text-left px-4 py-2.5 text-sm border-l-2 transition-colors",
+                  activeTab === idx
+                    ? "border-l-[#f96800] text-foreground font-medium"
+                    : "border-l-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0">{renderForm(current)}</div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

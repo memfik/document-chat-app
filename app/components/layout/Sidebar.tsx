@@ -1,65 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import AddIcon from "@mui/icons-material/Add";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import HandshakeIcon from "@mui/icons-material/Handshake";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
-  Box,
-  Button,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  Divider,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+  Plus,
+  Upload,
+  BookOpen,
+  ClipboardList,
+  FileText,
+  Handshake,
+  FolderOpen,
+  BarChart2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  X,
+} from "lucide-react";
+import { Dialog } from "@base-ui/react/dialog";
+import { cn } from "@/lib/utils";
 
 const EXPANDED = 220;
 const COLLAPSED = 60;
 
 const navItems = [
-  {
-    label: "Заявки",
-    href: "/applications",
-    icon: <ListAltIcon fontSize="small" />,
-  },
-  { label: "ЗНО", href: "/zno", icon: <AssignmentIcon fontSize="small" /> },
-  {
-    label: "Сопровождение",
-    href: "/accompaniment",
-    icon: <HandshakeIcon fontSize="small" />,
-  },
-  {
-    label: "Рамочный договор",
-    href: "/rd",
-    icon: <FolderOpenIcon fontSize="small" />,
-  },
-  {
-    label: "Отчеты",
-    href: "/report",
-    icon: <AssessmentIcon fontSize="small" />,
-  },
+  { label: "Заявки", href: "/applications", icon: ClipboardList },
+  { label: "ЗНО", href: "/zno", icon: FileText },
+  { label: "Сопровождение", href: "/accompaniment", icon: Handshake },
+  { label: "Рамочный договор", href: "/rd", icon: FolderOpen },
+  { label: "Отчеты", href: "/report", icon: BarChart2 },
 ];
 
 const docItems = [
@@ -74,6 +42,108 @@ const docItems = [
   },
 ];
 
+function DocsDropdown({ expanded }: { expanded: boolean }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        title={expanded ? undefined : "Инструкции"}
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          "w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-muted-foreground hover:bg-muted/50 text-sm transition-colors mb-0.5",
+          expanded ? "justify-start" : "justify-center px-2",
+        )}
+      >
+        <BookOpen className="size-4 shrink-0" />
+        {expanded && (
+          <>
+            <span className="flex-1 text-left">Инструкции</span>
+            <ChevronDown
+              className={cn(
+                "size-3.5 ml-auto transition-transform",
+                open && "rotate-180",
+              )}
+            />
+          </>
+        )}
+      </button>
+      {open && (
+        <div
+          className={cn(
+            "absolute z-50 bg-popover border border-border rounded-lg shadow-lg overflow-hidden w-48",
+            expanded ? "left-0 top-full mt-1" : "left-full top-0 ml-2",
+          )}
+        >
+          {docItems.map((item) => (
+            <button
+              key={item.href}
+              onClick={() => {
+                window.open(item.href, "_blank");
+                setOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ImportDialog({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
+        <Dialog.Popup className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs bg-card border border-border rounded-xl shadow-xl outline-none">
+        <div className="px-4 py-3 border-b border-border">
+          <p className="text-sm font-semibold">Импорт файлов</p>
+        </div>
+        <div className="p-4">
+          <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-[#f96800] transition-colors">
+            <p className="text-sm text-muted-foreground">
+              Нажмите или перетащите файл
+            </p>
+            <input type="file" className="hidden" multiple />
+          </label>
+        </div>
+        <div className="flex justify-end gap-2 px-4 py-3 border-t border-border">
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-sm rounded-md border border-border hover:bg-muted transition-colors"
+          >
+            Отмена
+          </button>
+          <button className="px-3 py-1.5 text-sm rounded-md bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors">
+            Загрузить
+          </button>
+        </div>
+      </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
 export function Sidebar({
   mobileOpen = false,
   onMobileClose,
@@ -82,316 +152,155 @@ export function Sidebar({
   onMobileClose?: () => void;
 }) {
   const [open, setOpen] = useState(true);
+  const [layoutExpanded, setLayoutExpanded] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const [importOpen, setImportOpen] = useState(false);
-  const [docsAnchor, setDocsAnchor] = useState<null | HTMLElement>(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    if (!open) {
+      setLayoutExpanded(false);
+    } else {
+      const t = setTimeout(() => setLayoutExpanded(true), 200);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
-
-  const actionBtn = (
-    label: string,
-    icon: React.ReactNode,
-    onClick: () => void,
-    color?: string,
-    active?: boolean,
-  ) => (
-    <Tooltip title={open ? "" : label} placement="right" arrow>
-      <Button
-        fullWidth
-        startIcon={icon}
-        onClick={onClick}
-        size="small"
-        variant={active ? "contained" : "text"}
-        sx={{
-          justifyContent: open ? "flex-start" : "center",
-          minWidth: 0,
-          px: open ? 1.5 : 1,
-          py: 0.75,
-          mb: 0.5,
-          borderRadius: 1.5,
-          textTransform: "none",
-          fontWeight: active ? 600 : 400,
-          color: active ? "#fff" : "text.secondary",
-          bgcolor: active ? (color ?? "primary.main") : "transparent",
-          "&:hover": {
-            bgcolor: active ? (color ?? "primary.dark") : "action.hover",
-          },
-          "& .MuiButton-startIcon": {
-            mx: open ? undefined : 0,
-          },
-        }}
-      >
-        {open ? label : null}
-      </Button>
-    </Tooltip>
-  );
 
   const handleNavClick = (href: string) => {
     router.push(href);
     onMobileClose?.();
   };
-  const navList = (forceExpanded = false) => {
-    const expanded = forceExpanded || open;
+
+  const NavList = ({ forceExpanded = false }: { forceExpanded?: boolean }) => {
+    const expanded = forceExpanded || layoutExpanded;
     return (
-      <List dense disablePadding sx={{ flex: 1, px: 0.75, py: 1 }}>
+      <nav className="flex-1 px-2 py-2">
         {navItems.map((item) => {
           const active = isActive(item.href);
+          const Icon = item.icon;
           return (
-            <Tooltip
+            <button
               key={item.href}
-              title={expanded ? "" : item.label}
-              placement="right"
-              arrow
+              title={expanded ? undefined : item.label}
+              onClick={() => handleNavClick(item.href)}
+              className={cn(
+                "w-full flex items-center gap-2 rounded-md text-sm transition-colors mb-0.5",
+                expanded ? "px-3 py-1.5" : "justify-center px-2 py-1.5",
+                active
+                  ? "bg-[#f96800] text-white"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+              )}
             >
-              <ListItemButton
-                selected={active}
-                onClick={() => handleNavClick(item.href)}
-                sx={{
-                  borderRadius: 1.5,
-                  mb: 0.25,
-                  px: expanded ? 1.5 : 1,
-                  justifyContent: expanded ? "flex-start" : "center",
-                  "&.Mui-selected": {
-                    bgcolor: "primary.main",
-                    color: "#fff",
-                    "&:hover": { bgcolor: "primary.dark" },
-                    "& .MuiListItemIcon-root": { color: "#fff" },
-                  },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: expanded ? 32 : "auto",
-                    color: active ? "#fff" : "text.secondary",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                {expanded && (
-                  <ListItemText
-                    primary={item.label}
-                    slotProps={{
-                      primary: {
-                        variant: "body2",
-                        fontWeight: active ? 600 : 400,
-                      },
-                    }}
-                  />
-                )}
-              </ListItemButton>
-            </Tooltip>
+              <Icon className="size-4 shrink-0" />
+              {expanded && (
+                <span className={cn("font-medium", active ? "" : "font-normal")}>
+                  {item.label}
+                </span>
+              )}
+            </button>
           );
         })}
-      </List>
+      </nav>
     );
   };
-  const actionButtons = (forceExpanded = false) => {
-    const expanded = forceExpanded || open;
+
+  const ActionButtons = ({
+    forceExpanded = false,
+  }: {
+    forceExpanded?: boolean;
+  }) => {
+    const expanded = forceExpanded || layoutExpanded;
     return (
-      <Box sx={{ px: 0.75, pt: 1, pb: 0.5 }}>
-        {actionBtn(
-          "Новая Ф16",
-          <AddIcon fontSize="small" />,
-          () => {
+      <div className="px-2 pt-2 pb-1">
+        <button
+          title={expanded ? undefined : "Новая Ф16"}
+          onClick={() => {
             router.push("/new-application");
             onMobileClose?.();
-          },
-          "#f96800",
-          isActive("/new-application"),
-        )}
-        {actionBtn("Импорт", <FileUploadIcon fontSize="small" />, () =>
-          setImportOpen(true),
-        )}
-        <Tooltip title={expanded ? "" : "Инструкции"} placement="right" arrow>
-          <Button
-            fullWidth
-            startIcon={<MenuBookIcon fontSize="small" />}
-            endIcon={
-              expanded ? (
-                <KeyboardArrowDownIcon
-                  fontSize="small"
-                  sx={{
-                    transform: docsAnchor ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.2s",
-                    ml: "auto",
-                  }}
-                />
-              ) : null
-            }
-            onClick={(e) => setDocsAnchor(e.currentTarget)}
-            size="small"
-            sx={{
-              justifyContent: expanded ? "flex-start" : "center",
-              minWidth: 0,
-              px: expanded ? 1.5 : 1,
-              py: 0.75,
-              borderRadius: 1.5,
-              textTransform: "none",
-              color: "text.secondary",
-              "&:hover": { bgcolor: "action.hover" },
-              "& .MuiButton-startIcon": { mx: expanded ? undefined : 0 },
-              "& .MuiButton-endIcon": { ml: "auto" },
-            }}
-          >
-            {expanded ? "Инструкции" : null}
-          </Button>
-        </Tooltip>
-        <Menu
-          anchorEl={docsAnchor}
-          open={Boolean(docsAnchor)}
-          onClose={() => setDocsAnchor(null)}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "left" }}
+          }}
+          className={cn(
+            "w-full flex items-center gap-2 rounded-md text-sm transition-colors mb-0.5",
+            expanded ? "px-3 py-1.5" : "justify-center px-2 py-1.5",
+            isActive("/new-application")
+              ? "bg-[#f96800] text-white"
+              : "bg-[#f96800] text-white hover:bg-[#e05a00]",
+          )}
         >
-          {docItems.map((item) => (
-            <MenuItem
-              key={item.href}
-              onClick={() => {
-                window.open(item.href, "_blank");
-                setDocsAnchor(null);
-              }}
-            >
-              {item.label}
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
+          <Plus className="size-4 shrink-0" />
+          {expanded && <span className="font-medium">Новая Ф16</span>}
+        </button>
+        <button
+          title={expanded ? undefined : "Импорт"}
+          onClick={() => setImportOpen(true)}
+          className={cn(
+            "w-full flex items-center gap-2 rounded-md text-sm text-muted-foreground hover:bg-muted/50 transition-colors mb-0.5",
+            expanded ? "px-3 py-1.5" : "justify-center px-2 py-1.5",
+          )}
+        >
+          <Upload className="size-4 shrink-0" />
+          {expanded && <span>Импорт</span>}
+        </button>
+        <DocsDropdown expanded={expanded} />
+      </div>
     );
   };
-
-  const importDialog = (
-    <Dialog
-      open={importOpen}
-      onClose={() => setImportOpen(false)}
-      maxWidth="xs"
-      fullWidth
-    >
-      <DialogTitle>Импорт файлов</DialogTitle>
-      <DialogContent>
-        <Box
-          component="label"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px dashed",
-            borderColor: "divider",
-            borderRadius: 2,
-            height: 128,
-            cursor: "pointer",
-            transition: "border-color 0.2s",
-            "&:hover": { borderColor: "primary.main" },
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
-            Нажмите или перетащите файл
-          </Typography>
-          <input type="file" hidden multiple />
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => setImportOpen(false)}
-          color="inherit"
-          sx={{ textTransform: "none" }}
-        >
-          Отмена
-        </Button>
-        <Button
-          variant="contained"
-          disableElevation
-          sx={{ textTransform: "none" }}
-        >
-          Загрузить
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  if (isMobile) {
-    return (
-      <>
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={onMobileClose}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              width: "100%",
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              px: 0.5,
-              py: 0.75,
-              borderBottom: "1px solid",
-              borderColor: "divider",
-            }}
-          >
-            <IconButton size="small" onClick={onMobileClose}>
-              <ChevronLeftIcon fontSize="small" />
-            </IconButton>
-          </Box>
-          {actionButtons(true)}
-          <Divider />
-          {navList(true)}
-        </Drawer>
-        {importDialog}
-      </>
-    );
-  }
 
   return (
     <>
-      <Box
-        sx={{
-          width: open ? EXPANDED : COLLAPSED,
-          transition: "width 0.22s ease",
-          flexShrink: 0,
-          bgcolor: "background.paper",
-          borderRight: "1px solid",
-          borderColor: "divider",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          height: "100%",
-        }}
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={onMobileClose}
+          />
+          <div className="relative z-50 flex flex-col w-full bg-card border-r border-border h-full">
+            <div className="flex justify-end px-2 py-2 border-b border-border">
+              <button
+                onClick={onMobileClose}
+                className="p-1.5 rounded hover:bg-muted"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <ActionButtons forceExpanded />
+            <div className="border-t border-border" />
+            <NavList forceExpanded />
+          </div>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <div
+        className="hidden md:flex flex-col h-full bg-card border-r border-border overflow-hidden transition-[width] duration-200 will-change-[width] shrink-0"
+        style={{ width: open ? EXPANDED : COLLAPSED }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: open ? "flex-end" : "center",
-            px: 0.5,
-            py: 0.75,
-            borderBottom: "1px solid",
-            borderColor: "divider",
-          }}
+        <div
+          className={cn(
+            "flex border-b border-border px-1 py-1.5",
+            layoutExpanded ? "justify-end" : "justify-center",
+          )}
         >
-          <IconButton size="small" onClick={() => setOpen((v) => !v)}>
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="p-1.5 rounded hover:bg-muted"
+          >
             {open ? (
-              <ChevronLeftIcon fontSize="small" />
+              <ChevronLeft className="size-4" />
             ) : (
-              <ChevronRightIcon fontSize="small" />
+              <ChevronRight className="size-4" />
             )}
-          </IconButton>
-        </Box>
-        {actionButtons()}
-        <Divider />
-        {navList()}
-      </Box>
-      {importDialog}
+          </button>
+        </div>
+        <ActionButtons />
+        <div className="border-t border-border" />
+        <NavList />
+      </div>
+
+      <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} />
     </>
   );
 }

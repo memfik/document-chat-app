@@ -1,6 +1,5 @@
 "use client";
 
-import { Paper, Box, Typography, TextField } from "@mui/material";
 import { SelectWithAdd } from "./SelectWithAdd";
 import { formatNumber, type FormData } from "../data/options";
 
@@ -34,43 +33,56 @@ export function RdInfoForm({
   onAddArticle,
 }: RdInfoFormProps) {
   return (
-    <Paper elevation={1} sx={{ mb: 3 }}>
-      <Box px={2.5} py={2} borderBottom="1px solid" sx={{ borderColor: "divider" }}>
-        <Typography variant="subtitle2" fontWeight={600}>
-          Основная информация
-        </Typography>
-      </Box>
-      <Box
-        px={2.5}
-        py={2}
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
-        gap={2}
-      >
+    <div className="bg-card border border-border rounded-lg mb-4">
+      <div className="px-5 py-3 border-b border-border">
+        <p className="text-sm font-semibold">Основная информация</p>
+      </div>
+      <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <SelectWithAdd
           label="Договор"
           value={draft.contract}
           options={contracts}
           editing={true}
           onChange={(v) => onField("contract", v)}
-          onNewItem={(v) => { onAddContract(v); onField("contract", v); }}
+          onNewItem={(v) => {
+            onAddContract(v);
+            onField("contract", v);
+          }}
           modalTitle="Добавить новый договор"
         />
-        <TextField
-          size="small" label="Описание" fullWidth
-          value={draft.description}
-          onChange={(e) => onField("description", e.target.value)}
-          disabled={!editing}
-        />
-        <TextField size="small" label="Инициатор" fullWidth value={draft.initiator} disabled />
-        <TextField size="small" label="Дата создания" fullWidth value={draft.createdAt} disabled />
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Описание
+          </label>
+          <input
+            className="input-base"
+            value={draft.description}
+            onChange={(e) => onField("description", e.target.value)}
+            disabled={!editing}
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Инициатор
+          </label>
+          <input className="input-base" value={draft.initiator} disabled />
+        </div>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Дата создания
+          </label>
+          <input className="input-base" value={draft.createdAt} disabled />
+        </div>
         <SelectWithAdd
           label="Центр затрат"
           value={draft.costCenter}
           options={costCenters}
           editing={editing}
           onChange={(v) => onField("costCenter", v)}
-          onNewItem={(v) => { onAddCostCenter(v); onField("costCenter", v); }}
+          onNewItem={(v) => {
+            onAddCostCenter(v);
+            onField("costCenter", v);
+          }}
           modalTitle="Добавить новый центр затрат"
         />
         <SelectWithAdd
@@ -79,7 +91,10 @@ export function RdInfoForm({
           options={projects}
           editing={editing}
           onChange={(v) => onField("project", v)}
-          onNewItem={(v) => { onAddProject(v); onField("project", v); }}
+          onNewItem={(v) => {
+            onAddProject(v);
+            onField("project", v);
+          }}
           modalTitle="Добавить новый проект"
         />
         <SelectWithAdd
@@ -88,15 +103,23 @@ export function RdInfoForm({
           options={articles}
           editing={editing}
           onChange={(v) => onField("article", v)}
-          onNewItem={(v) => { onAddArticle(v); onField("article", v); }}
+          onNewItem={(v) => {
+            onAddArticle(v);
+            onField("article", v);
+          }}
           modalTitle="Добавить новую статью"
         />
-        <TextField
-          size="small" label="Сумма рамочного договора" fullWidth
-          value={`${formatNumber(total)} KZT`}
-          disabled
-        />
-      </Box>
-    </Paper>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Сумма рамочного договора
+          </label>
+          <input
+            className="input-base"
+            value={`${formatNumber(total)} KZT`}
+            disabled
+          />
+        </div>
+      </div>
+    </div>
   );
 }

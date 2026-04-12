@@ -1,7 +1,6 @@
 "use client";
 
-import AddIcon from "@mui/icons-material/Add";
-import { Paper, Box, Typography, Button } from "@mui/material";
+import { Plus } from "lucide-react";
 import { SpecMobileCards } from "./SpecMobileCards";
 import { SpecTable } from "./SpecTable";
 import { calcTotal, formatNumber, type SpecRow } from "../data/options";
@@ -15,47 +14,51 @@ interface SpecSectionProps {
   onAdd: () => void;
 }
 
-export function SpecSection({ rows, editing, isMobile, onUpdate, onRemove, onAdd }: SpecSectionProps) {
+export function SpecSection({
+  rows,
+  editing,
+  isMobile,
+  onUpdate,
+  onRemove,
+  onAdd,
+}: SpecSectionProps) {
   const total = calcTotal(rows);
 
   return (
-    <Paper elevation={1}>
-      <Box
-        px={2.5} py={2}
-        borderBottom="1px solid" sx={{ borderColor: "divider" }}
-        display="flex" alignItems="center" justifyContent="space-between"
-      >
-        <Typography variant="subtitle2" fontWeight={600}>
-          Спецификация
-        </Typography>
+    <div className="bg-card border border-border rounded-lg">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border">
+        <p className="text-sm font-semibold">Спецификация</p>
         {editing && (
-          <Button
-            variant="outlined"
-            color="inherit"
-            size="small"
-            startIcon={<AddIcon />}
+          <button
             onClick={onAdd}
-            sx={{ textTransform: "none", borderRadius: 2, borderColor: "grey.300", color: "text.secondary" }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
           >
+            <Plus className="size-4" />
             Добавить строку
-          </Button>
+          </button>
         )}
-      </Box>
+      </div>
 
       {isMobile ? (
-        <SpecMobileCards rows={rows} editing={editing} onUpdate={onUpdate} onRemove={onRemove} />
+        <SpecMobileCards
+          rows={rows}
+          editing={editing}
+          onUpdate={onUpdate}
+          onRemove={onRemove}
+        />
       ) : (
-        <SpecTable rows={rows} editing={editing} onUpdate={onUpdate} onRemove={onRemove} />
+        <SpecTable
+          rows={rows}
+          editing={editing}
+          onUpdate={onUpdate}
+          onRemove={onRemove}
+        />
       )}
 
-      <Box
-        px={2.5} py={2}
-        borderTop="1px solid" sx={{ borderColor: "divider" }}
-        display="flex" justifyContent="flex-end" alignItems="center" gap={2}
-      >
-        <Typography variant="body2" color="text.secondary">Итого:</Typography>
-        <Typography variant="subtitle1" fontWeight={600}>{formatNumber(total)} KZT</Typography>
-      </Box>
-    </Paper>
+      <div className="flex justify-end items-center gap-4 px-5 py-3 border-t border-border">
+        <p className="text-sm text-muted-foreground">Итого:</p>
+        <p className="text-base font-semibold">{formatNumber(total)} KZT</p>
+      </div>
+    </div>
   );
 }

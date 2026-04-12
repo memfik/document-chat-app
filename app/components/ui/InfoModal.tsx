@@ -1,24 +1,7 @@
 "use client";
 
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CloseIcon from "@mui/icons-material/Close";
-import HistoryIcon from "@mui/icons-material/History";
-import DescriptionIcon from "@mui/icons-material/Description";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  Chip,
-  Divider,
-} from "@mui/material";
+import { X, History, FileText, Eye, Paperclip } from "lucide-react";
+import { Dialog } from "@base-ui/react/dialog";
 import { useRouter } from "next/navigation";
 import type { ApplicationRow } from "@/app/types/application";
 
@@ -40,20 +23,12 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Box>
-      <Typography
-        variant="caption"
-        fontWeight={700}
-        color="text.secondary"
-        textTransform="uppercase"
-        letterSpacing={0.8}
-        display="block"
-        mb={1.5}
-      >
+    <div>
+      <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide mb-3">
         {title}
-      </Typography>
+      </p>
       {children}
-    </Box>
+    </div>
   );
 }
 
@@ -67,19 +42,10 @@ function Field({
   wide?: boolean;
 }) {
   return (
-    <Box sx={wide ? { gridColumn: "span 2" } : {}}>
-      <Typography
-        variant="caption"
-        color="text.disabled"
-        display="block"
-        mb={0.25}
-      >
-        {label}
-      </Typography>
-      <Typography variant="body2" fontWeight={500} color="text.primary">
-        {value || "—"}
-      </Typography>
-    </Box>
+    <div className={wide ? "col-span-2" : ""}>
+      <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+      <p className="text-sm font-medium">{value || "—"}</p>
+    </div>
   );
 }
 
@@ -93,52 +59,33 @@ function FileLink({
   onView?: () => void;
 }) {
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="space-between"
-      px={1.5}
-      py={1}
-      sx={{
-        borderRadius: 2,
-        border: "1px solid",
-        borderColor: exists ? "divider" : "divider",
-        borderStyle: exists ? "solid" : "dashed",
-        bgcolor: exists ? "background.paper" : "action.hover",
-        transition: "border-color 0.2s",
-        ...(exists && { "&:hover": { borderColor: "text.disabled" } }),
-      }}
+    <div
+      className={`flex items-center justify-between px-3 py-2 rounded-lg border transition-colors ${
+        exists
+          ? "border-border bg-card hover:border-muted-foreground"
+          : "border-dashed border-border bg-muted/30"
+      }`}
     >
-      <Box display="flex" alignItems="center" gap={1} minWidth={0}>
-        <DescriptionIcon
-          fontSize="small"
-          sx={{ color: exists ? "info.main" : "text.disabled", flexShrink: 0 }}
+      <div className="flex items-center gap-2 min-w-0">
+        <FileText
+          className={`size-4 shrink-0 ${exists ? "text-blue-500" : "text-muted-foreground"}`}
         />
-        <Typography
-          variant="body2"
-          color={exists ? "text.primary" : "text.disabled"}
-          noWrap
+        <span
+          className={`text-sm truncate ${exists ? "text-foreground" : "text-muted-foreground"}`}
         >
           {name}
-        </Typography>
-      </Box>
+        </span>
+      </div>
       {exists && onView && (
-        <Button
-          size="small"
-          startIcon={<VisibilityIcon sx={{ fontSize: "13px !important" }} />}
+        <button
           onClick={onView}
-          sx={{
-            textTransform: "none",
-            fontSize: 12,
-            ml: 1,
-            flexShrink: 0,
-            borderRadius: 2,
-          }}
+          className="flex items-center gap-1 text-xs px-2 py-1 rounded-md hover:bg-muted ml-2 shrink-0 text-muted-foreground"
         >
+          <Eye className="size-3" />
           Просмотр
-        </Button>
+        </button>
       )}
-    </Box>
+    </div>
   );
 }
 
@@ -149,8 +96,6 @@ export function InfoModal({
   paymentFileName,
   onClose,
 }: InfoModalProps) {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const costWithVat = row.cost.replace(/\s/g, "");
   const router = useRouter();
   const costNum = parseInt(costWithVat.replace(/\D/g, ""), 10) || 0;
@@ -158,206 +103,146 @@ export function InfoModal({
   const vat = Math.round(costNum - costNum / 1.12).toLocaleString("ru-RU");
 
   return (
-    <Dialog
-      open
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      fullScreen={fullScreen}
-      scroll="paper"
-    >
-      <DialogTitle sx={{ pb: 1 }}>
-        <Box
-          display="flex"
-          alignItems="flex-start"
-          justifyContent="space-between"
-          gap={2}
-        >
-          <Box minWidth={0}>
-            <Typography variant="subtitle1" fontWeight={700}>
-              Заявка №{row.id}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" noWrap>
+    <Dialog.Root open onOpenChange={(o) => !o && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
+        <Dialog.Popup className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-card border border-border rounded-xl shadow-xl max-h-[90vh] flex flex-col outline-none">
+        {/* Title */}
+        <div className="flex items-start justify-between gap-4 px-4 py-3 border-b border-border">
+          <div className="min-w-0">
+            <p className="text-sm font-bold">Заявка №{row.id}</p>
+            <p className="text-sm text-muted-foreground truncate">
               {row.description}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center" gap={1} flexShrink={0}>
-            <Button
-              variant="outlined"
-              color="inherit"
-              size="small"
-              startIcon={<HistoryIcon fontSize="small" />}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
               onClick={() => router.push(`/history/${row.id}`)}
-              sx={{
-                textTransform: "none",
-                borderColor: "divider",
-                color: "text.secondary",
-                borderRadius: 2,
-              }}
+              className="flex items-center gap-1.5 text-sm px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
             >
+              <History className="size-3.5" />
               История
-            </Button>
-            <IconButton
-              size="small"
+            </button>
+            <button
               onClick={onClose}
-              sx={{ color: "text.secondary" }}
+              className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"
             >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
-      </DialogTitle>
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
 
-      <DialogContent
-        dividers
-        sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-      >
-        <SectionCard title="Основная информация">
-          <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
-            <Field label="№ заявки" value={row.id} />
-            <Field
-              label="Статус"
-              value={
-                <Chip
-                  label={statusLabel}
-                  size="small"
-                  sx={{
-                    bgcolor: statusColor,
-                    color: "#fff",
-                    fontWeight: 500,
-                    fontSize: 11,
-                  }}
-                />
-              }
-            />
-            <Field label="Дата поступления" value={row.date} />
-            <Field label="Тип" value={row.type} />
-            <Field label="Инициатор" value={row.initiator} />
-            <Field label="Исполнитель" value={row.executor} />
-            <Field label="Статья" value={row.article} />
-            <Field label="Метод закупа" value="Запрос ценовых предложений" />
-            <Field
-              label="Стоимость (с НДС)"
-              value={
-                <Typography
-                  variant="body2"
-                  fontWeight={700}
-                  color="text.primary"
-                  component="span"
-                >
-                  {row.cost} {row.currency}
-                </Typography>
-              }
-            />
-            <Field
-              label="Стоимость (без НДС)"
-              value={`${costWithoutVat} ${row.currency}`}
-            />
-          </Box>
-        </SectionCard>
-
-        <Divider />
-
-        <SectionCard title="Паспорт договора">
-          <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
-            <Field label="Поставщик" value="ТОО «ТехСнаб»" wide />
-            <Field
-              label="Сумма договора"
-              value={
-                <Typography
-                  variant="body2"
-                  fontWeight={700}
-                  color="text.primary"
-                  component="span"
-                >
-                  {row.cost} {row.currency}
-                </Typography>
-              }
-            />
-            <Field label="НДС (12%)" value={`${vat} ${row.currency}`} />
-            <Field label="№ договора" value={row.contractNum} />
-            <Field label="Дата договора" value={row.date} />
-            <Field label="Условия оплаты" value="30 дней с момента поставки" />
-            <Field label="Форма договора" value="Рамочный" />
-          </Box>
-        </SectionCard>
-
-        <Divider />
-
-        <SectionCard title="Согласование">
-          <Box display="flex" flexDirection="column" gap={1}>
-            <FileLink name="Форма 16" onView={() => {}} />
-            <FileLink name="Протокол согласования" onView={() => {}} />
-            <FileLink name="Договор" onView={() => {}} />
-            <Box
-              display="grid"
-              gridTemplateColumns="1fr 1fr"
-              gap={2}
-              mt={0.5}
-              px={0.5}
-            >
-              <Field label="№ ЗНО" value={row.znoNum} />
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 px-4 py-3 flex flex-col gap-5">
+          <SectionCard title="Основная информация">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="№ заявки" value={row.id} />
               <Field
-                label="Платежный документ"
+                label="Статус"
                 value={
-                  paymentFileName ? (
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={0.5}
-                      component="span"
-                    >
-                      <AttachFileIcon
-                        sx={{ fontSize: 13, color: "info.main" }}
-                      />
-                      <Typography
-                        variant="body2"
-                        color="info.main"
-                        component="span"
-                      >
-                        {paymentFileName}
-                      </Typography>
-                    </Box>
-                  ) : (
-                    "—"
-                  )
+                  <span
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                    style={{ backgroundColor: statusColor }}
+                  >
+                    {statusLabel}
+                  </span>
                 }
               />
-            </Box>
-          </Box>
-        </SectionCard>
+              <Field label="Дата поступления" value={row.date} />
+              <Field label="Тип" value={row.type} />
+              <Field label="Инициатор" value={row.initiator} />
+              <Field label="Исполнитель" value={row.executor} />
+              <Field label="Статья" value={row.article} />
+              <Field label="Метод закупа" value="Запрос ценовых предложений" />
+              <Field
+                label="Стоимость (с НДС)"
+                value={
+                  <span className="font-bold">
+                    {row.cost} {row.currency}
+                  </span>
+                }
+              />
+              <Field
+                label="Стоимость (без НДС)"
+                value={`${costWithoutVat} ${row.currency}`}
+              />
+            </div>
+          </SectionCard>
 
-        <Divider />
+          <div className="border-t border-border" />
 
-        <SectionCard title="Документы и файлы">
-          <Box display="flex" flexDirection="column" gap={1}>
-            <FileLink name="Техническая спецификация.pdf" onView={() => {}} />
-            <FileLink name="Приложение №1.xlsx" onView={() => {}} />
-            <FileLink name="Файл договора.pdf" onView={() => {}} />
-            <FileLink name="Анализ предложений.pdf" onView={() => {}} />
-            <FileLink name="Прочие документы" exists={false} />
-          </Box>
-        </SectionCard>
-      </DialogContent>
+          <SectionCard title="Паспорт договора">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Поставщик" value="ТОО «ТехСнаб»" wide />
+              <Field
+                label="Сумма договора"
+                value={
+                  <span className="font-bold">
+                    {row.cost} {row.currency}
+                  </span>
+                }
+              />
+              <Field label="НДС (12%)" value={`${vat} ${row.currency}`} />
+              <Field label="№ договора" value={row.contractNum} />
+              <Field label="Дата договора" value={row.date} />
+              <Field label="Условия оплаты" value="30 дней с момента поставки" />
+              <Field label="Форма договора" value="Рамочный" />
+            </div>
+          </SectionCard>
 
-      <DialogActions sx={{ px: 3, py: 1.5, justifyContent: "space-between" }}>
-        <Typography variant="caption" color="text.disabled">
-          Последнее изменение: {row.updatedAt}
-        </Typography>
-        <Button
-          variant="outlined"
-          color="inherit"
-          onClick={onClose}
-          sx={{
-            textTransform: "none",
-            borderColor: "divider",
-            color: "text.secondary",
-            borderRadius: 2,
-          }}
-        >
-          Закрыть
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <div className="border-t border-border" />
+
+          <SectionCard title="Согласование">
+            <div className="flex flex-col gap-2">
+              <FileLink name="Форма 16" onView={() => {}} />
+              <FileLink name="Протокол согласования" onView={() => {}} />
+              <FileLink name="Договор" onView={() => {}} />
+              <div className="grid grid-cols-2 gap-3 mt-1 px-1">
+                <Field label="№ ЗНО" value={row.znoNum} />
+                <Field
+                  label="Платежный документ"
+                  value={
+                    paymentFileName ? (
+                      <span className="flex items-center gap-1 text-blue-500">
+                        <Paperclip className="size-3" />
+                        {paymentFileName}
+                      </span>
+                    ) : (
+                      "—"
+                    )
+                  }
+                />
+              </div>
+            </div>
+          </SectionCard>
+
+          <div className="border-t border-border" />
+
+          <SectionCard title="Документы и файлы">
+            <div className="flex flex-col gap-2">
+              <FileLink name="Техническая спецификация.pdf" onView={() => {}} />
+              <FileLink name="Приложение №1.xlsx" onView={() => {}} />
+              <FileLink name="Файл договора.pdf" onView={() => {}} />
+              <FileLink name="Анализ предложений.pdf" onView={() => {}} />
+              <FileLink name="Прочие документы" exists={false} />
+            </div>
+          </SectionCard>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+          <p className="text-xs text-muted-foreground">
+            Последнее изменение: {row.updatedAt}
+          </p>
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+          >
+            Закрыть
+          </button>
+        </div>
+      </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

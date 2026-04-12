@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button } from "@mui/material";
+import { cn } from "@/lib/utils";
 
 export interface StatusFilterOption {
   key: string;
@@ -15,60 +15,39 @@ interface StatusFilterBarProps {
   counts: Record<string, number>;
 }
 
-export function StatusFilterBar({ filters, activeKey, onSelect, counts }: StatusFilterBarProps) {
+export function StatusFilterBar({
+  filters,
+  activeKey,
+  onSelect,
+  counts,
+}: StatusFilterBarProps) {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: 1,
-        overflowX: "auto",
-        flexWrap: { xs: "nowrap", md: "wrap" },
-        pb: { xs: 0.5, md: 0 },
-        "&::-webkit-scrollbar": { display: "none" },
-        scrollbarWidth: "none",
-      }}
-    >
+    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 md:flex-wrap [&::-webkit-scrollbar]:hidden scrollbar-none">
       {filters.map((f) => {
         const active = activeKey === f.key;
         return (
-          <Button
+          <button
             key={f.key}
             onClick={() => onSelect(f.key)}
-            size="small"
-            startIcon={
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  backgroundColor: f.color,
-                  flexShrink: 0,
-                  display: "inline-block",
-                }}
-              />
-            }
-            sx={{
-              textTransform: "none",
-              borderRadius: 2,
-              border: "1px solid",
-              borderColor: active ? f.color : "transparent",
-              backgroundColor: "transparent",
-              color: active ? "text.primary" : "text.secondary",
-              fontWeight: active ? 600 : 400,
-              px: 2,
-              flexShrink: 0,
-            }}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1 rounded-lg border text-sm transition-colors shrink-0",
+              active
+                ? "border-current font-semibold text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50",
+            )}
+            style={active ? { borderColor: f.color } : {}}
           >
+            <span
+              className="inline-block size-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: f.color }}
+            />
             {f.label}
-            <Box
-              component="span"
-              sx={{ ml: 1, fontWeight: 600, fontSize: "0.75rem", color: "text.disabled" }}
-            >
+            <span className="text-xs font-semibold text-muted-foreground ml-0.5">
               {counts[f.key] ?? 0}
-            </Box>
-          </Button>
+            </span>
+          </button>
         );
       })}
-    </Box>
+    </div>
   );
 }

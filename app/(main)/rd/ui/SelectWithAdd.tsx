@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import { Box, TextField, MenuItem, IconButton } from "@mui/material";
+import { Plus } from "lucide-react";
 import { NewItemModal } from "./NewItemModal";
 
 interface SelectWithAddProps {
@@ -28,40 +27,34 @@ export function SelectWithAdd({
 
   return (
     <>
-      <Box display="flex" gap={1} alignItems="flex-end">
-        <TextField
-          select
-          size="small"
-          label={label}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={!editing}
-          fullWidth
-        >
-          {options.map((o) => (
-            <MenuItem key={o} value={o}>
-              {o}
-            </MenuItem>
-          ))}
-        </TextField>
+      <div className="flex gap-2 items-end">
+        <div className="flex-1">
+          <label className="block text-xs text-muted-foreground mb-1">
+            {label}
+          </label>
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={!editing}
+            className="select-base"
+          >
+            {options.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
         {editing && (
-          <IconButton
-            size="small"
+          <button
             onClick={() => setShowModal(true)}
             title={`Создать новый: ${label}`}
-            sx={{
-              border: "1px solid",
-              borderColor: "grey.300",
-              borderRadius: 1,
-              height: 40,
-              width: 40,
-              flexShrink: 0,
-            }}
+            className="size-8 shrink-0 flex items-center justify-center border border-border rounded hover:bg-muted transition-colors"
           >
-            <AddIcon fontSize="small" />
-          </IconButton>
+            <Plus className="size-4" />
+          </button>
         )}
-      </Box>
+      </div>
       {showModal && (
         <NewItemModal
           title={modalTitle}

@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { Box } from "@mui/material";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 import { RdHeader } from "./ui/RdHeader";
 import { RdInfoForm } from "./ui/RdInfoForm";
@@ -22,8 +20,7 @@ import {
 let nextId = 100;
 
 export default function RdPage() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile(900);
 
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState<FormData>(initialData);
@@ -33,31 +30,61 @@ export default function RdPage() {
   const [projects, setProjects] = useState(projectOptions);
   const [articles, setArticles] = useState(articleOptions);
 
-  const setField = useCallback(<K extends keyof FormData>(key: K, value: FormData[K]) => {
-    setDraft((d) => ({ ...d, [key]: value }));
-  }, []);
+  const setField = useCallback(
+    <K extends keyof FormData>(key: K, value: FormData[K]) => {
+      setDraft((d) => ({ ...d, [key]: value }));
+    },
+    [],
+  );
 
   const updateRow = (id: number, field: keyof SpecRow, value: string) =>
-    setDraft((d) => ({ ...d, rows: d.rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)) }));
+    setDraft((d) => ({
+      ...d,
+      rows: d.rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)),
+    }));
 
   const addRow = () =>
-    setDraft((d) => ({ ...d, rows: [...d.rows, { id: nextId++, description: "", qty: "", price: "" }] }));
+    setDraft((d) => ({
+      ...d,
+      rows: [
+        ...d.rows,
+        { id: nextId++, description: "", qty: "", price: "" },
+      ],
+    }));
 
   const removeRow = (id: number) =>
     setDraft((d) => ({ ...d, rows: d.rows.filter((r) => r.id !== id) }));
 
-  const handleEdit = () => { setDraft(saved); setEditing(true); };
-  const handleCancel = () => { setDraft(saved); setEditing(false); };
-  const handleSave = () => { setSaved(draft); setEditing(false); };
+  const handleEdit = () => {
+    setDraft(saved);
+    setEditing(true);
+  };
+  const handleCancel = () => {
+    setDraft(saved);
+    setEditing(false);
+  };
+  const handleSave = () => {
+    setSaved(draft);
+    setEditing(false);
+  };
 
   return (
-    <Box py={{ xs: 2, md: 3 }} px={{ xs: 1.5, md: 3 }} maxWidth="1280px" mx="auto">
-      <RdHeader editing={editing} onEdit={handleEdit} onSave={handleSave} onCancel={handleCancel} />
+    <div className="py-6 px-4 md:px-6 max-w-[1280px] mx-auto">
+      <RdHeader
+        editing={editing}
+        onEdit={handleEdit}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
 
       <RdInfoForm
         draft={draft}
         editing={editing}
-        total={draft.rows.reduce((acc, r) => acc + (parseFloat(r.qty) || 0) * (parseFloat(r.price) || 0), 0)}
+        total={draft.rows.reduce(
+          (acc, r) =>
+            acc + (parseFloat(r.qty) || 0) * (parseFloat(r.price) || 0),
+          0,
+        )}
         contracts={contracts}
         costCenters={costCenters}
         projects={projects}
@@ -77,6 +104,6 @@ export default function RdPage() {
         onRemove={removeRow}
         onAdd={addRow}
       />
-    </Box>
+    </div>
   );
 }

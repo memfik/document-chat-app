@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Box, Typography } from "@mui/material";
 import { initialEvents, groupByDay, type HistoryEvent } from "../data/events";
 import { EventCard } from "../ui/EventCard";
 import { CommentBox } from "../ui/CommentBox";
@@ -33,35 +32,30 @@ export default function HistoryPage() {
   };
 
   return (
-    <Box py={{ xs: 2, md: 3 }} px={{ xs: 1.5, md: 3 }} maxWidth={896} mx="auto">
-      <Box mb={2.5}>
-        <Typography variant="h6" fontWeight={600}>
-          История заявки №{id}
-        </Typography>
-        <Typography variant="caption" color="text.disabled">
-          {events.length} событий
-        </Typography>
-      </Box>
+    <div className="py-6 px-4 md:px-6 max-w-3xl mx-auto">
+      <div className="mb-5">
+        <h1 className="text-lg font-semibold">История заявки №{id}</h1>
+        <p className="text-xs text-muted-foreground">{events.length} событий</p>
+      </div>
 
       <CommentBox value={comment} onChange={setComment} onSend={sendComment} />
 
-      <Box>
+      <div>
         {groups.map((group) => (
-          <Box key={group.label}>
-            <Box display="flex" alignItems="center" gap={1.5} mb={2}>
-              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
-              <Typography variant="caption" color="text.disabled" sx={{ px: 1 }}>
+          <div key={group.label}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-border" />
+              <p className="text-xs text-muted-foreground px-2">
                 {group.label}
-              </Typography>
-              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
-            </Box>
-
+              </p>
+              <div className="flex-1 h-px bg-border" />
+            </div>
             {group.events.map((ev) => (
               <EventCard key={ev.id} ev={ev} />
             ))}
-          </Box>
+          </div>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

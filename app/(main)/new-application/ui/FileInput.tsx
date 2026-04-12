@@ -1,8 +1,6 @@
 "use client";
 
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import CloseIcon from "@mui/icons-material/Close";
-import { Box, Typography, IconButton } from "@mui/material";
+import { Upload, X } from "lucide-react";
 
 interface FileInputProps {
   label: string;
@@ -12,41 +10,31 @@ interface FileInputProps {
 
 export function FileInput({ label, file, onChange }: FileInputProps) {
   return (
-    <Box>
-      <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
-        {label}
-      </Typography>
-      <Box
-        component="label"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          px: 2,
-          py: 1.5,
-          border: "1px dashed",
-          borderColor: "grey.300",
-          borderRadius: 1,
-          cursor: "pointer",
-          transition: "border-color 0.2s",
-          "&:hover": { borderColor: "primary.main" },
-        }}
-      >
-        <UploadFileIcon fontSize="small" sx={{ color: "text.disabled", flexShrink: 0 }} />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-        >
+    <div>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <label className="flex items-center gap-2 px-3 py-3 border border-dashed border-border rounded-md cursor-pointer hover:border-[#f96800] transition-colors">
+        <Upload className="size-4 text-muted-foreground shrink-0" />
+        <span className="text-sm text-muted-foreground flex-1 truncate">
           {file ? file.name : "Нажмите для загрузки файла..."}
-        </Typography>
+        </span>
         {file && (
-          <IconButton size="small" onClick={(e) => { e.preventDefault(); onChange(null); }}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onChange(null);
+            }}
+            className="p-0.5 rounded hover:bg-muted"
+          >
+            <X className="size-3.5 text-muted-foreground" />
+          </button>
         )}
-        <input type="file" hidden onChange={(e) => onChange(e.target.files?.[0] ?? null)} />
-      </Box>
-    </Box>
+        <input
+          type="file"
+          className="hidden"
+          onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+        />
+      </label>
+    </div>
   );
 }

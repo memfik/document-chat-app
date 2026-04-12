@@ -1,8 +1,7 @@
 "use client";
 
-import SearchIcon from "@mui/icons-material/Search";
-import CloseIcon from "@mui/icons-material/Close";
-import { TextField, InputAdornment, IconButton, Button, Box } from "@mui/material";
+import { Search, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
   value: string;
@@ -20,64 +19,38 @@ export function SearchBar({
   onYearToggle,
 }: SearchBarProps) {
   return (
-    <Box display="flex" alignItems="center" gap={1.5}>
-      <TextField
-        size="small"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        sx={{
-          flex: 1,
-          "& .MuiOutlinedInput-root": {
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#f96800",
-            },
-          },
-        }}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" sx={{ color: "text.secondary" }} />
-              </InputAdornment>
-            ),
-            endAdornment: value ? (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="clear search"
-                  onClick={() => onChange("")}
-                  edge="end"
-                  size="small"
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
-          },
-        }}
-      />
+    <div className="flex items-center gap-3">
+      <div className="relative flex-1">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="input-base pl-8 pr-8"
+        />
+        {value && (
+          <button
+            onClick={() => onChange("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
+          >
+            <X className="size-3.5 text-muted-foreground" />
+          </button>
+        )}
+      </div>
       {onYearToggle && (
-        <Button
-          variant={currentYearOnly ? "contained" : "outlined"}
+        <button
           onClick={onYearToggle}
-          size="medium"
-          sx={{
-            textTransform: "none",
-            whiteSpace: "nowrap",
-            borderRadius: 2,
-            ...(currentYearOnly
-              ? {
-                  backgroundColor: "#2db351",
-                  color: "text.primary",
-                  boxShadow: "none",
-                  "&:hover": { backgroundColor: "#208c3d", boxShadow: "none" },
-                }
-              : { borderColor: "grey.300", color: "text.secondary" }),
-          }}
+          className={cn(
+            "shrink-0 px-3 py-1.5 text-sm rounded-lg border transition-colors whitespace-nowrap",
+            currentYearOnly
+              ? "bg-[#2db351] text-white border-[#2db351] hover:bg-[#208c3d]"
+              : "border-border text-muted-foreground hover:bg-muted/50",
+          )}
         >
           Только текущий год
-        </Button>
+        </button>
       )}
-    </Box>
+    </div>
   );
 }

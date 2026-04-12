@@ -1,21 +1,7 @@
 "use client";
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import HistoryIcon from "@mui/icons-material/History";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Button,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Eye, Pencil, History } from "lucide-react";
+import { TablePagination } from "@/app/components/ui/TablePagination";
 import type { ApplicationRow, StatusFilter } from "../data/applications";
 import type { RowExtra } from "./EditModal";
 
@@ -34,6 +20,24 @@ interface ApplicationsTableProps {
   onOpenFile: (extra: RowExtra) => void;
 }
 
+const COLUMNS = [
+  "№ заявки",
+  "Дата поступления",
+  "Инициатор",
+  "Подразделение инициатора",
+  "Описание",
+  "Стоимость",
+  "№ договора",
+  "Исполнитель",
+  "Статус",
+  "Договор",
+  "Время изменения",
+  "Статья",
+  "№ ЗНО",
+  "Платежный документ",
+  "Действия",
+];
+
 export function ApplicationsTable({
   rows,
   statusFilters,
@@ -48,144 +52,130 @@ export function ApplicationsTable({
   onHistory,
   onOpenFile,
 }: ApplicationsTableProps) {
-  const visibleRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const visibleRows = rows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
 
   return (
-    <Paper>
-      <TableContainer sx={{ maxHeight: "calc(100vh - 260px)" }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              {[
-                "№ заявки",
-                "Дата поступления",
-                "Инициатор",
-                "Подразделение инициатора",
-                "Описание",
-                "Стоимость",
-                "№ договора",
-                "Исполнитель",
-                "Статус",
-                "Договор",
-                "Время изменения",
-                "Статья",
-                "№ ЗНО",
-                "Платежный документ",
-                "Действия",
-              ].map((col) => (
-                <TableCell key={col}>
-                  <b>{col}</b>
-                </TableCell>
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="overflow-auto max-h-[calc(100vh-260px)]">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50 sticky top-0 z-10">
+            <tr>
+              {COLUMNS.map((col) => (
+                <th
+                  key={col}
+                  className="px-3 py-2.5 text-left font-semibold text-foreground whitespace-nowrap border-b border-border"
+                >
+                  {col}
+                </th>
               ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
+            </tr>
+          </thead>
+          <tbody>
             {visibleRows.map((row) => {
               const status = statusFilters.find((s) => s.key === row.status);
               const extra = extras[row.id];
               return (
-                <TableRow
+                <tr
                   key={row.id}
-                  hover
                   onClick={() => onRowClick(row)}
-                  sx={{ cursor: "pointer" }}
+                  className="border-b border-border last:border-b-0 hover:bg-muted/30 cursor-pointer transition-colors"
                 >
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.initiator}</TableCell>
-                  <TableCell>{row.type}</TableCell>
-                  <TableCell>{row.description}</TableCell>
-                  <TableCell>
+                  <td className="px-3 py-2 whitespace-nowrap">{row.id}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{row.date}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {row.initiator}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">{row.type}</td>
+                  <td className="px-3 py-2 max-w-[200px] truncate">
+                    {row.description}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
                     {row.cost} {row.currency}
-                  </TableCell>
-                  <TableCell>{row.contractNum}</TableCell>
-                  <TableCell>{row.executor}</TableCell>
-                  <TableCell>
-                    <Box display="flex" alignItems="center" gap={0.75}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, bgcolor: status?.color }} />
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {row.contractNum}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {row.executor}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="inline-block size-2 rounded-full shrink-0"
+                        style={{ backgroundColor: status?.color }}
+                      />
                       {status?.label}
-                    </Box>
-                  </TableCell>
-                  <TableCell>{row.contract}</TableCell>
-                  <TableCell>{row.updatedAt}</TableCell>
-                  <TableCell>{row.article}</TableCell>
-                  <TableCell>{extra?.znoNum || row.znoNum}</TableCell>
-                  <TableCell>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {row.contract}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {row.updatedAt}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">{row.article}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {extra?.znoNum || row.znoNum}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
                     {extra?.paymentFileName ? (
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<VisibilityIcon sx={{ fontSize: "0.85rem !important" }} />}
-                        onClick={(e) => { e.stopPropagation(); onOpenFile(extra); }}
-                        sx={{ borderRadius: 2, textTransform: "none", fontSize: "0.7rem", py: 0.5, px: 1 }}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenFile(extra);
+                        }}
+                        className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border hover:bg-muted transition-colors"
                       >
+                        <Eye className="size-3" />
                         Посмотреть
-                      </Button>
+                      </button>
                     ) : (
-                      <Typography variant="caption" color="text.disabled">—</Typography>
+                      <span className="text-xs text-muted-foreground">—</span>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    <Box display="grid" gap={1}>                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<EditIcon sx={{ fontSize: "0.85rem !important" }} />}
-                        onClick={(e) => { e.stopPropagation(); onEdit(row.id); }}
-                        sx={{
-                          textTransform: "none",
-                          borderRadius: 2,
-                          fontSize: "0.7rem",
-                          color: "text.secondary",
-                          borderColor: "grey.300",
-                          py: 0.5,
-                          px: 5,
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(row.id);
                         }}
+                        className="flex items-center gap-1 text-xs px-3 py-1 rounded border border-border text-muted-foreground hover:bg-muted transition-colors"
                       >
+                        <Pencil className="size-3" />
                         Править
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<HistoryIcon sx={{ fontSize: "0.85rem !important" }} />}
-                        onClick={(e) => { e.stopPropagation(); onHistory(row.id); }}
-                        sx={{
-                          textTransform: "none",
-                          fontSize: "0.7rem",
-                          color: "text.secondary",
-                          borderColor: "grey.300",
-                          borderRadius: 2,
-                          py: 0.5,
-                          px: 1,
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onHistory(row.id);
                         }}
+                        className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-border text-muted-foreground hover:bg-muted transition-colors"
                       >
+                        <History className="size-3" />
                         История
-                      </Button>
-                    </Box>
-                  </TableCell>
-                </TableRow>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
       <TablePagination
-        component="div"
         count={total}
         page={page}
         rowsPerPage={rowsPerPage}
-        onPageChange={(_, p) => onPageChange(p)}
-        onRowsPerPageChange={(e) => { onRowsPerPageChange(parseInt(e.target.value, 10)); onPageChange(0); }}
-        rowsPerPageOptions={[25, 50, 75, 100]}
-        labelRowsPerPage="Строк на странице:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          bgcolor: "background.paper",
-          borderTop: "1px solid",
-          borderColor: "divider",
-        }}
+        onPageChange={onPageChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        labelDisplayedRows={({ from, to, count }) =>
+          `${from}–${to} из ${count}`
+        }
       />
-    </Paper>
+    </div>
   );
 }

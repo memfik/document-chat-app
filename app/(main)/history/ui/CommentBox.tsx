@@ -1,7 +1,6 @@
 "use client";
 
-import SendIcon from "@mui/icons-material/Send";
-import { Box, Typography, Paper, TextField, Button } from "@mui/material";
+import { Send } from "lucide-react";
 
 interface CommentBoxProps {
   value: string;
@@ -11,14 +10,10 @@ interface CommentBoxProps {
 
 export function CommentBox({ value, onChange, onSend }: CommentBoxProps) {
   return (
-    <Paper variant="outlined" sx={{ p: 2, mb: 4, borderRadius: 2 }}>
-      <Typography variant="subtitle2" color="text.secondary" mb={1}>
-        Добавить комментарий
-      </Typography>
-      <TextField
-        fullWidth
-        size="small"
-        multiline
+    <div className="border border-border rounded-lg p-4 mb-8 bg-card">
+      <p className="text-sm text-muted-foreground mb-2">Добавить комментарий</p>
+      <textarea
+        className="textarea-base"
         rows={3}
         placeholder="Введите комментарий..."
         value={value}
@@ -27,24 +22,19 @@ export function CommentBox({ value, onChange, onSend }: CommentBoxProps) {
           if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) onSend();
         }}
       />
-      <Box display="flex" alignItems="center" justifyContent="space-between" mt={1.5} gap={1}>
-        <Typography
-          variant="caption"
-          color="text.disabled"
-          sx={{ display: { xs: "none", sm: "block" } }}
-        >
+      <div className="flex items-center justify-between mt-3 gap-2">
+        <p className="hidden sm:block text-xs text-muted-foreground">
           Ctrl+Enter для отправки
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<SendIcon />}
+        </p>
+        <button
           disabled={!value.trim()}
           onClick={onSend}
-          sx={{ textTransform: "none", borderRadius: 2, ml: { xs: "auto", sm: 0 } }}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
         >
+          <Send className="size-4" />
           Отправить
-        </Button>
-      </Box>
-    </Paper>
+        </button>
+      </div>
+    </div>
   );
 }

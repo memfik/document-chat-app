@@ -1,28 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import LogoutIcon from "@mui/icons-material/Logout";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MenuIcon from "@mui/icons-material/Menu";
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Badge,
+  Bell,
+  LogOut,
+  Sun,
+  Moon,
+  CircleUserRound,
+  ChevronDown,
   Menu,
-  MenuItem,
-  Typography,
-  Box,
-  Divider,
-  ListItemIcon,
-  Switch,
-} from "@mui/material";
+} from "lucide-react";
 import { useAppTheme } from "./ThemeContext";
+import { cn } from "@/lib/utils";
 
 const notifications = [
   { id: 1, text: "Заявка №1023 требует проверки", time: "5 мин назад" },
@@ -31,164 +21,152 @@ const notifications = [
   { id: 4, text: "Срок по заявке №1010 истекает", time: "вчера" },
 ];
 
-export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
-  const router = useRouter();
-  const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
-  const [userAnchorEl, setUserAnchorEl] = useState<null | HTMLElement>(null);
-  const { isDark, toggleTheme } = useAppTheme();
+function Dropdown({
+  children,
+  content,
+  width = 280,
+  align = "right",
+}: {
+  children: React.ReactNode;
+  content: React.ReactNode;
+  width?: number;
+  align?: "left" | "right";
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
-    <AppBar
-      position="static"
-      color="default"
-      elevation={1}
-      sx={{ bgcolor: "background.paper" }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between", px: 2, minHeight: 56 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <IconButton
-            onClick={onMenuClick}
-            sx={{ display: { xs: "flex", md: "none" } }}
+    <div className="relative" ref={ref}>
+      <div onClick={() => setOpen((v) => !v)}>{children}</div>
+      {open && (
+        <div
+          className={cn(
+            "absolute top-full mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg overflow-hidden",
+            align === "right" ? "right-0" : "left-0",
+          )}
+          style={{ width }}
+        >
+          {content}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
+  const router = useRouter();
+  const { isDark, toggleTheme } = useAppTheme();
+
+  const notifContent = (
+    <div>
+      <div className="px-3 py-2 border-b border-border">
+        <p className="text-sm font-semibold">Уведомления</p>
+      </div>
+      {notifications.length === 0 ? (
+        <div className="px-3 py-2 text-sm text-muted-foreground">
+          У вас нет уведомлений
+        </div>
+      ) : (
+        notifications.map((n) => (
+          <div
+            key={n.id}
+            className="px-3 py-2.5 border-b border-border last:border-b-0 hover:bg-muted/50 cursor-default"
           >
-            <MenuIcon />
-          </IconButton>
-          <Box
-            component="img"
-            src="/logo-jusanmobile.png"
-            alt="Logo"
-            sx={{
-              height: "clamp(32px, 6vw, 48px)",
-              objectFit: "contain",
-              ml: { xs: "-8px", md: "12px" },
-            }}
-          />
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <IconButton onClick={(e) => setNotifAnchorEl(e.currentTarget)}>
-            <Badge badgeContent={notifications.length} color="error">
-              <NotificationsIcon color="action" />
-            </Badge>
-          </IconButton>
-          <Menu
-            anchorEl={notifAnchorEl}
-            open={Boolean(notifAnchorEl)}
-            onClose={() => setNotifAnchorEl(null)}
-            PaperProps={{ sx: { width: 320 } }}
-          >
-            <Box sx={{ px: 2, py: 1, borderBottom: 1, borderColor: "divider" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                Уведомления
-              </Typography>
-            </Box>
-            {notifications.length === 0 ? (
-              <MenuItem disabled>
-                <Typography variant="body2" color="text.secondary">
-                  У вас нет уведомлений
-                </Typography>
-              </MenuItem>
-            ) : (
-              notifications.map((n) => (
-                <MenuItem
-                  key={n.id}
-                  sx={{
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    py: 1.5,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    "&:last-child": { borderBottom: 0 },
-                  }}
-                >
-                  <Typography variant="body2">{n.text}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {n.time}
-                  </Typography>
-                </MenuItem>
-              ))
+            <p className="text-sm">{n.text}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{n.time}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const userContent = (
+    <div>
+      <button
+        onClick={toggleTheme}
+        className="w-full flex items-center justify-between px-3 py-2.5 text-sm hover:bg-muted/50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          {isDark ? (
+            <Sun className="size-4 text-yellow-400" />
+          ) : (
+            <Moon className="size-4 text-muted-foreground" />
+          )}
+          <span>{isDark ? "Светлая тема" : "Тёмная тема"}</span>
+        </div>
+        <div
+          className={cn(
+            "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
+            isDark ? "bg-[#f96800]" : "bg-muted",
+          )}
+        >
+          <span
+            className={cn(
+              "inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform",
+              isDark ? "translate-x-[18px]" : "translate-x-0.5",
             )}
-          </Menu>
-          <Box
-            onClick={(e) => setUserAnchorEl(e.currentTarget)}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.5,
-              cursor: "pointer",
-              px: 1,
-              py: 0.5,
-              ml: 1,
-              borderRadius: 2,
-              "&:hover": { bgcolor: "action.hover" },
-            }}
-          >
-            <AccountCircleIcon color="action" fontSize="medium" />
-            <Typography
-              variant="body2"
-              fontWeight={500}
-              sx={{
-                color: "text.primary",
-                display: { xs: "none", md: "block" },
-              }}
-            >
+          />
+        </div>
+      </button>
+      <div className="border-t border-border" />
+      <button
+        onClick={() => router.push("/login")}
+        className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-destructive hover:bg-muted/50 transition-colors"
+      >
+        <LogOut className="size-4" />
+        <span>Выйти</span>
+      </button>
+    </div>
+  );
+
+  return (
+    <header className="flex items-center justify-between px-4 bg-card border-b border-border shadow-sm min-h-14">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-1.5 rounded hover:bg-muted"
+        >
+          <Menu className="size-5" />
+        </button>
+        <img
+          src="/logo-jusanmobile.png"
+          alt="Logo"
+          className="h-8 md:h-10 object-contain ml-0 md:ml-3"
+        />
+      </div>
+
+      <div className="flex items-center gap-1">
+        <Dropdown content={notifContent} width={320}>
+          <button className="relative p-2 rounded hover:bg-muted">
+            <Bell className="size-5 text-muted-foreground" />
+            {notifications.length > 0 && (
+              <span className="absolute top-1 right-1 size-4 rounded-full bg-destructive text-white text-[10px] flex items-center justify-center font-medium">
+                {notifications.length}
+              </span>
+            )}
+          </button>
+        </Dropdown>
+
+        <Dropdown content={userContent} width={220}>
+          <button className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-muted ml-1">
+            <CircleUserRound className="size-5 text-muted-foreground" />
+            <span className="hidden md:block text-sm font-medium">
               Югай Виталий
-            </Typography>
-            <KeyboardArrowDownIcon
-              fontSize="small"
-              color="action"
-              sx={{
-                display: { xs: "none", md: "block" },
-                transform: userAnchorEl ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.2s",
-              }}
-            />
-          </Box>
-          <Menu
-            anchorEl={userAnchorEl}
-            open={Boolean(userAnchorEl)}
-            onClose={() => setUserAnchorEl(null)}
-            PaperProps={{ sx: { width: 220 } }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <MenuItem
-              onClick={toggleTheme}
-              sx={{ justifyContent: "space-between" }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <ListItemIcon sx={{ minWidth: "auto" }}>
-                  {isDark ? (
-                    <LightModeIcon fontSize="small" sx={{ color: "#facc15" }} />
-                  ) : (
-                    <DarkModeIcon fontSize="small" color="action" />
-                  )}
-                </ListItemIcon>
-                <Typography variant="body2">
-                  {isDark ? "Светлая тема" : "Тёмная тема"}
-                </Typography>
-              </Box>
-              <Switch
-                size="small"
-                checked={isDark}
-                onChange={toggleTheme}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </MenuItem>
-            <Divider />
-            <MenuItem
-              onClick={() => {
-                setUserAnchorEl(null);
-                router.push("/login");
-              }}
-              sx={{ color: "error.main" }}
-            >
-              <ListItemIcon sx={{ minWidth: "auto", mr: 1 }}>
-                <LogoutIcon fontSize="small" color="error" />
-              </ListItemIcon>
-              <Typography variant="body2">Выйти</Typography>
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Toolbar>
-    </AppBar>
+            </span>
+            <ChevronDown className="hidden md:block size-4 text-muted-foreground" />
+          </button>
+        </Dropdown>
+      </div>
+    </header>
   );
 }

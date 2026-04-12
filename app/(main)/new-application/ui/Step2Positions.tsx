@@ -1,7 +1,6 @@
 "use client";
 
-import AddIcon from "@mui/icons-material/Add";
-import { Box, Typography, Button } from "@mui/material";
+import { Plus } from "lucide-react";
 import { PositionRow } from "./PositionRow";
 import { priceWithVat, fmt, type Position } from "../data/options";
 
@@ -14,14 +13,19 @@ interface Step2Props {
   onAdd: () => void;
 }
 
-export function Step2Positions({ positions, errors, onUpdate, onClear, onRemove, onAdd }: Step2Props) {
+export function Step2Positions({
+  positions,
+  errors,
+  onUpdate,
+  onClear,
+  onRemove,
+  onAdd,
+}: Step2Props) {
   const totalWithVat = positions.reduce((acc, p) => acc + priceWithVat(p), 0);
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
-      <Typography variant="subtitle2" color="text.primary">
-        Позиции заявки
-      </Typography>
+    <div className="flex flex-col gap-4">
+      <p className="text-sm font-medium">Позиции заявки</p>
 
       {positions.map((pos, idx) => (
         <PositionRow
@@ -37,42 +41,28 @@ export function Step2Positions({ positions, errors, onUpdate, onClear, onRemove,
         />
       ))}
 
-      <Button
-        variant="outlined"
-        color="inherit"
-        startIcon={<AddIcon />}
+      <button
+        type="button"
         onClick={onAdd}
-        sx={{
-          alignSelf: "flex-start",
-          textTransform: "none",
-          borderStyle: "dashed",
-          borderColor: "grey.300",
-          borderRadius: 2,
-          color: "text.secondary",
-          "&:hover": { borderColor: "#f96800", color: "#f96800" },
-        }}
+        className="self-start flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-dashed border-border text-muted-foreground hover:border-[#f96800] hover:text-[#f96800] transition-colors"
       >
+        <Plus className="size-4" />
         Добавить позицию
-      </Button>
+      </button>
 
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        pt={1}
-        sx={{ borderTop: "1px solid", borderColor: "grey.100" }}
-      >
-        <Box display="flex" alignItems="center" gap={4}>
-          <Typography variant="body2" color="text.secondary">
+      <div className="flex justify-end pt-2 border-t border-border/50">
+        <div className="flex items-center gap-8">
+          <p className="text-sm text-muted-foreground">
             Позиций: <b>{positions.length}</b>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </p>
+          <p className="text-sm text-muted-foreground">
             ИТОГО с НДС:{" "}
-            <Typography component="span" variant="body2" fontWeight={700} fontSize={15}>
+            <span className="text-base font-bold text-foreground">
               {fmt(totalWithVat)} KZT
-            </Typography>
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
 import { FileInput } from "./FileInput";
 import type { Attachments } from "../data/options";
 
@@ -11,15 +10,9 @@ interface Step4Props {
 
 export function Step4Attachments({ attachments, onChange }: Step4Props) {
   return (
-    <Box>
-      <Typography variant="subtitle2" color="text.primary" mb={2}>
-        Вложения
-      </Typography>
-      <Box
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", sm: "repeat(3, 1fr)" }}
-        gap={2}
-      >
+    <div>
+      <p className="text-sm font-medium mb-4">Вложения</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <FileInput
           label="Техническая спецификация"
           file={attachments.spec}
@@ -35,7 +28,7 @@ export function Step4Attachments({ attachments, onChange }: Step4Props) {
           file={attachments.contract}
           onChange={(f) => onChange({ contract: f })}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

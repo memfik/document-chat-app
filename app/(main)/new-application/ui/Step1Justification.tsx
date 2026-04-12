@@ -1,7 +1,5 @@
 "use client";
 
-import { Box, Typography, TextField } from "@mui/material";
-
 interface Step1Props {
   title: string;
   purpose: string;
@@ -26,68 +24,69 @@ export function Step1Justification({
   onLosses,
 }: Step1Props) {
   return (
-    <Box display="flex" flexDirection="column" gap={3}>
-      <Box>
-        <Typography variant="subtitle2" color="text.primary" mb={1.5}>
-          Название заявки
-        </Typography>
-        <TextField
-          size="small"
-          label="Название заявки"
-          required
-          fullWidth
-          placeholder="Введите название заявки..."
-          value={title}
-          onChange={(e) => onTitle(e.target.value)}
-          error={errors.has("title")}
-          helperText={errors.has("title") ? "Обязательное поле" : ""}
-        />
-      </Box>
+    <div className="flex flex-col gap-6">
+      <div>
+        <p className="text-sm font-medium mb-3">Название заявки</p>
+        <div>
+          <label className="block text-xs text-muted-foreground mb-1">
+            Название заявки <span className="text-destructive">*</span>
+          </label>
+          <input
+            className={`input-base ${errors.has("title") ? "border-destructive ring-1 ring-destructive" : ""}`}
+            placeholder="Введите название заявки..."
+            value={title}
+            onChange={(e) => onTitle(e.target.value)}
+          />
+          {errors.has("title") && (
+            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+          )}
+        </div>
+      </div>
 
-      <Box sx={{ borderTop: "1px solid", borderColor: "grey.100", pt: 3 }}>
-        <Typography variant="subtitle2" color="text.primary" mb={2}>
-          Обоснование закупа
-        </Typography>
-        <Box
-          display="grid"
-          gridTemplateColumns={{ xs: "1fr", md: "repeat(3, 1fr)" }}
-          gap={2}
-        >
-          <TextField
-            size="small"
-            label="Назначение закупа"
-            required
-            fullWidth
-            multiline
-            rows={3}
-            placeholder="Опишите назначение..."
-            value={purpose}
-            onChange={(e) => onPurpose(e.target.value)}
-            error={errors.has("purpose")}
-            helperText={errors.has("purpose") ? "Обязательное поле" : ""}
-          />
-          <TextField
-            size="small"
-            label="Выгоды от закупа"
-            fullWidth
-            multiline
-            rows={3}
-            placeholder="Опишите выгоды..."
-            value={benefits}
-            onChange={(e) => onBenefits(e.target.value)}
-          />
-          <TextField
-            size="small"
-            label="Убытки при непроведении"
-            fullWidth
-            multiline
-            rows={3}
-            placeholder="Опишите возможные убытки..."
-            value={losses}
-            onChange={(e) => onLosses(e.target.value)}
-          />
-        </Box>
-      </Box>
-    </Box>
+      <div className="border-t border-border/50 pt-6">
+        <p className="text-sm font-medium mb-4">Обоснование закупа</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Назначение закупа <span className="text-destructive">*</span>
+            </label>
+            <textarea
+              className={`textarea-base ${errors.has("purpose") ? "border-destructive ring-1 ring-destructive" : ""}`}
+              rows={3}
+              placeholder="Опишите назначение..."
+              value={purpose}
+              onChange={(e) => onPurpose(e.target.value)}
+            />
+            {errors.has("purpose") && (
+              <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Выгоды от закупа
+            </label>
+            <textarea
+              className="textarea-base"
+              rows={3}
+              placeholder="Опишите выгоды..."
+              value={benefits}
+              onChange={(e) => onBenefits(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Убытки при непроведении
+            </label>
+            <textarea
+              className="textarea-base"
+              rows={3}
+              placeholder="Опишите возможные убытки..."
+              value={losses}
+              onChange={(e) => onLosses(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

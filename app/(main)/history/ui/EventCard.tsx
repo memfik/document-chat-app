@@ -1,106 +1,101 @@
 "use client";
 
-import { alpha } from "@mui/material/styles";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import CommentIcon from "@mui/icons-material/Comment";
-import { Box, Typography, Paper, Chip, LinearProgress } from "@mui/material";
+import { Paperclip, MessageSquare } from "lucide-react";
 import { formatDate, type HistoryEvent, type EventType } from "../data/events";
 
 function eventMeta(_type: EventType): { icon: React.ReactNode; color: string } {
-  return { icon: <CommentIcon fontSize="small" />, color: "#6b7280" };
+  return { icon: <MessageSquare className="size-4" />, color: "#6b7280" };
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 export function EventCard({ ev }: { ev: HistoryEvent }) {
   const meta = eventMeta(ev.type);
 
   return (
-    <Box display="flex" gap={1.5}>
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <Box
-          sx={{
-            width: 32,
-            height: 32,
-            borderRadius: "50%",
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: alpha(meta.color, 0.15),
+    <div className="flex gap-3">
+      <div className="flex flex-col items-center">
+        <div
+          className="size-8 rounded-full shrink-0 flex items-center justify-center"
+          style={{
+            backgroundColor: hexToRgba(meta.color, 0.15),
             color: meta.color,
           }}
         >
           {meta.icon}
-        </Box>
-        <Box sx={{ width: "1px", flex: 1, bgcolor: "divider", mt: 0.5 }} />
-      </Box>
+        </div>
+        <div className="w-px flex-1 bg-border mt-1" />
+      </div>
 
-      <Box flex={1} pb={2.5}>
-        <Paper variant="outlined" sx={{ px: 2, py: 1.5, borderRadius: 2 }}>
-          <Box
-            display="flex"
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            flexDirection={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            gap={0.25}
-            mb={0.5}
-          >
-            <Typography variant="body2" fontWeight={600}>{ev.user}</Typography>
-            <Typography variant="caption" color="text.disabled">{formatDate(ev.date)}</Typography>
-          </Box>
+      <div className="flex-1 pb-6">
+        <div className="border border-border rounded-lg px-4 py-3 bg-card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 mb-1.5">
+            <p className="text-sm font-semibold">{ev.user}</p>
+            <p className="text-xs text-muted-foreground">{formatDate(ev.date)}</p>
+          </div>
 
-          <Typography variant="body2" color="text.secondary" lineHeight={1.5}>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {ev.text}
-          </Typography>
+          </p>
 
           {ev.status && (
-            <Box display="flex" alignItems="center" gap={1.5} mt={1}>
-              <Chip
-                label={ev.status}
-                size="small"
-                sx={{ bgcolor: ev.statusColor, color: "#fff", fontWeight: 500, fontSize: 11 }}
-              />
-              {ev.progress !== undefined && (
-                <Box display="flex" alignItems="center" gap={1} flex={1}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={ev.progress}
-                    sx={{
-                      flex: 1,
-                      height: 6,
-                      borderRadius: 3,
-                      bgcolor: alpha(ev.statusColor!, 0.15),
-                      "& .MuiLinearProgress-bar": { bgcolor: ev.statusColor, borderRadius: 3 },
+            <div className="flex items-center gap-3 mt-2">
+              <span
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                style={{ backgroundColor: ev.statusColor }}
+              >
+                {ev.status}
+              </span>
+              {ev.progress !== undefined && ev.statusColor && (
+                <div className="flex items-center gap-2 flex-1">
+                  <div
+                    className="flex-1 h-1.5 rounded-full overflow-hidden"
+                    style={{
+                      backgroundColor: hexToRgba(ev.statusColor, 0.15),
                     }}
-                  />
-                  <Typography variant="caption" color="text.disabled">{ev.progress}%</Typography>
-                </Box>
+                  >
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${ev.progress}%`,
+                        backgroundColor: ev.statusColor,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {ev.progress}%
+                  </p>
+                </div>
               )}
-            </Box>
+            </div>
           )}
 
           {ev.files && ev.files.length > 0 && (
-            <Box display="flex" flexWrap="wrap" gap={0.75} mt={1}>
+            <div className="flex flex-wrap gap-1.5 mt-2">
               {ev.files.map((f) => (
-                <Chip
+                <a
                   key={f.name}
-                  icon={<AttachFileIcon sx={{ fontSize: "12px !important" }} />}
-                  label={f.name}
-                  size="small"
-                  component="a"
                   href={f.url}
                   onClick={(e) => e.preventDefault()}
-                  clickable
-                  sx={
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border ${
                     ev.type === "file_remove"
-                      ? { bgcolor: alpha("#ef4444", 0.1), color: "#ef4444", borderColor: alpha("#ef4444", 0.3), border: "1px solid", textDecoration: "line-through" }
-                      : { bgcolor: alpha("#3b82f6", 0.08), color: "#3b82f6", borderColor: alpha("#3b82f6", 0.3), border: "1px solid" }
-                  }
-                />
+                      ? "line-through text-red-500 border-red-300 bg-red-50"
+                      : "text-blue-500 border-blue-300 bg-blue-50"
+                  }`}
+                >
+                  <Paperclip className="size-3" />
+                  {f.name}
+                </a>
               ))}
-            </Box>
+            </div>
           )}
-        </Paper>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

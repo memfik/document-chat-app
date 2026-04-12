@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Typography } from "@mui/material";
 import { STEPS } from "../data/options";
 
 interface FormNavProps {
@@ -11,47 +10,44 @@ interface FormNavProps {
   onSubmit: () => void;
 }
 
-const orangeBtn = {
-  bgcolor: "#f96800",
-  borderRadius: 2,
-  "&:hover": { bgcolor: "#e05a00" },
-  textTransform: "none",
-} as const;
-
-export function FormNav({ activeStep, errorsCount, onBack, onNext, onSubmit }: FormNavProps) {
+export function FormNav({
+  activeStep,
+  errorsCount,
+  onBack,
+  onNext,
+  onSubmit,
+}: FormNavProps) {
   return (
     <>
       {errorsCount > 0 && (
-        <Typography variant="body2" color="error" mt={2} textAlign="right">
+        <p className="text-sm text-destructive mt-4 text-right">
           Заполните все обязательные поля ({errorsCount} ошибок)
-        </Typography>
+        </p>
       )}
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        mt={3}
-        pt={2}
-        sx={{ borderTop: "1px solid", borderColor: "grey.100" }}
-      >
-        <Button
-          variant="outlined"
-          color="inherit"
+      <div className="flex justify-between mt-6 pt-4 border-t border-border/50">
+        <button
           onClick={onBack}
-          sx={{ textTransform: "none", borderColor: "grey.300", borderRadius: 2, color: "text.secondary" }}
+          className="px-4 py-2 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
         >
           {activeStep === 0 ? "Отмена" : "Назад"}
-        </Button>
+        </button>
 
         {activeStep < STEPS.length - 1 ? (
-          <Button variant="contained" onClick={onNext} sx={orangeBtn}>
+          <button
+            onClick={onNext}
+            className="px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors font-medium"
+          >
             Далее
-          </Button>
+          </button>
         ) : (
-          <Button variant="contained" onClick={onSubmit} sx={orangeBtn}>
+          <button
+            onClick={onSubmit}
+            className="px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors font-medium"
+          >
             Отправить
-          </Button>
+          </button>
         )}
-      </Box>
+      </div>
     </>
   );
 }

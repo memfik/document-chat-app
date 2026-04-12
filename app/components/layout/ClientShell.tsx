@@ -17,7 +17,7 @@ export function ClientShell({ children }: { children: React.ReactNode }) {
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
         />
-        <main style={{ flex: 1, overflowY: "auto" }}>{children}</main>
+        <main style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>{children}</main>
       </div>
     </div>
   );
