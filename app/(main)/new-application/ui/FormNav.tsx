@@ -1,6 +1,7 @@
 "use client";
 
 import { STEPS } from "../data/options";
+import { Button } from "@/components/ui/button";
 
 interface FormNavProps {
   activeStep: number;
@@ -25,27 +26,24 @@ export function FormNav({
         </p>
       )}
       <div className="flex justify-between mt-6 pt-4 border-t border-border/50">
-        <button
-          onClick={onBack}
-          className="px-4 py-2 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
-        >
+        <Button variant="outline" onClick={onBack}>
           {activeStep === 0 ? "Отмена" : "Назад"}
-        </button>
+        </Button>
 
         {activeStep < STEPS.length - 1 ? (
-          <button
+          <Button
             onClick={onNext}
-            className="px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors font-medium"
+            className="bg-[#f96800] text-white hover:bg-[#e05a00] font-medium"
           >
             Далее
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             onClick={onSubmit}
-            className="px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors font-medium"
+            className="bg-[#f96800] text-white hover:bg-[#e05a00] font-medium"
           >
             Отправить
-          </button>
+          </Button>
         )}
       </div>
     </>

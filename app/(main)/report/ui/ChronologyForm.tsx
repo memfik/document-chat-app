@@ -1,16 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SELECT_PLACEHOLDER = "— Выберите —";
 
 function SelectField({ label, name }: { label: string; name: string }) {
   return (
-    <div>
-      <label className="block text-xs text-muted-foreground mb-1">{label}</label>
-      <select name={name} defaultValue="" className="select-base">
-        <option value="">{SELECT_PLACEHOLDER}</option>
-      </select>
+    <div className="flex flex-col gap-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Select>
+        <SelectTrigger className="w-full" name={name}>
+          <SelectValue placeholder={SELECT_PLACEHOLDER} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="_placeholder" disabled>
+            {SELECT_PLACEHOLDER}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -52,24 +69,22 @@ export default function ChronologyForm({
           <SelectField label="БКВ2" name="bkv2" />
           <SelectField label="Проект" name="project" />
           <SelectField label="Центр / Децентр" name="centerDecentr" />
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Начало периода
-            </label>
-            <input
+            </Label>
+            <Input
               type="date"
-              className="input-base"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Конец периода
-            </label>
-            <input
+            </Label>
+            <Input
               type="date"
-              className="input-base"
               min={dateFrom}
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
@@ -81,34 +96,26 @@ export default function ChronologyForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Фильтр по тексту
-            </label>
-            <input
-              className="input-base"
-              name="textFilter"
-              placeholder="Введите текст"
-            />
+            </Label>
+            <Input name="textFilter" placeholder="Введите текст" />
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               или содержит
-            </label>
-            <input
-              className="input-base"
-              name="textFilterOr"
-              placeholder="или содержит"
-            />
+            </Label>
+            <Input name="textFilterOr" placeholder="или содержит" />
           </div>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="self-stretch sm:self-start px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+          className="self-stretch sm:self-start bg-[#f96800] text-white hover:bg-[#e05a00]"
         >
           Сформировать
-        </button>
+        </Button>
       </form>
 
       {toast && (

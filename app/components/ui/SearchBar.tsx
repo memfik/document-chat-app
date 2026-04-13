@@ -2,6 +2,8 @@
 
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SearchBarProps {
   value: string;
@@ -22,34 +24,37 @@ export function SearchBar({
     <div className="flex items-center gap-3">
       <div className="relative flex-1">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-        <input
+        <Input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="input-base pl-8 pr-8"
+          className="pl-8 pr-8 w-full"
         />
         {value && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon-xs"
             onClick={() => onChange("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
+            className="absolute right-1 top-1/2 -translate-y-1/2"
           >
             <X className="size-3.5 text-muted-foreground" />
-          </button>
+          </Button>
         )}
       </div>
       {onYearToggle && (
-        <button
+        <Button
+          variant="outline"
           onClick={onYearToggle}
           className={cn(
-            "shrink-0 px-3 py-1.5 text-sm rounded-lg border transition-colors whitespace-nowrap",
+            "shrink-0 whitespace-nowrap",
             currentYearOnly
-              ? "bg-[#2db351] text-white border-[#2db351] hover:bg-[#208c3d]"
-              : "border-border text-muted-foreground hover:bg-muted/50",
+              ? "bg-[#2db351] text-white border-[#2db351] hover:bg-[#208c3d] hover:text-white dark:bg-[#2db351] dark:text-white dark:hover:bg-[#208c3d]"
+              : "",
           )}
         >
           Только текущий год
-        </button>
+        </Button>
       )}
     </div>
   );

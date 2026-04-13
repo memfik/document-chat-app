@@ -1,6 +1,16 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   REQUEST_TYPES,
   COST_CENTERS,
@@ -32,10 +42,14 @@ export function PositionRow({
   canRemove,
   priceWithVatValue,
 }: PositionRowProps) {
-  const set =
+  const setInput =
     (f: keyof Position) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange(pos.id, f, e.target.value);
+
+  const setSelect = (f: keyof Position) => (val: string | null) => {
+    if (val) onChange(pos.id, f, val);
+  };
 
   const err = (field: string) => errors.has(`${pos.id}.${field}`);
 
@@ -46,233 +60,223 @@ export function PositionRow({
           Позиция #{index + 1}
         </p>
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => onClear(pos.id)}
-            className="text-xs text-muted-foreground underline hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground h-auto py-1 px-2"
           >
             Очистить
-          </button>
+          </Button>
           {canRemove && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onRemove(pos.id)}
-              className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors"
+              className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 h-auto py-1 px-2"
             >
               <Trash2 className="size-3" />
               Удалить
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Тип заявки <span className="text-destructive">*</span>
-          </label>
-          <select
-            value={pos.requestType}
-            onChange={set("requestType")}
-            className="select-base"
-          >
-            {REQUEST_TYPES.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Select value={pos.requestType} onValueChange={setSelect("requestType")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {REQUEST_TYPES.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="sm:col-span-2">
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="sm:col-span-2 flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Товар / Услуга <span className="text-destructive">*</span>
-          </label>
-          <input
-            className={`input-base ${err("product") ? "border-destructive" : ""}`}
+          </Label>
+          <Input
+            className={err("product") ? "border-destructive" : ""}
             placeholder="Введите наименование..."
             value={pos.product}
-            onChange={set("product")}
+            onChange={setInput("product")}
           />
           {err("product") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Количество <span className="text-destructive">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="number"
             min={1}
-            className={`input-base ${err("qty") ? "border-destructive" : ""}`}
+            className={err("qty") ? "border-destructive" : ""}
             placeholder="0"
             value={pos.qty}
-            onChange={set("qty")}
+            onChange={setInput("qty")}
           />
           {err("qty") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Место поставки <span className="text-destructive">*</span>
-          </label>
-          <input
-            className={`input-base ${err("deliveryPlace") ? "border-destructive" : ""}`}
+          </Label>
+          <Input
+            className={err("deliveryPlace") ? "border-destructive" : ""}
             placeholder="Адрес..."
             value={pos.deliveryPlace}
-            onChange={set("deliveryPlace")}
+            onChange={setInput("deliveryPlace")}
           />
           {err("deliveryPlace") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Дата начала <span className="text-destructive">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="date"
-            className={`input-base ${err("dateFrom") ? "border-destructive" : ""}`}
+            className={err("dateFrom") ? "border-destructive" : ""}
             value={pos.dateFrom}
-            onChange={set("dateFrom")}
+            onChange={setInput("dateFrom")}
           />
           {err("dateFrom") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Дата окончания <span className="text-destructive">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="date"
-            className={`input-base ${err("dateTo") ? "border-destructive" : ""}`}
+            className={err("dateTo") ? "border-destructive" : ""}
             min={pos.dateFrom}
             value={pos.dateTo}
-            onChange={set("dateTo")}
+            onChange={setInput("dateTo")}
           />
           {err("dateTo") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Стоимость без НДС <span className="text-destructive">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="number"
             min={0}
-            className={`input-base ${err("priceNoVat") ? "border-destructive" : ""}`}
+            className={err("priceNoVat") ? "border-destructive" : ""}
             placeholder="0"
             value={pos.priceNoVat}
-            onChange={set("priceNoVat")}
+            onChange={setInput("priceNoVat")}
           />
           {err("priceNoVat") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Стоимость с НДС (12%)
-          </label>
-          <input
-            className="input-base"
-            value={priceWithVatValue}
-            disabled
-          />
+          </Label>
+          <Input value={priceWithVatValue} disabled />
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Центр затрат <span className="text-destructive">*</span>
-          </label>
-          <select
-            value={pos.costCenter}
-            onChange={set("costCenter")}
-            className="select-base"
-          >
-            {COST_CENTERS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Select value={pos.costCenter} onValueChange={setSelect("costCenter")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {COST_CENTERS.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Куратор <span className="text-destructive">*</span>
-          </label>
-          <select
-            value={pos.curator}
-            onChange={set("curator")}
-            className="select-base"
-          >
-            {CURATORS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Select value={pos.curator} onValueChange={setSelect("curator")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CURATORS.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Проект
-          </label>
-          <select
-            value={pos.project}
-            onChange={set("project")}
-            className="select-base"
-          >
-            {PROJECTS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Проект</Label>
+          <Select value={pos.project} onValueChange={setSelect("project")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PROJECTS.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Статья <span className="text-destructive">*</span>
-          </label>
-          <select
-            value={pos.article}
-            onChange={set("article")}
-            className="select-base"
-          >
-            {ARTICLES.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Select value={pos.article} onValueChange={setSelect("article")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ARTICLES.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Точка присутствия
-          </label>
-          <select
-            value={pos.location}
-            onChange={set("location")}
-            className="select-base"
-          >
-            {LOCATIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Точка присутствия</Label>
+          <Select value={pos.location} onValueChange={setSelect("location")}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LOCATIONS.map((o) => (
+                <SelectItem key={o} value={o}>{o}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

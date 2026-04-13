@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Plus,
@@ -16,7 +17,14 @@ import {
   ChevronDown,
   X,
 } from "lucide-react";
-import { Dialog } from "@base-ui/react/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const EXPANDED = 220;
@@ -44,11 +52,19 @@ const docItems = [
 
 function DocsDropdown({ expanded }: { expanded: boolean }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const popupEl = document.getElementById("docs-dropdown-portal");
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(target) &&
+        !(popupEl && popupEl.contains(target))
+      ) {
         setOpen(false);
       }
     };
@@ -56,11 +72,37 @@ function DocsDropdown({ expanded }: { expanded: boolean }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const handleToggle = () => {
+    if (!expanded && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPopupPos({ top: rect.top, left: rect.right + 8 });
+    }
+    setOpen((v) => !v);
+  };
+
+  const dropdownItems = (
+    <>
+      {docItems.map((item) => (
+        <button
+          key={item.href}
+          onClick={() => {
+            window.open(item.href, "_blank");
+            setOpen(false);
+          }}
+          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+        >
+          {item.label}
+        </button>
+      ))}
+    </>
+  );
+
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={wrapperRef}>
       <button
+        ref={buttonRef}
         title={expanded ? undefined : "Инструкции"}
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
         className={cn(
           "w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-muted-foreground hover:bg-muted/50 text-sm transition-colors mb-0.5",
           expanded ? "justify-start" : "justify-center px-2",
@@ -79,27 +121,24 @@ function DocsDropdown({ expanded }: { expanded: boolean }) {
           </>
         )}
       </button>
-      {open && (
-        <div
-          className={cn(
-            "absolute z-50 bg-popover border border-border rounded-lg shadow-lg overflow-hidden w-48",
-            expanded ? "left-0 top-full mt-1" : "left-full top-0 ml-2",
-          )}
-        >
-          {docItems.map((item) => (
-            <button
-              key={item.href}
-              onClick={() => {
-                window.open(item.href, "_blank");
-                setOpen(false);
-              }}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
-            >
-              {item.label}
-            </button>
-          ))}
+      {open && expanded && (
+        <div className="absolute z-50 bg-popover border border-border rounded-lg shadow-lg overflow-hidden w-48 left-0 top-full mt-1">
+          {dropdownItems}
         </div>
       )}
+      {open &&
+        !expanded &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            id="docs-dropdown-portal"
+            className="fixed z-[9999] bg-popover border border-border rounded-lg shadow-lg overflow-hidden w-48"
+            style={{ top: popupPos.top, left: popupPos.left }}
+          >
+            {dropdownItems}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -112,35 +151,27 @@ function ImportDialog({
   onClose: () => void;
 }) {
   return (
-    <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Popup className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs bg-card border border-border rounded-xl shadow-xl outline-none">
-        <div className="px-4 py-3 border-b border-border">
-          <p className="text-sm font-semibold">Импорт файлов</p>
-        </div>
-        <div className="p-4">
-          <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-[#f96800] transition-colors">
-            <p className="text-sm text-muted-foreground">
-              Нажмите или перетащите файл
-            </p>
-            <input type="file" className="hidden" multiple />
-          </label>
-        </div>
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-border">
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 text-sm rounded-md border border-border hover:bg-muted transition-colors"
-          >
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent showCloseButton={false} className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle>Импорт файлов</DialogTitle>
+        </DialogHeader>
+        <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-[#f96800] transition-colors">
+          <p className="text-sm text-muted-foreground">
+            Нажмите или перетащите файл
+          </p>
+          <input type="file" className="hidden" multiple />
+        </label>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Отмена
-          </button>
-          <button className="px-3 py-1.5 text-sm rounded-md bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors">
+          </Button>
+          <Button className="bg-[#f96800] text-white hover:bg-[#e05a00]">
             Загрузить
-          </button>
-        </div>
-      </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -196,7 +227,9 @@ export function Sidebar({
             >
               <Icon className="size-4 shrink-0" />
               {expanded && (
-                <span className={cn("font-medium", active ? "" : "font-normal")}>
+                <span
+                  className={cn("font-medium", active ? "" : "font-normal")}
+                >
                   {item.label}
                 </span>
               )}
@@ -226,7 +259,7 @@ export function Sidebar({
             expanded ? "px-3 py-1.5" : "justify-center px-2 py-1.5",
             isActive("/new-application")
               ? "bg-[#f96800] text-white"
-              : "bg-[#f96800] text-white hover:bg-[#e05a00]",
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
           )}
         >
           <Plus className="size-4 shrink-0" />
@@ -250,53 +283,45 @@ export function Sidebar({
 
   return (
     <>
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40 flex">
-          <div
-            className="fixed inset-0 bg-black/50"
-            onClick={onMobileClose}
-          />
+          <div className="fixed inset-0 bg-black/50" onClick={onMobileClose} />
           <div className="relative z-50 flex flex-col w-full bg-card border-r border-border h-full">
             <div className="flex justify-end px-2 py-2 border-b border-border">
-              <button
-                onClick={onMobileClose}
-                className="p-1.5 rounded hover:bg-muted"
-              >
+              <Button variant="ghost" size="icon-sm" onClick={onMobileClose}>
                 <X className="size-4" />
-              </button>
+              </Button>
             </div>
             <ActionButtons forceExpanded />
-            <div className="border-t border-border" />
+            <div className="border-t border-dashed" />
             <NavList forceExpanded />
           </div>
         </div>
       )}
-
-      {/* Desktop sidebar */}
       <div
         className="hidden md:flex flex-col h-full bg-card border-r border-border overflow-hidden transition-[width] duration-200 will-change-[width] shrink-0"
         style={{ width: open ? EXPANDED : COLLAPSED }}
       >
         <div
           className={cn(
-            "flex border-b border-border px-1 py-1.5",
+            "flex px-1 py-3.5",
             layoutExpanded ? "justify-end" : "justify-center",
           )}
         >
-          <button
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setOpen((v) => !v)}
-            className="p-1.5 rounded hover:bg-muted"
           >
             {open ? (
               <ChevronLeft className="size-4" />
             ) : (
               <ChevronRight className="size-4" />
             )}
-          </button>
+          </Button>
         </div>
         <ActionButtons />
-        <div className="border-t border-border" />
+        <div className="border-t border-dashed" />
         <NavList />
       </div>
 

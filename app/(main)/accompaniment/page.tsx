@@ -31,6 +31,7 @@ export default function AccompanimentPage() {
 
   return (
     <div className="py-6 px-4 sm:px-6">
+      <h1 className="text-lg font-semibold mb-3">Сопровождение</h1>
       <div className="mb-4">
         <SearchBar
           value={search}

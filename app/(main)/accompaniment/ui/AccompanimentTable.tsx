@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TablePagination } from "@/app/components/ui/TablePagination";
 import type { AccompanimentRow } from "../data/accompaniment";
 
@@ -40,44 +48,38 @@ export function AccompanimentTable({
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
       <div className="overflow-auto max-h-[calc(100vh-260px)]">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 sticky top-0 z-10">
-            <tr>
+        <Table className="w-full text-sm">
+          <TableHeader className="bg-muted/50 sticky top-0 z-10">
+            <TableRow>
               {COLUMNS.map((col) => (
-                <th
+                <TableHead
                   key={col}
-                  className="px-3 py-2.5 text-left font-semibold whitespace-nowrap border-b border-border"
+                  className="whitespace-nowrap border-b border-border"
                 >
                   {col}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {visible.map((row) => (
-              <tr
+              <TableRow
                 key={row.id}
                 className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
               >
-                <td className="px-3 py-2 whitespace-nowrap">{row.id}</td>
-                <td className="px-3 py-2 whitespace-nowrap">{row.initiator}</td>
-                <td className="px-3 py-2 whitespace-nowrap">{row.dept}</td>
-                <td className="px-3 py-2 whitespace-nowrap">{row.supplier}</td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  {row.contractNum}
-                </td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  {row.deliveryDate}
-                </td>
-                <td className="px-3 py-2 whitespace-nowrap">{row.cost}</td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  {row.paymentDate}
-                </td>
-                <td className="px-3 py-2 whitespace-nowrap">{row.executor}</td>
-              </tr>
+                <TableCell className="whitespace-nowrap">{row.id}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.initiator}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.dept}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.supplier}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.contractNum}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.deliveryDate}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.cost}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.paymentDate}</TableCell>
+                <TableCell className="whitespace-nowrap">{row.executor}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
       <TablePagination
         count={total}

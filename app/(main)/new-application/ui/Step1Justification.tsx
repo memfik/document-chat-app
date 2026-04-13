@@ -1,5 +1,9 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 interface Step1Props {
   title: string;
   purpose: string;
@@ -27,18 +31,18 @@ export function Step1Justification({
     <div className="flex flex-col gap-6">
       <div>
         <p className="text-sm font-medium mb-3">Название заявки</p>
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">
             Название заявки <span className="text-destructive">*</span>
-          </label>
-          <input
-            className={`input-base ${errors.has("title") ? "border-destructive ring-1 ring-destructive" : ""}`}
+          </Label>
+          <Input
+            className={errors.has("title") ? "border-destructive ring-1 ring-destructive" : ""}
             placeholder="Введите название заявки..."
             value={title}
             onChange={(e) => onTitle(e.target.value)}
           />
           {errors.has("title") && (
-            <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+            <p className="text-xs text-destructive">Обязательное поле</p>
           )}
         </div>
       </div>
@@ -46,39 +50,37 @@ export function Step1Justification({
       <div className="border-t border-border/50 pt-6">
         <p className="text-sm font-medium mb-4">Обоснование закупа</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Назначение закупа <span className="text-destructive">*</span>
-            </label>
-            <textarea
-              className={`textarea-base ${errors.has("purpose") ? "border-destructive ring-1 ring-destructive" : ""}`}
+            </Label>
+            <Textarea
+              className={errors.has("purpose") ? "border-destructive ring-1 ring-destructive" : ""}
               rows={3}
               placeholder="Опишите назначение..."
               value={purpose}
               onChange={(e) => onPurpose(e.target.value)}
             />
             {errors.has("purpose") && (
-              <p className="text-xs text-destructive mt-1">Обязательное поле</p>
+              <p className="text-xs text-destructive">Обязательное поле</p>
             )}
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Выгоды от закупа
-            </label>
-            <textarea
-              className="textarea-base"
+            </Label>
+            <Textarea
               rows={3}
               placeholder="Опишите выгоды..."
               value={benefits}
               onChange={(e) => onBenefits(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">
               Убытки при непроведении
-            </label>
-            <textarea
-              className="textarea-base"
+            </Label>
+            <Textarea
               rows={3}
               placeholder="Опишите возможные убытки..."
               value={losses}

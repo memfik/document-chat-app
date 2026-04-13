@@ -52,9 +52,7 @@ export default function NewApplicationPage() {
   const clearPosition = (id: number) =>
     setPositions((prev) =>
       prev.map((p) =>
-        p.id === id
-          ? { ...emptyPosition(id), requestType: p.requestType }
-          : p,
+        p.id === id ? { ...emptyPosition(id), requestType: p.requestType } : p,
       ),
     );
 
@@ -97,9 +95,8 @@ export default function NewApplicationPage() {
   };
 
   const handleSubmit = () => setToast(true);
-
   return (
-    <div className="py-8 md:py-12 px-4 md:px-12 max-w-[1280px] mx-auto">
+    <div className="py-6 md:py-6 px-4 md:px-6 max-w-[1280px] mx-auto">
       <h1 className="text-lg font-semibold mb-6">Новая заявка Ф16</h1>
 
       <FormStepper activeStep={activeStep} isMobile={isMobile} />

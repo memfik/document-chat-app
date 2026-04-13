@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { NewItemModal } from "./NewItemModal";
 
 interface SelectWithAddProps {
@@ -28,31 +37,35 @@ export function SelectWithAdd({
   return (
     <>
       <div className="flex gap-2 items-end">
-        <div className="flex-1">
-          <label className="block text-xs text-muted-foreground mb-1">
-            {label}
-          </label>
-          <select
+        <div className="flex-1 flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">{label}</Label>
+          <Select
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onValueChange={(val) => val && onChange(val)}
             disabled={!editing}
-            className="select-base"
           >
-            {options.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((o) => (
+                <SelectItem key={o} value={o}>
+                  {o}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         {editing && (
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => setShowModal(true)}
             title={`Создать новый: ${label}`}
-            className="size-8 shrink-0 flex items-center justify-center border border-border rounded hover:bg-muted transition-colors"
+            className="shrink-0"
           >
             <Plus className="size-4" />
-          </button>
+          </Button>
         )}
       </div>
       {showModal && (

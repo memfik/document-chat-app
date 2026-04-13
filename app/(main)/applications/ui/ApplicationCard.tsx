@@ -1,6 +1,7 @@
 "use client";
 
 import { Pencil, History } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { ApplicationRow, StatusFilter } from "../data/applications";
 
 interface ApplicationCardProps {
@@ -49,24 +50,26 @@ export function ApplicationCard({
           {row.cost} {row.currency}
         </p>
         <div className="flex gap-1.5">
-          <button
+          <Button
+            variant="outline"
+            size="icon-sm"
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
             }}
-            className="p-1.5 rounded border border-border hover:bg-muted transition-colors"
           >
             <Pencil className="size-4" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-sm"
             onClick={(e) => {
               e.stopPropagation();
               onHistory();
             }}
-            className="p-1.5 rounded border border-border hover:bg-muted transition-colors"
           >
             <History className="size-4" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

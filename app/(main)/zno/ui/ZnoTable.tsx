@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TablePagination } from "@/app/components/ui/TablePagination";
 import type { ZnoRow } from "../data/zno";
 import { ZNO_STATUS_FILTERS } from "../data/zno";
@@ -43,51 +51,39 @@ export function ZnoTable({
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
       <div className="overflow-auto max-h-[calc(100vh-260px)]">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 sticky top-0 z-10">
-            <tr>
+        <Table className="w-full text-sm">
+          <TableHeader className="bg-muted/50 sticky top-0 z-10">
+            <TableRow>
               {COLUMNS.map((col) => (
-                <th
+                <TableHead
                   key={col}
-                  className="px-3 py-2.5 text-left font-semibold whitespace-nowrap border-b border-border"
+                  className="whitespace-nowrap border-b border-border"
                 >
                   {col}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {visible.map((row) => {
               const status = ZNO_STATUS_FILTERS.find(
                 (s) => s.key === row.status,
               );
               return (
-                <tr
+                <TableRow
                   key={row.id}
                   className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
                 >
-                  <td className="px-3 py-2 whitespace-nowrap">{row.id}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.payBefore}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.initiator}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">{row.type}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.counterparty}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">{row.amount}</td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.currency}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.contractNum}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.executor}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
+                  <TableCell className="whitespace-nowrap">{row.id}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.payBefore}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.initiator}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.type}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.counterparty}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.amount}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.currency}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.contractNum}</TableCell>
+                  <TableCell className="whitespace-nowrap">{row.executor}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
                       <span
                         className="inline-block size-2 rounded-full shrink-0"
@@ -95,15 +91,13 @@ export function ZnoTable({
                       />
                       {status?.label}
                     </div>
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {row.updatedAt}
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">{row.updatedAt}</TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
       <TablePagination
         count={total}

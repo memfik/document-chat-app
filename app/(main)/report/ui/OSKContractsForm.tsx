@@ -1,6 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function OSKContractsForm({
   title,
@@ -34,23 +43,26 @@ export default function OSKContractsForm({
             { label: "Инициатор", name: "initiator" },
             { label: "Центр / Децентр", name: "centerDecentr" },
           ].map(({ label, name }) => (
-            <div key={name}>
-              <label className="block text-xs text-muted-foreground mb-1">
-                {label}
-              </label>
-              <select name={name} defaultValue="" className="select-base">
-                <option value="">— Выберите —</option>
-              </select>
+            <div key={name} className="flex flex-col gap-1.5">
+              <Label className="text-xs text-muted-foreground">{label}</Label>
+              <Select>
+                <SelectTrigger className="w-full" name={name}>
+                  <SelectValue placeholder="— Выберите —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_placeholder" disabled>— Выберите —</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           ))}
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="self-stretch sm:self-start px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+          className="self-stretch sm:self-start bg-[#f96800] text-white hover:bg-[#e05a00]"
         >
           Сформировать
-        </button>
+        </Button>
       </form>
 
       {toast && (

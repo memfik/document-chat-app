@@ -32,7 +32,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="py-6 px-4 md:px-6 max-w-3xl mx-auto">
+    <div className="py-6 px-4 md:px-6 max-w-5xl mx-auto">
       <div className="mb-5">
         <h1 className="text-lg font-semibold">История заявки №{id}</h1>
         <p className="text-xs text-muted-foreground">{events.length} событий</p>

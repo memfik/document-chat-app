@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +25,7 @@ export default function LoginPage() {
         <img
           src="/login-bg.png"
           alt="Background"
-          className="w-full h-full object-fill object-center"
+          className="w-full h-full object-contain object-center"
         />
       </div>
 
@@ -45,49 +48,51 @@ export default function LoginPage() {
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Почта</label>
-              <input
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-sm font-medium">Почта</Label>
+              <Input
                 type="email"
                 required
                 placeholder="example@jusanmobile.kz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input-base focus:ring-[#f96800]"
+                className="h-10"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Пароль</label>
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-sm font-medium">Пароль</Label>
               <div className="relative">
-                <input
+                <Input
                   type={showPassword ? "text" : "password"}
                   required
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input-base pr-10 focus:ring-[#f96800]"
+                  className="pr-10 h-10"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? (
                     <EyeOff className="size-4" />
                   ) : (
                     <Eye className="size-4" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="w-full py-2.5 mt-1 bg-[#f96800] text-white font-semibold rounded-lg hover:bg-[#e05a00] transition-colors text-sm"
+              className="w-full mt-1 py-2.5 h-auto bg-[#f96800] text-white font-semibold hover:bg-[#e05a00]"
             >
               Войти
-            </button>
+            </Button>
           </form>
         </div>
       </div>

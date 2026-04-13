@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function F16ApprovalForm({
   title,
@@ -32,26 +35,20 @@ export default function F16ApprovalForm({
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Дата начала
-            </label>
-            <input
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Дата начала</Label>
+            <Input
               type="date"
               required
-              className="input-base"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Дата окончания
-            </label>
-            <input
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Дата окончания</Label>
+            <Input
               type="date"
               required
-              className="input-base"
               min={dateFrom}
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
@@ -59,12 +56,12 @@ export default function F16ApprovalForm({
           </div>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="self-stretch sm:self-start px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+          className="self-stretch sm:self-start bg-[#f96800] text-white hover:bg-[#e05a00]"
         >
           Сформировать
-        </button>
+        </Button>
       </form>
 
       {toast && (

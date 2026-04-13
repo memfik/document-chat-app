@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PositionRow } from "./PositionRow";
 import { priceWithVat, fmt, type Position } from "../data/options";
 
@@ -41,14 +42,15 @@ export function Step2Positions({
         />
       ))}
 
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={onAdd}
-        className="self-start flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-dashed border-border text-muted-foreground hover:border-[#f96800] hover:text-[#f96800] transition-colors"
+        className="self-start flex items-center gap-1.5 border-dashed hover:border-[#f96800] hover:text-[#f96800]"
       >
         <Plus className="size-4" />
         Добавить позицию
-      </button>
+      </Button>
 
       <div className="flex justify-end pt-2 border-t border-border/50">
         <div className="flex items-center gap-8">

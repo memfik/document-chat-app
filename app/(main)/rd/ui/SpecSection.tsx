@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SpecMobileCards } from "./SpecMobileCards";
 import { SpecTable } from "./SpecTable";
 import { calcTotal, formatNumber, type SpecRow } from "../data/options";
@@ -29,13 +30,15 @@ export function SpecSection({
       <div className="flex items-center justify-between px-5 py-3 border-b border-border">
         <p className="text-sm font-semibold">Спецификация</p>
         {editing && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onAdd}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="size-4" />
             Добавить строку
-          </button>
+          </Button>
         )}
       </div>
 

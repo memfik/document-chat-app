@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export interface StatusFilterOption {
   key: string;
@@ -26,11 +27,12 @@ export function StatusFilterBar({
       {filters.map((f) => {
         const active = activeKey === f.key;
         return (
-          <button
+          <Button
             key={f.key}
+            variant="ghost"
             onClick={() => onSelect(f.key)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1 rounded-lg border text-sm transition-colors shrink-0",
+              "flex items-center gap-1.5 px-3 py-1 rounded-lg border text-sm shrink-0 h-auto",
               active
                 ? "border-current font-semibold text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -45,7 +47,7 @@ export function StatusFilterBar({
             <span className="text-xs font-semibold text-muted-foreground ml-0.5">
               {counts[f.key] ?? 0}
             </span>
-          </button>
+          </Button>
         );
       })}
     </div>

@@ -1,6 +1,9 @@
 "use client";
 
 import { Minus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { calcRowSum, formatNumber, type SpecRow } from "../data/options";
 
 interface SpecMobileCardsProps {
@@ -38,23 +41,23 @@ export function SpecMobileCards({
                 № {idx + 1}
               </p>
               {editing && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => onRemove(row.id)}
-                  className="p-1 rounded border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors"
+                  className="border border-destructive/40 text-destructive hover:bg-destructive/10"
                 >
                   <Minus className="size-4" />
-                </button>
+                </Button>
               )}
             </div>
 
             {editing ? (
-              <input
-                className="input-base mb-3"
+              <Input
+                className="mb-3"
                 placeholder="Введите описание..."
                 value={row.description}
-                onChange={(e) =>
-                  onUpdate(row.id, "description", e.target.value)
-                }
+                onChange={(e) => onUpdate(row.id, "description", e.target.value)}
               />
             ) : (
               <p className="text-sm font-medium mb-3">
@@ -65,30 +68,22 @@ export function SpecMobileCards({
             <div className="grid grid-cols-2 gap-2">
               {editing ? (
                 <>
-                  <div>
-                    <label className="block text-xs text-muted-foreground mb-1">
-                      Кол-во
-                    </label>
-                    <input
-                      className="input-base"
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-xs text-muted-foreground">Кол-во</Label>
+                    <Input
                       type="number"
                       min={0}
                       value={row.qty}
                       onChange={(e) => onUpdate(row.id, "qty", e.target.value)}
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs text-muted-foreground mb-1">
-                      Цена за ед.
-                    </label>
-                    <input
-                      className="input-base"
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-xs text-muted-foreground">Цена за ед.</Label>
+                    <Input
                       type="number"
                       min={0}
                       value={row.price}
-                      onChange={(e) =>
-                        onUpdate(row.id, "price", e.target.value)
-                      }
+                      onChange={(e) => onUpdate(row.id, "price", e.target.value)}
                     />
                   </div>
                 </>
@@ -110,9 +105,7 @@ export function SpecMobileCards({
 
             <div className="flex justify-end items-center mt-3 pt-3 border-t border-border gap-2">
               <p className="text-xs text-muted-foreground">Сумма:</p>
-              <p
-                className={`text-sm font-bold ${sum > 0 ? "text-foreground" : "text-muted-foreground"}`}
-              >
+              <p className={`text-sm font-bold ${sum > 0 ? "text-foreground" : "text-muted-foreground"}`}>
                 {sum > 0 ? formatNumber(sum) : "—"}
               </p>
             </div>

@@ -1,6 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function SelectField({
   label,
@@ -12,14 +22,19 @@ function SelectField({
   defaultValue?: string;
 }) {
   return (
-    <div>
-      <label className="block text-xs text-muted-foreground mb-1">{label}</label>
-      <select name={name} defaultValue={defaultValue} className="select-base">
-        {defaultValue && defaultValue !== "--все--" && defaultValue !== "" && (
-          <option value={defaultValue}>{defaultValue}</option>
-        )}
-        <option value="--все--">--все--</option>
-      </select>
+    <div className="flex flex-col gap-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Select defaultValue={defaultValue || undefined}>
+        <SelectTrigger className="w-full" name={name}>
+          <SelectValue placeholder="— Выберите —" />
+        </SelectTrigger>
+        <SelectContent>
+          {defaultValue && defaultValue !== "--все--" && defaultValue !== "" && (
+            <SelectItem value={defaultValue}>{defaultValue}</SelectItem>
+          )}
+          <SelectItem value="--все--">--все--</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -68,23 +83,17 @@ export default function ISSKForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <SelectField label="Подпроект" name="subproject" defaultValue="--все--" />
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Начало периода
-            </label>
-            <input
-              className="input-base"
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Начало периода</Label>
+            <Input
               name="dateFrom"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Конец периода
-            </label>
-            <input
-              className="input-base"
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Конец периода</Label>
+            <Input
               name="dateTo"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
@@ -95,35 +104,34 @@ export default function ISSKForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <SelectField label="Центр / Децентр" name="centerDecentr" defaultValue="--все--" />
           <SelectField label="Статус" name="status" defaultValue="Все с утвержденной Ф16" />
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Фильтр по тексту
-            </label>
-            <input className="input-base" name="textFilter" />
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Фильтр по тексту</Label>
+            <Input name="textFilter" />
           </div>
         </div>
 
         <div className="flex flex-col gap-2 max-w-full sm:max-w-[220px]">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              Точка присутствия из списка
-            </label>
-            <select name="presencePoint" defaultValue="" className="select-base">
-              <option value="">— Выберите —</option>
-            </select>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Точка присутствия из списка</Label>
+            <Select>
+              <SelectTrigger className="w-full" name="presencePoint">
+                <SelectValue placeholder="— Выберите —" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_placeholder" disabled>— Выберите —</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <p className="text-xs text-muted-foreground">или содержит</p>
-          <div>
-            <input className="input-base" name="presencePointText" placeholder="Текст" />
-          </div>
+          <Input name="presencePointText" placeholder="Текст" />
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="self-stretch sm:self-start px-4 py-2 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+          className="self-stretch sm:self-start bg-[#f96800] text-white hover:bg-[#e05a00]"
         >
           Сформировать
-        </button>
+        </Button>
       </form>
 
       {toast && (

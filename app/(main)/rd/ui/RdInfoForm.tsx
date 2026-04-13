@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { SelectWithAdd } from "./SelectWithAdd";
 import { formatNumber, type FormData } from "../data/options";
 
@@ -50,28 +52,21 @@ export function RdInfoForm({
           }}
           modalTitle="Добавить новый договор"
         />
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Описание
-          </label>
-          <input
-            className="input-base"
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Описание</Label>
+          <Input
             value={draft.description}
             onChange={(e) => onField("description", e.target.value)}
             disabled={!editing}
           />
         </div>
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Инициатор
-          </label>
-          <input className="input-base" value={draft.initiator} disabled />
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Инициатор</Label>
+          <Input value={draft.initiator} disabled />
         </div>
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Дата создания
-          </label>
-          <input className="input-base" value={draft.createdAt} disabled />
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Дата создания</Label>
+          <Input value={draft.createdAt} disabled />
         </div>
         <SelectWithAdd
           label="Центр затрат"
@@ -109,15 +104,9 @@ export function RdInfoForm({
           }}
           modalTitle="Добавить новую статью"
         />
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
-            Сумма рамочного договора
-          </label>
-          <input
-            className="input-base"
-            value={`${formatNumber(total)} KZT`}
-            disabled
-          />
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Сумма рамочного договора</Label>
+          <Input value={`${formatNumber(total)} KZT`} disabled />
         </div>
       </div>
     </div>

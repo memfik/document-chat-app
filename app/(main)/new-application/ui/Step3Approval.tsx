@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { APPROVERS, ED_GO_LIST } from "../data/options";
 import { cn } from "@/lib/utils";
 
@@ -42,10 +44,11 @@ function MultiSelect({
 
   return (
     <div className="relative" ref={ref}>
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={() => setOpen((v) => !v)}
-        className="input-base flex items-center justify-between text-left"
+        className="w-full flex items-center justify-between text-left h-8 px-2.5 font-normal"
       >
         <span
           className={cn(
@@ -61,7 +64,7 @@ function MultiSelect({
             open && "rotate-180",
           )}
         />
-      </button>
+      </Button>
       {open && (
         <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
           {options.map((opt) => (
@@ -97,7 +100,7 @@ export function Step3Approval({ approvers, onApproversChange }: Step3Props) {
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Согласующий</p>
-            <input className="input-base" value="ГО-ДЦиРС" disabled />
+            <Input value="ГО-ДЦиРС" disabled />
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1">Согласующий</p>

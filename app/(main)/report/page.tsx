@@ -89,9 +89,7 @@ function renderForm(tab: (typeof tabs)[number]) {
   if (tab.key === "rd")
     return <ISSKForm title={tab.title} description={tab.description} />;
   if (tab.key === "zno")
-    return (
-      <OSKContractsForm title={tab.title} description={tab.description} />
-    );
+    return <OSKContractsForm title={tab.title} description={tab.description} />;
   if (tab.key === "summary")
     return <F16ApprovalForm title={tab.title} description={tab.description} />;
   return <NoAccess />;
@@ -104,7 +102,7 @@ export default function ReportPage() {
 
   return (
     <div className="py-6 px-4 md:px-6">
-      <h1 className="text-lg font-semibold mb-6">Отчеты</h1>
+      <h1 className="text-lg font-semibold mb-3">Отчеты</h1>
 
       {isMobile ? (
         <div className="flex flex-col gap-4">

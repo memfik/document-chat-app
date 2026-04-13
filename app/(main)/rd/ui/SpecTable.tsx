@@ -1,6 +1,16 @@
 "use client";
 
 import { Minus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { calcRowSum, formatNumber, type SpecRow } from "../data/options";
 
 interface SpecTableProps {
@@ -13,58 +23,46 @@ interface SpecTableProps {
 export function SpecTable({ rows, editing, onUpdate, onRemove }: SpecTableProps) {
   return (
     <div className="overflow-auto">
-      <table className="w-full text-sm min-w-[640px]">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="px-3 py-2.5 text-left font-semibold w-12">№</th>
-            <th className="px-3 py-2.5 text-left font-semibold">
-              Описание товара / услуги
-            </th>
-            <th className="px-3 py-2.5 text-left font-semibold w-28">
-              Количество
-            </th>
-            <th className="px-3 py-2.5 text-left font-semibold w-36">
-              Цена за ед.
-            </th>
-            <th className="px-3 py-2.5 text-left font-semibold w-36">Сумма</th>
-            {editing && <th className="w-14" />}
-          </tr>
-        </thead>
-        <tbody>
+      <Table className="min-w-[640px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12">№</TableHead>
+            <TableHead>Описание товара / услуги</TableHead>
+            <TableHead className="w-28">Количество</TableHead>
+            <TableHead className="w-36">Цена за ед.</TableHead>
+            <TableHead className="w-36">Сумма</TableHead>
+            {editing && <TableHead className="w-14" />}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.length === 0 && (
-            <tr>
-              <td
+            <TableRow>
+              <TableCell
                 colSpan={editing ? 6 : 5}
                 className="px-3 py-8 text-center text-sm text-muted-foreground"
               >
                 Нет строк спецификации
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
           {rows.map((row, idx) => (
-            <tr
-              key={row.id}
-              className="border-t border-border hover:bg-muted/20 transition-colors"
-            >
-              <td className="px-3 py-2 text-muted-foreground">{idx + 1}</td>
-              <td className="px-3 py-2">
+            <TableRow key={row.id}>
+              <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
+              <TableCell>
                 {editing ? (
-                  <input
-                    className="input-base"
+                  <Input
                     placeholder="Введите описание..."
                     value={row.description}
-                    onChange={(e) =>
-                      onUpdate(row.id, "description", e.target.value)
-                    }
+                    onChange={(e) => onUpdate(row.id, "description", e.target.value)}
                   />
                 ) : (
                   <span>{row.description || "—"}</span>
                 )}
-              </td>
-              <td className="px-3 py-2">
+              </TableCell>
+              <TableCell>
                 {editing ? (
-                  <input
-                    className="input-base text-right"
+                  <Input
+                    className="text-right"
                     type="number"
                     min={0}
                     placeholder="0"
@@ -74,11 +72,11 @@ export function SpecTable({ rows, editing, onUpdate, onRemove }: SpecTableProps)
                 ) : (
                   <span>{row.qty || "—"}</span>
                 )}
-              </td>
-              <td className="px-3 py-2">
+              </TableCell>
+              <TableCell>
                 {editing ? (
-                  <input
-                    className="input-base text-right"
+                  <Input
+                    className="text-right"
                     type="number"
                     min={0}
                     placeholder="0"
@@ -90,25 +88,27 @@ export function SpecTable({ rows, editing, onUpdate, onRemove }: SpecTableProps)
                     {row.price ? formatNumber(parseFloat(row.price)) : "—"}
                   </span>
                 )}
-              </td>
-              <td className="px-3 py-2 font-medium">
+              </TableCell>
+              <TableCell className="font-medium">
                 {calcRowSum(row) > 0 ? formatNumber(calcRowSum(row)) : "—"}
-              </td>
+              </TableCell>
               {editing && (
-                <td className="px-3 py-2">
-                  <button
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={() => onRemove(row.id)}
                     title="Удалить строку"
-                    className="p-1 rounded border border-destructive/40 text-destructive hover:bg-destructive/10 transition-colors"
+                    className="border border-destructive/40 text-destructive hover:bg-destructive/10"
                   >
                     <Minus className="size-4" />
-                  </button>
-                </td>
+                  </Button>
+                </TableCell>
               )}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

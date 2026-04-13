@@ -1,6 +1,7 @@
 "use client";
 
 import { Pencil, Save, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface RdHeaderProps {
   editing: boolean;
@@ -11,53 +12,60 @@ interface RdHeaderProps {
 
 export function RdHeader({ editing, onEdit, onSave, onCancel }: RdHeaderProps) {
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between mb-3">
       <h1 className="text-lg font-semibold">Рамочный договор</h1>
       <div className="flex gap-2">
         {editing ? (
           <>
-            <button
+            <Button
               onClick={onSave}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+              className="hidden sm:flex items-center gap-2 bg-[#f96800] text-white hover:bg-[#e05a00]"
             >
               <Save className="size-4" />
               Сохранить
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onSave}
-              className="sm:hidden flex items-center justify-center size-8 rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+              size="icon"
+              className="sm:hidden bg-[#f96800] text-white hover:bg-[#e05a00]"
             >
               <Save className="size-4" />
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={onCancel}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+              className="hidden sm:flex items-center gap-2"
             >
               <X className="size-4" />
               Отмена
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
               onClick={onCancel}
-              className="sm:hidden flex items-center justify-center size-8 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+              className="sm:hidden"
             >
               <X className="size-4" />
-            </button>
+            </Button>
           </>
         ) : (
           <>
-            <button
+            <Button
+              variant="outline"
               onClick={onEdit}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+              className="hidden sm:flex items-center gap-2"
             >
               <Pencil className="size-4" />
               Редактировать
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
               onClick={onEdit}
-              className="sm:hidden flex items-center justify-center size-8 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+              className="sm:hidden"
             >
               <Pencil className="size-4" />
-            </button>
+            </Button>
           </>
         )}
       </div>

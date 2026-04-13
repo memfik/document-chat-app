@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { X, Upload } from "lucide-react";
-import { Dialog } from "@base-ui/react/dialog";
+import { Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export interface RowExtra {
   znoNum: string;
@@ -31,37 +40,24 @@ export function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
   };
 
   return (
-    <Dialog.Root open onOpenChange={(o) => !o && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Popup className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xs bg-card border border-border rounded-xl shadow-xl outline-none">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <p className="text-sm font-semibold">Редактирование — {rowId}</p>
-          <button
-            onClick={onClose}
-            className="p-1 rounded hover:bg-muted text-muted-foreground"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent showCloseButton={false} className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle>Редактирование — {rowId}</DialogTitle>
+        </DialogHeader>
 
-        <div className="px-4 py-4 flex flex-col gap-4">
-          <div>
-            <label className="block text-xs text-muted-foreground mb-1">
-              № ЗНО
-            </label>
-            <input
-              className="input-base"
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">№ ЗНО</Label>
+            <Input
               placeholder="Введите номер ЗНО..."
               value={znoNum}
               onChange={(e) => setZnoNum(e.target.value)}
             />
           </div>
 
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">
-              Платежный документ
-            </p>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Платежный документ</Label>
             <label className="flex items-center gap-2 px-3 py-3 border border-dashed border-border rounded-md cursor-pointer hover:border-[#f96800] transition-colors">
               <Upload className="size-4 text-muted-foreground shrink-0" />
               <span className="text-sm text-muted-foreground flex-1 truncate">
@@ -72,24 +68,20 @@ export function EditModal({ rowId, extra, onClose, onSave }: EditModalProps) {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-border">
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Отмена
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               onSave({ znoNum, paymentFile: file, paymentFileName: fileName })
             }
-            className="px-3 py-1.5 text-sm rounded-lg bg-[#f96800] text-white hover:bg-[#e05a00] transition-colors"
+            className="bg-[#f96800] text-white hover:bg-[#e05a00]"
           >
             Сохранить
-          </button>
-        </div>
-      </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

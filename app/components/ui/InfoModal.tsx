@@ -1,8 +1,12 @@
 "use client";
 
 import { X, History, FileText, Eye, Paperclip } from "lucide-react";
-import { Dialog } from "@base-ui/react/dialog";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import type { ApplicationRow } from "@/app/types/application";
 
 export type { ApplicationRow };
@@ -77,13 +81,15 @@ function FileLink({
         </span>
       </div>
       {exists && onView && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onView}
-          className="flex items-center gap-1 text-xs px-2 py-1 rounded-md hover:bg-muted ml-2 shrink-0 text-muted-foreground"
+          className="flex items-center gap-1 ml-2 shrink-0 text-muted-foreground h-auto py-1"
         >
           <Eye className="size-3" />
           Просмотр
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -103,10 +109,11 @@ export function InfoModal({
   const vat = Math.round(costNum - costNum / 1.12).toLocaleString("ru-RU");
 
   return (
-    <Dialog.Root open onOpenChange={(o) => !o && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
-        <Dialog.Popup className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-card border border-border rounded-xl shadow-xl max-h-[90vh] flex flex-col outline-none">
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-lg max-h-[90vh] flex flex-col p-0 gap-0"
+      >
         {/* Title */}
         <div className="flex items-start justify-between gap-4 px-4 py-3 border-b border-border">
           <div className="min-w-0">
@@ -116,19 +123,22 @@ export function InfoModal({
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => router.push(`/history/${row.id}`)}
-              className="flex items-center gap-1.5 text-sm px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+              className="flex items-center gap-1.5 h-auto py-1.5"
             >
               <History className="size-3.5" />
               История
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"
             >
               <X className="size-4" />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -234,15 +244,11 @@ export function InfoModal({
           <p className="text-xs text-muted-foreground">
             Последнее изменение: {row.updatedAt}
           </p>
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
-          >
+          <Button variant="outline" size="sm" onClick={onClose}>
             Закрыть
-          </button>
+          </Button>
         </div>
-      </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

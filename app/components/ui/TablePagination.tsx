@@ -1,5 +1,13 @@
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 interface TablePaginationProps {
@@ -41,37 +49,45 @@ export function TablePagination({
     >
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground">{labelRowsPerPage}</span>
-        <select
-          value={rowsPerPage}
-          onChange={(e) => {
-            onRowsPerPageChange(parseInt(e.target.value, 10));
-            onPageChange(0);
+        <Select
+          value={String(rowsPerPage)}
+          onValueChange={(val) => {
+            if (val) {
+              onRowsPerPageChange(parseInt(val, 10));
+              onPageChange(0);
+            }
           }}
-          className="border border-border rounded px-1.5 py-0.5 text-sm bg-background text-foreground"
         >
-          {rowsPerPageOptions.map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="h-7 w-16 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {rowsPerPageOptions.map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {n}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <span className="text-muted-foreground">{displayedRows}</span>
       <div className="flex items-center gap-1">
-        <button
+        <Button
+          variant="ghost"
+          size="icon-sm"
           disabled={page === 0}
           onClick={() => onPageChange(page - 1)}
-          className="p-1 rounded hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronLeft className="size-4" />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
           disabled={page >= totalPages - 1}
           onClick={() => onPageChange(page + 1)}
-          className="p-1 rounded hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronRight className="size-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

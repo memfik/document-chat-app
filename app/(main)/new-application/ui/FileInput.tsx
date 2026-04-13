@@ -1,6 +1,7 @@
 "use client";
 
 import { Upload, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface FileInputProps {
   label: string;
@@ -18,16 +19,17 @@ export function FileInput({ label, file, onChange }: FileInputProps) {
           {file ? file.name : "Нажмите для загрузки файла..."}
         </span>
         {file && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-xs"
             onClick={(e) => {
               e.preventDefault();
               onChange(null);
             }}
-            className="p-0.5 rounded hover:bg-muted"
           >
             <X className="size-3.5 text-muted-foreground" />
-          </button>
+          </Button>
         )}
         <input
           type="file"
