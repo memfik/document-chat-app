@@ -56,7 +56,7 @@ export default function ChronologyForm({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 max-w-3xl shadow-sm">
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
       <p className="text-sm font-semibold mb-1">{title}</p>
       <p className="text-sm text-muted-foreground mb-5">{description}</p>
 

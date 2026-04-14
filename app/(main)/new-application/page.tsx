@@ -96,9 +96,7 @@ export default function NewApplicationPage() {
 
   const handleSubmit = () => setToast(true);
   return (
-    <div className="py-6 md:py-6 px-4 md:px-6 max-w-[1280px] mx-auto">
-      <h1 className="text-lg font-semibold mb-6">Новая заявка Ф16</h1>
-
+    <div className="py-6 md:py-6 px-4 md:px-6 max-w-7xl mx-auto">
       <FormStepper activeStep={activeStep} isMobile={isMobile} />
 
       <div className="bg-card border border-border rounded-lg shadow-sm">

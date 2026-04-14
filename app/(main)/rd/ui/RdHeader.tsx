@@ -12,8 +12,7 @@ interface RdHeaderProps {
 
 export function RdHeader({ editing, onEdit, onSave, onCancel }: RdHeaderProps) {
   return (
-    <div className="flex items-center justify-between mb-3">
-      <h1 className="text-lg font-semibold">Рамочный договор</h1>
+    <div className="flex justify-end mb-3">
       <div className="flex gap-2">
         {editing ? (
           <>

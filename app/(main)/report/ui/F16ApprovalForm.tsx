@@ -29,7 +29,7 @@ export default function F16ApprovalForm({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 max-w-lg shadow-sm">
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
       <p className="text-sm font-semibold mb-1">{title}</p>
       <p className="text-sm text-muted-foreground mb-5">{description}</p>
 
@@ -45,7 +45,9 @@ export default function F16ApprovalForm({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-muted-foreground">Дата окончания</Label>
+            <Label className="text-xs text-muted-foreground">
+              Дата окончания
+            </Label>
             <Input
               type="date"
               required

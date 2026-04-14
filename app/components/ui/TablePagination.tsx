@@ -40,10 +40,24 @@ export function TablePagination({
     ? labelDisplayedRows({ from, to, count })
     : `${from}–${to} из ${count}`;
 
+  // Build page buttons with ellipsis
+  const pageButtons: (number | "...")[] = [];
+  if (totalPages <= 7) {
+    for (let i = 0; i < totalPages; i++) pageButtons.push(i);
+  } else {
+    const near = new Set([0, 1, totalPages - 2, totalPages - 1, page - 1, page, page + 1].filter(i => i >= 0 && i < totalPages));
+    let prev: number | null = null;
+    Array.from(near).sort((a, b) => a - b).forEach((i) => {
+      if (prev !== null && i - prev > 1) pageButtons.push("...");
+      pageButtons.push(i);
+      prev = i;
+    });
+  }
+
   return (
     <div
       className={cn(
-        "flex items-center justify-end gap-4 px-4 py-2 text-sm border-t border-border bg-card sticky bottom-0",
+        "flex flex-wrap items-center justify-center gap-3 px-4 py-2 text-sm border-t border-border bg-card sticky bottom-0",
         className,
       )}
     >
@@ -70,7 +84,9 @@ export function TablePagination({
           </SelectContent>
         </Select>
       </div>
+
       <span className="text-muted-foreground">{displayedRows}</span>
+
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"
@@ -80,6 +96,28 @@ export function TablePagination({
         >
           <ChevronLeft className="size-4" />
         </Button>
+
+        {pageButtons.map((p, i) =>
+          p === "..." ? (
+            <span key={`ellipsis-${i}`} className="px-1 text-muted-foreground select-none">
+              …
+            </span>
+          ) : (
+            <Button
+              key={p}
+              variant={p === page ? "default" : "ghost"}
+              size="icon-sm"
+              onClick={() => onPageChange(p)}
+              className={cn(
+                "min-w-7 text-xs",
+                p === page && "bg-[#f96800] hover:bg-[#e05a00] text-white",
+              )}
+            >
+              {p + 1}
+            </Button>
+          )
+        )}
+
         <Button
           variant="ghost"
           size="icon-sm"

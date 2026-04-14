@@ -1,25 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import {
-  Bell,
-  LogOut,
-  Sun,
-  Moon,
-  CircleUserRound,
-  ChevronDown,
-  Menu,
-} from "lucide-react";
-import { useAppTheme } from "./ThemeContext";
+import { usePathname } from "next/navigation";
+import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 
 const notifications = [
   { id: 1, text: "Заявка №1023 требует проверки", time: "5 мин назад" },
@@ -28,12 +17,32 @@ const notifications = [
   { id: 4, text: "Срок по заявке №1010 истекает", time: "вчера" },
 ];
 
+const pageTitles: Record<string, string> = {
+  "/applications": "Заявки",
+  "/new-application": "Новая заявка Ф16",
+  "/zno": "ЗНО",
+  "/accompaniment": "Сопровождение",
+  "/rd": "Рамочный договор",
+  "/report": "Отчеты",
+};
+
+function usePageTitle() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/history/")) {
+    const id = pathname.split("/history/")[1];
+    return `История / ${id}`;
+  }
+  const match = Object.entries(pageTitles).find(
+    ([href]) => pathname === href || pathname.startsWith(href + "/"),
+  );
+  return match ? match[1] : "";
+}
+
 export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
-  const router = useRouter();
-  const { isDark, toggleTheme } = useAppTheme();
+  const pageTitle = usePageTitle();
 
   return (
-    <header className="flex items-center justify-between px-4 bg-card border-b border-border shadow-sm h-16">
+    <header className="flex items-center justify-between px-4 md:px-6 bg-card border-b border-border shadow-sm h-16">
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -43,17 +52,10 @@ export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
         >
           <Menu className="size-5" />
         </Button>
-        <a href="/applications">
-          <img
-            src="/logo-jusanmobile.png"
-            alt="Logo"
-            className="h-8 md:h-10 object-contain ml-0 md:ml-3"
-          />
-        </a>
+        {pageTitle && <h1 className="text-lg font-semibold">{pageTitle}</h1>}
       </div>
 
       <div className="flex items-center gap-1">
-        {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger
             render={<Button variant="ghost" size="icon" className="relative" />}
@@ -86,60 +88,6 @@ export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
                 </DropdownMenuItem>
               ))
             )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* User menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                className="flex items-center gap-1.5 px-2 py-1.5 ml-1 h-auto"
-              />
-            }
-          >
-            <CircleUserRound className="size-5 text-muted-foreground" />
-            <span className="hidden md:block text-sm font-medium">
-              Югай Виталий
-            </span>
-            <ChevronDown className="hidden md:block size-4 text-muted-foreground" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-0">
-            <DropdownMenuItem
-              onClick={toggleTheme}
-              className="flex items-center justify-between px-3 py-2.5 rounded-none cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                {isDark ? (
-                  <Sun className="size-4 text-yellow-400" />
-                ) : (
-                  <Moon className="size-4 text-muted-foreground" />
-                )}
-                <span>{isDark ? "Светлая тема" : "Тёмная тема"}</span>
-              </div>
-              <div
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
-                  isDark ? "bg-[#f96800]" : "bg-muted",
-                )}
-              >
-                <span
-                  className={cn(
-                    "inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform",
-                    isDark ? "translate-x-[18px]" : "translate-x-0.5",
-                  )}
-                />
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => router.push("/login")}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-none text-destructive cursor-pointer"
-            >
-              <LogOut className="size-4" />
-              <span>Выйти</span>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

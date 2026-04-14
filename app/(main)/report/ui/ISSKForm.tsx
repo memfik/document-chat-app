@@ -29,9 +29,11 @@ function SelectField({
           <SelectValue placeholder="— Выберите —" />
         </SelectTrigger>
         <SelectContent>
-          {defaultValue && defaultValue !== "--все--" && defaultValue !== "" && (
-            <SelectItem value={defaultValue}>{defaultValue}</SelectItem>
-          )}
+          {defaultValue &&
+            defaultValue !== "--все--" &&
+            defaultValue !== "" && (
+              <SelectItem value={defaultValue}>{defaultValue}</SelectItem>
+            )}
           <SelectItem value="--все--">--все--</SelectItem>
         </SelectContent>
       </Select>
@@ -63,16 +65,28 @@ export default function ISSKForm({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 max-w-3xl shadow-sm">
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
       <p className="text-sm font-semibold mb-1">{title}</p>
       <p className="text-sm text-muted-foreground mb-5">{description}</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-          <SelectField label="Инициатор" name="initiator" defaultValue="ГО-ДЭ" />
-          <SelectField label="Центр затрат" name="costCenter" defaultValue="--все--" />
+          <SelectField
+            label="Инициатор"
+            name="initiator"
+            defaultValue="ГО-ДЭ"
+          />
+          <SelectField
+            label="Центр затрат"
+            name="costCenter"
+            defaultValue="--все--"
+          />
           <SelectField label="Куратор" name="curator" defaultValue="--все--" />
-          <SelectField label="Тип закупа" name="purchaseType" defaultValue="--все--" />
+          <SelectField
+            label="Тип закупа"
+            name="purchaseType"
+            defaultValue="--все--"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -82,9 +96,15 @@ export default function ISSKForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <SelectField label="Подпроект" name="subproject" defaultValue="--все--" />
+          <SelectField
+            label="Подпроект"
+            name="subproject"
+            defaultValue="--все--"
+          />
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-muted-foreground">Начало периода</Label>
+            <Label className="text-xs text-muted-foreground">
+              Начало периода
+            </Label>
             <Input
               name="dateFrom"
               value={dateFrom}
@@ -92,7 +112,9 @@ export default function ISSKForm({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-muted-foreground">Конец периода</Label>
+            <Label className="text-xs text-muted-foreground">
+              Конец периода
+            </Label>
             <Input
               name="dateTo"
               value={dateTo}
@@ -102,23 +124,37 @@ export default function ISSKForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <SelectField label="Центр / Децентр" name="centerDecentr" defaultValue="--все--" />
-          <SelectField label="Статус" name="status" defaultValue="Все с утвержденной Ф16" />
+          <SelectField
+            label="Центр / Децентр"
+            name="centerDecentr"
+            defaultValue="--все--"
+          />
+          <SelectField
+            label="Статус"
+            name="status"
+            defaultValue="Все с утвержденной Ф16"
+          />
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-muted-foreground">Фильтр по тексту</Label>
+            <Label className="text-xs text-muted-foreground">
+              Фильтр по тексту
+            </Label>
             <Input name="textFilter" />
           </div>
         </div>
 
         <div className="flex flex-col gap-2 max-w-full sm:max-w-[220px]">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-muted-foreground">Точка присутствия из списка</Label>
+            <Label className="text-xs text-muted-foreground">
+              Точка присутствия из списка
+            </Label>
             <Select>
               <SelectTrigger className="w-full" name="presencePoint">
                 <SelectValue placeholder="— Выберите —" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="_placeholder" disabled>— Выберите —</SelectItem>
+                <SelectItem value="_placeholder" disabled>
+                  — Выберите —
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

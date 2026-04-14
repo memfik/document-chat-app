@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { ThemeRegistry } from "./components/layout/ThemeRegistry";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,9 @@ export default async function RootLayout({
   return (
     <html lang="ru" data-theme={isDark ? "dark" : "light"} suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body suppressHydrationWarning>
-        <ThemeRegistry initialDark={isDark}>{children}</ThemeRegistry>
+        <ThemeRegistry initialDark={isDark}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeRegistry>
       </body>
     </html>
   );

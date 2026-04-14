@@ -33,12 +33,10 @@ export default function HistoryPage() {
 
   return (
     <div className="py-6 px-4 md:px-6 max-w-5xl mx-auto">
-      <div className="mb-5">
-        <h1 className="text-lg font-semibold">История заявки №{id}</h1>
-        <p className="text-xs text-muted-foreground">{events.length} событий</p>
-      </div>
-
       <CommentBox value={comment} onChange={setComment} onSend={sendComment} />
+      <p className="text-sm mb-2 font-semibold text-muted-foreground text-center">
+        {events.length} событий
+      </p>
 
       <div>
         {groups.map((group) => (

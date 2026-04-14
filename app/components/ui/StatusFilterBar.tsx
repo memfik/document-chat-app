@@ -23,7 +23,7 @@ export function StatusFilterBar({
   counts,
 }: StatusFilterBarProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 md:flex-wrap [&::-webkit-scrollbar]:hidden scrollbar-none">
+    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 md:flex-wrap [&::-webkit-scrollbar]:hidden scrollbar-none px-4 -mx-4 md:px-0 md:mx-0">
       {filters.map((f) => {
         const active = activeKey === f.key;
         return (

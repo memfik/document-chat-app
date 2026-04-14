@@ -33,7 +33,7 @@ export default function BudgetExecutionForm({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 max-w-2xl shadow-sm">
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
       <p className="text-sm font-semibold mb-1">{title}</p>
       <p className="text-sm text-muted-foreground mb-5">{description}</p>
 
@@ -51,7 +51,9 @@ export default function BudgetExecutionForm({
                   <SelectValue placeholder="— Выберите —" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="_placeholder" disabled>— Выберите —</SelectItem>
+                  <SelectItem value="_placeholder" disabled>
+                    — Выберите —
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
